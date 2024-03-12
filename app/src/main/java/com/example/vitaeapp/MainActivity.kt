@@ -5,6 +5,7 @@ import android.print.PrintAttributes.Margins
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -66,7 +67,9 @@ fun Tela(name: String, modifier: Modifier = Modifier) {
 
 @Composable
 fun Logo() {
-    Row(modifier = Modifier.fillMaxSize().padding(10.dp), Arrangement.End) {
+    Row(modifier = Modifier
+        .fillMaxSize()
+        .padding(10.dp), Arrangement.End) {
         Image(
             painter = painterResource(id = R.mipmap.logo),
             contentDescription = "Vitae",
@@ -88,25 +91,20 @@ fun Menu() {
         )
     }
 
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.BottomCenter
-    ) {
-        DropdownMenu(expanded = true, onDismissRequest = { /*TODO*/ }) {
-            Row(modifier = Modifier.fillMaxSize(), ) {
-                Spacer(modifier = Modifier.width(8.dp))
-                listaMenu.forEach { itemId ->
-                    Image(
-                        painter = painterResource(id = itemId),
-                        contentDescription = "",
-                        modifier = Modifier.size(55.dp)
-                    )
-                    Spacer(modifier = Modifier.width(10.dp))
-                }
-                Spacer(modifier = Modifier.width(8.dp))
-            }
+    Row(verticalAlignment = Alignment.Bottom) {
+        Spacer(modifier = Modifier.width(8.dp))
+        listaMenu.forEach { itemId ->
+            Image(
+                painter = painterResource(id = itemId),
+                contentDescription = "",
+                modifier = Modifier.size(55.dp)
+            )
+            Spacer(modifier = Modifier.width(10.dp))
         }
+        Spacer(modifier = Modifier.width(8.dp))
     }
+
+
 }
 
 
