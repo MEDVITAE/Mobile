@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -26,6 +27,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.vitaeapp.ui.theme.VitaeAppTheme
 
 class MainActivity : ComponentActivity() {
@@ -49,18 +51,18 @@ class MainActivity : ComponentActivity() {
 fun Tela(name: String, modifier: Modifier = Modifier) {
     val listaHistorico = remember {
         mutableStateListOf(
-            Historico(id = 5 , data = "2024/06/26", hora = "10:30", hemocentro = "Hospital Teste"),
-            Historico(id = 4 , data = "2024/05/14", hora = "10:00", hemocentro = "Hospital Teste"),
-            Historico(id = 3 , data = "2024/02/27", hora = "10:30", hemocentro = "Hospital Exemplo"),
-            Historico(id = 2 , data = "2023/11/01", hora = "10:00", hemocentro = "Hospital Exemplo"),
-            Historico(id = 1 , data = "2023/09/06", hora = "10:30", hemocentro = "Hospital Exemplo"),
+            Historico(id = 5, data = "2024/06/26", hora = "10:30", hemocentro = "Hospital Teste"),
+            Historico(id = 4, data = "2024/05/14", hora = "10:00", hemocentro = "Hospital Teste"),
+            Historico(id = 3, data = "2024/02/27", hora = "10:30", hemocentro = "Hospital Exemplo"),
+            Historico(id = 2, data = "2023/11/01", hora = "10:00", hemocentro = "Hospital Exemplo"),
+            Historico(id = 1, data = "2023/09/06", hora = "10:30", hemocentro = "Hospital Exemplo"),
         )
     }
 
     Logo()
     Column {
         Proxima(lista = listaHistorico)
-        Text("HISTÓRICO")
+        Anteriores(lista = listaHistorico)
 
     }
     Menu()
@@ -68,9 +70,11 @@ fun Tela(name: String, modifier: Modifier = Modifier) {
 
 @Composable
 fun Logo() {
-    Row(modifier = Modifier
-        .fillMaxSize()
-        .padding(10.dp), Arrangement.End) {
+    Row(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(10.dp), Arrangement.End
+    ) {
         Image(
             painter = painterResource(id = R.mipmap.logo),
             contentDescription = "Vitae",
@@ -107,11 +111,11 @@ fun Menu() {
 }
 
 @Composable
-fun Proxima(lista:List<Historico>){
+fun Proxima(lista: List<Historico>) {
 
-    var data:String = ""
-    var hora:String = ""
-    var hospital:String = ""
+    var data: String = ""
+    var hora: String = ""
+    var hospital: String = ""
 
     var hemocentro = lista.maxBy { it.id }
 
@@ -129,13 +133,12 @@ fun Proxima(lista:List<Historico>){
      */
 
     Column(
-        Modifier.
-        padding(30.dp, 50.dp)
+        Modifier.padding(30.dp, 50.dp)
     ) {
         Text(
             "PRÓXIMA DOAÇÃO",
             Modifier.padding(0.dp, 0.dp, 0.dp, 10.dp)
-            )
+        )
         Column {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Image(
@@ -144,16 +147,73 @@ fun Proxima(lista:List<Historico>){
                     modifier = Modifier.size(55.dp)
                 )
 
-                Column {
-                    Text("Doação: n° ")
-                    Text("Data: ${hemocentro.data} - Hora: ${hemocentro.hora}")
-                    Text("Hemocentro: ${hemocentro.hemocentro}")
+                Column(
+                    Modifier
+                        .padding(10.dp, 0.dp, 0.dp, 0.dp)
+                        .background(Color.White)
+                        .width(350.dp)
+                ) {
+                    Column(
+                        Modifier
+                            .padding(10.dp)
+                    ) {
+                        Text("Doação: n° ")
+                        Text("Data: ${hemocentro.data} - Hora: ${hemocentro.hora}")
+                        Text("Hemocentro: ${hemocentro.hemocentro}")
+                    }
                 }
             }
         }
     }
 }
 
+@Composable
+fun Anteriores(lista: List<Historico>) {
+
+    var data: String = ""
+    var hora: String = ""
+    var hospital: String = ""
+
+    var hemocentro = lista.maxBy { it.id }
+
+    Column(
+        Modifier.padding(30.dp, 50.dp)
+    ) {
+        Text(
+            "HISTÓRICO",
+            Modifier.padding(0.dp, 0.dp, 0.dp, 10.dp)
+        )
+        lista.forEach { item ->
+            if (hemocentro != item) {
+                Column {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Image(
+                            painter = painterResource(id = R.mipmap.hospital),
+                            contentDescription = "Doação",
+                            modifier = Modifier.size(55.dp)
+                        )
+
+                        Column(
+                            Modifier
+                                .padding(10.dp, 0.dp, 0.dp, 20.dp)
+                                .background(Color.White)
+                                .width(350.dp)
+                        ) {
+                            Column(
+                                Modifier
+                                    .padding(10.dp)
+                            ) {
+                                Text("Doação: n° ")
+                                Text("Data: ${hemocentro.data} - Hora: ${hemocentro.hora}")
+                                Text("Hemocentro: ${hemocentro.hemocentro}")
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
 
 @Preview(showBackground = true)
 @Composable
