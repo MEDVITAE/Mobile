@@ -2,9 +2,32 @@ package com.example.vitaeapp.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import com.example.vitaeapp.R
+
+val Roboto = FontFamily(
+    Font(R.font.roboto_regular, FontWeight.Normal, FontStyle.Normal),
+    Font(R.font.roboto_bold, FontWeight.Bold, FontStyle.Normal),
+    Font(R.font.roboto_light, FontWeight.Light, FontStyle.Normal),
+    Font(R.font.roboto_medium, FontWeight.Medium, FontStyle.Normal)
+)
+
+val Rowdies = FontFamily(
+    Font(R.font.rowdies_regular, FontWeight.Normal, FontStyle.Normal),
+    Font(R.font.rowdies_bold, FontWeight.Bold, FontStyle.Normal),
+    Font(R.font.rowdies_light, FontWeight.Light, FontStyle.Normal),
+)
+
+val Poppins = FontFamily(
+    Font(R.font.poppins_regular, FontWeight.Normal, FontStyle.Normal),
+    Font(R.font.poppins_bold, FontWeight.Bold, FontStyle.Normal),
+    Font(R.font.poppins_light, FontWeight.Light, FontStyle.Normal),
+    Font(R.font.poppins_medium, FontWeight.Medium, FontStyle.Normal)
+)
 
 // Set of Material typography styles to start with
 val Typography = Typography(
@@ -31,4 +54,5 @@ val Typography = Typography(
         letterSpacing = 0.5.sp
     )
     */
+
 )
