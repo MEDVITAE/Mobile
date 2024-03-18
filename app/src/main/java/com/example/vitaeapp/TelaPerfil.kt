@@ -76,17 +76,18 @@
 
             AtributoUsuario(stringResource(id = (R.string.ola)), 70, 15)
             QuadradoInfo()
-            AtributoUsuario(stringResource(id = (R.string.title_input_nome)), 8, 5)
+            AtributoUsuario(stringResource(id = (R.string.title_input_nome)), 12, 5)
             InputGetInfo("Joao Vitor de Souza Tenorio")
-            AtributoUsuario(stringResource(id = (R.string.title_input_cpf)), 8, 10)
+            AtributoUsuario(stringResource(id = (R.string.title_input_cpf)), 12, 10)
             InputGetInfo(valorInput = "413654667-97")
-            AtributoUsuario(stringResource(id = (R.string.title_input_peso)), 8, 10)
+            AtributoUsuario(stringResource(id = (R.string.title_input_peso)), 12, 10)
             InputGetInfo(valorInput = "68 kg")
-            AtributoUsuario(stringResource(id = (R.string.title_input_altura)), 8, 10)
+            AtributoUsuario(stringResource(id = (R.string.title_input_altura)), 12, 10)
             InputGetInfo(valorInput = "1,70")
             BotaoEditar("Editar")
-            Menu()
+
         }
+        Menu()
     }
 
 
@@ -131,7 +132,7 @@
                         .size(110.dp)
                         .border(
                             color = Color.Black,
-                            width = 2.dp,
+                            width = 1.dp,
                             shape = RoundedCornerShape(15.dp)
                         )
                         .background(Color.White, shape = RoundedCornerShape(16.dp)),
@@ -176,7 +177,7 @@
                         .size(110.dp)
                         .border(
                             color = Color.Black,
-                            width = 2.dp,
+                            width = 1.dp,
                             shape = RoundedCornerShape(15.dp)
                         )
                         .background(Color.White, shape = RoundedCornerShape(16.dp)),
@@ -226,7 +227,6 @@
 
         ) {
             Row(
-    //            Modifier.padding(start = 15.dp,top = 5.dp, end = 0.dp, bottom = 0.dp)
             ) {
                 QuadradoComImagem(
                     R.mipmap.check,
@@ -251,7 +251,7 @@
     fun BotaoEditar(valor:String){
         Box(  modifier = Modifier
             .fillMaxWidth()
-            .height(90.dp)
+            .height(120.dp)
             .padding(top = 10.dp)
             .background(Color.Transparent, shape = RoundedCornerShape(16.dp)),
              contentAlignment = Alignment.Center,
