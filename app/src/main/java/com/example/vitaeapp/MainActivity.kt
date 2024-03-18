@@ -35,6 +35,8 @@ import com.example.vitaeapp.ui.theme.Roboto
 import com.example.vitaeapp.ui.theme.Rowdies
 import com.example.vitaeapp.ui.theme.VitaeAppTheme
 
+
+
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -88,7 +90,6 @@ fun Logo() {
         )
     }
 }
-
 @Composable
 fun Menu() {
     val listaMenu = remember {
@@ -102,7 +103,9 @@ fun Menu() {
         )
     }
 
-    Row(verticalAlignment = Alignment.Bottom) {
+    Row(
+        verticalAlignment = Alignment.Bottom,
+    ) {
         Spacer(modifier = Modifier.width(8.dp))
         listaMenu.forEach { itemId ->
             Image(
@@ -115,6 +118,7 @@ fun Menu() {
         Spacer(modifier = Modifier.width(8.dp))
     }
 }
+
 
 @Composable
 fun Proxima(lista: List<Historico>) {
