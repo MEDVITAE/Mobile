@@ -5,20 +5,28 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.rememberScrollableState
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.ClickableText
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
@@ -69,7 +77,6 @@ fun Tela(name: String, modifier: Modifier = Modifier) {
     Column {
         Proxima(lista = listaHistorico)
         Anteriores(lista = listaHistorico)
-
     }
     Menu()
 }
@@ -78,7 +85,7 @@ fun Tela(name: String, modifier: Modifier = Modifier) {
 fun Logo() {
     Row(
         modifier = Modifier
-            .fillMaxSize()
+            .fillMaxWidth()
             .padding(10.dp), Arrangement.End
     ) {
         Image(
@@ -102,17 +109,21 @@ fun Menu() {
         )
     }
 
-    Row(verticalAlignment = Alignment.Bottom) {
-        Spacer(modifier = Modifier.width(8.dp))
-        listaMenu.forEach { itemId ->
-            Image(
-                painter = painterResource(id = itemId),
-                contentDescription = "",
-                modifier = Modifier.size(55.dp)
-            )
-            Spacer(modifier = Modifier.width(10.dp))
+    Row(
+        verticalAlignment = Alignment.Bottom
+    ) {
+        Row(Modifier.background(Color.White),){
+            Spacer(modifier = Modifier.width(8.dp))
+            listaMenu.forEach { itemId ->
+                Image(
+                    painter = painterResource(id = itemId),
+                    contentDescription = "",
+                    modifier = Modifier.size(55.dp)
+                )
+                Spacer(modifier = Modifier.width(10.dp))
+            }
+            Spacer(modifier = Modifier.width(8.dp))
         }
-        Spacer(modifier = Modifier.width(8.dp))
     }
 }
 
@@ -123,9 +134,11 @@ fun Proxima(lista: List<Historico>) {
     var hora: String = ""
     var hospital: String = ""
 
+
     var hemocentro = lista.maxBy { it.id }
 
     /*
+    val sein = remember { mutableStateOf("") }
     lista.forEach { itemIdMaior ->
         lista.forEach {
             itemIdMenor ->
@@ -136,15 +149,21 @@ fun Proxima(lista: List<Historico>) {
             }
         }
     }
+
+     Button(onClick = { sein.value = "um" }) {
+            Text("CRICA")
+        }
+        Text(sein.value)
      */
 
     Column(
         Modifier.padding(30.dp, 70.dp)
     ) {
+
         Text(
             "PRÓXIMA DOAÇÃO",
             Modifier.padding(0.dp, 0.dp, 0.dp, 10.dp),
-            style = TextStyle(fontFamily = Rowdies)
+            style = TextStyle(fontFamily = Rowdies),
         )
         Column {
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -164,13 +183,16 @@ fun Proxima(lista: List<Historico>) {
                         Modifier
                             .padding(10.dp)
                     ) {
-                        Text("Doação: n° ",
+                        Text(
+                            "Doação: n° ",
                             style = TextStyle(fontFamily = Roboto)
                         )
-                        Text("Data: ${hemocentro.data} - Hora: ${hemocentro.hora}",
+                        Text(
+                            "Data: ${hemocentro.data} - Hora: ${hemocentro.hora}",
                             style = TextStyle(fontFamily = Roboto)
                         )
-                        Text("Hemocentro: ${hemocentro.hemocentro}",
+                        Text(
+                            "Hemocentro: ${hemocentro.hemocentro}",
                             style = TextStyle(fontFamily = Roboto)
                         )
                     }
@@ -196,11 +218,10 @@ fun Anteriores(lista: List<Historico>) {
             "HISTÓRICO",
             Modifier.padding(0.dp, 0.dp, 0.dp, 10.dp),
             style = TextStyle(fontFamily = Rowdies)
-
         )
         lista.forEach { item ->
             if (hemocentro != item) {
-                Column {
+                Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Image(
                             painter = painterResource(id = R.mipmap.hospital),
@@ -218,13 +239,16 @@ fun Anteriores(lista: List<Historico>) {
                                 Modifier
                                     .padding(10.dp)
                             ) {
-                                Text("Doação: n° ",
+                                Text(
+                                    "Doação: n° ",
                                     style = TextStyle(fontFamily = Roboto)
                                 )
-                                Text("Data: ${hemocentro.data} - Hora: ${hemocentro.hora}",
+                                Text(
+                                    "Data: ${hemocentro.data} - Hora: ${hemocentro.hora}",
                                     style = TextStyle(fontFamily = Roboto)
                                 )
-                                Text("Hemocentro: ${hemocentro.hemocentro}",
+                                Text(
+                                    "Hemocentro: ${hemocentro.hemocentro}",
                                     style = TextStyle(fontFamily = Roboto)
                                 )
                             }
