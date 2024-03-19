@@ -2,6 +2,25 @@
 <project version="4">
   <component name="deploymentTargetDropDown">
     <value>
+      <entry key="GreetingPreview">
+        <State />
+      </entry>
+      <entry key="GreetingPreview2">
+        <State>
+          <targetSelectedWithDropDown>
+            <Target>
+              <type value="QUICK_BOOT_TARGET" />
+              <deviceKey>
+                <Key>
+                  <type value="VIRTUAL_DEVICE_PATH" />
+                  <value value="C:\Users\vgfagundes\.android\avd\Medium_Phone_API_UpsideDownCakePrivacySandbox.avd" />
+                </Key>
+              </deviceKey>
+            </Target>
+          </targetSelectedWithDropDown>
+          <timeTargetWasSelectedWithDropDown value="2024-03-18T19:04:55.119679300Z" />
+        </State>
+      </entry>
       <entry key="app">
         <State />
       </entry>

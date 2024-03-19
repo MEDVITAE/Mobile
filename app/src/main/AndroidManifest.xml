@@ -13,6 +13,11 @@
         android:theme="@style/Theme.VitaeApp"
         tools:targetApi="31">
         <activity
+            android:name=".TelaRanking"
+            android:exported="false"
+            android:label="@string/title_activity_tela_ranking"
+            android:theme="@style/Theme.VitaeApp" />
+        <activity
             android:name=".MainActivity"
             android:exported="true"
             android:label="@string/app_name"
