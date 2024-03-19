@@ -35,6 +35,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -59,6 +60,19 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+
+val fontFamilyRowdies = FontFamily(
+    Font(R.font.rowdies_light)
+)
+val fontRobotoRegular = FontFamily(
+    Font(R.font.roboto_regular)
+)
+val fontRobotoBold = FontFamily(
+    Font(R.font.roboto_bold)
+)
+val fontmontSerrat = FontFamily(
+    Font(R.font.montserrat_regular)
+)
 
 @Composable
 fun Tela(name: String, modifier: Modifier = Modifier) {
@@ -123,139 +137,6 @@ fun Menu() {
                 Spacer(modifier = Modifier.width(10.dp))
             }
             Spacer(modifier = Modifier.width(8.dp))
-        }
-    }
-}
-
-@Composable
-fun Proxima(lista: List<Historico>) {
-
-    var data: String = ""
-    var hora: String = ""
-    var hospital: String = ""
-
-
-    var hemocentro = lista.maxBy { it.id }
-
-    /*
-    val sein = remember { mutableStateOf("") }
-    lista.forEach { itemIdMaior ->
-        lista.forEach {
-            itemIdMenor ->
-            if (itemIdMaior.id > itemIdMenor.id){
-                data = itemIdMaior.data
-                hora = itemIdMaior.hora
-                hospital = itemIdMaior.hemocentro
-            }
-        }
-    }
-
-     Button(onClick = { sein.value = "um" }) {
-            Text("CRICA")
-        }
-        Text(sein.value)
-     */
-
-    Column(
-        Modifier.padding(30.dp, 70.dp)
-    ) {
-
-        Text(
-            "PRÓXIMA DOAÇÃO",
-            Modifier.padding(0.dp, 0.dp, 0.dp, 10.dp),
-            style = TextStyle(fontFamily = Rowdies),
-        )
-        Column {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Image(
-                    painter = painterResource(id = R.mipmap.hospital),
-                    contentDescription = "Doação",
-                    modifier = Modifier.size(55.dp)
-                )
-
-                Column(
-                    Modifier
-                        .padding(10.dp, 0.dp, 0.dp, 0.dp)
-                        .background(Color.White)
-                        .width(350.dp)
-                ) {
-                    Column(
-                        Modifier
-                            .padding(10.dp)
-                    ) {
-                        Text(
-                            "Doação: n° ",
-                            style = TextStyle(fontFamily = Roboto)
-                        )
-                        Text(
-                            "Data: ${hemocentro.data} - Hora: ${hemocentro.hora}",
-                            style = TextStyle(fontFamily = Roboto)
-                        )
-                        Text(
-                            "Hemocentro: ${hemocentro.hemocentro}",
-                            style = TextStyle(fontFamily = Roboto)
-                        )
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun Anteriores(lista: List<Historico>) {
-
-    var data: String = ""
-    var hora: String = ""
-    var hospital: String = ""
-
-    var hemocentro = lista.maxBy { it.id }
-
-    Column(
-        Modifier.padding(30.dp, 0.dp)
-    ) {
-        Text(
-            "HISTÓRICO",
-            Modifier.padding(0.dp, 0.dp, 0.dp, 10.dp),
-            style = TextStyle(fontFamily = Rowdies)
-        )
-        lista.forEach { item ->
-            if (hemocentro != item) {
-                Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Image(
-                            painter = painterResource(id = R.mipmap.hospital),
-                            contentDescription = "Doação",
-                            modifier = Modifier.size(55.dp)
-                        )
-
-                        Column(
-                            Modifier
-                                .padding(10.dp, 0.dp, 0.dp, 20.dp)
-                                .background(Color.White)
-                                .width(350.dp)
-                        ) {
-                            Column(
-                                Modifier
-                                    .padding(10.dp)
-                            ) {
-                                Text(
-                                    "Doação: n° ",
-                                    style = TextStyle(fontFamily = Roboto)
-                                )
-                                Text(
-                                    "Data: ${hemocentro.data} - Hora: ${hemocentro.hora}",
-                                    style = TextStyle(fontFamily = Roboto)
-                                )
-                                Text(
-                                    "Hemocentro: ${hemocentro.hemocentro}",
-                                    style = TextStyle(fontFamily = Roboto)
-                                )
-                            }
-                        }
-                    }
-                }
-            }
         }
     }
 }
