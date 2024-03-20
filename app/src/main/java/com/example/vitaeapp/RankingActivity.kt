@@ -1,3 +1,4 @@
+/*
 package com.example.vitaeapp
 
 import androidx.compose.foundation.Image
@@ -29,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.vitaeapp.R.*
 import com.example.vitaeapp.ui.theme.Rowdies
+
 
 @Composable
 fun Ranking(name: String, modifier: Modifier = Modifier) {
@@ -146,3 +148,5 @@ fun RankingItem(ranking: Ranking, position: Int) {
         }
     }
 }
+
+ */
