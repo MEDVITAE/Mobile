@@ -59,8 +59,9 @@ val fontRobotoBold = FontFamily(
 
 @Composable
 fun Tela(name: String, modifier: Modifier = Modifier) {
-    Logo()
-    Menu()
+    val contexto = LocalContext.current
+
+    contexto.startActivity(Intent(contexto, CadastroActivity::class.java))
 }
 
 @Composable
