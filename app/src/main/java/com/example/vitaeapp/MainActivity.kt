@@ -7,7 +7,6 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -16,7 +15,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.Button
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -25,17 +23,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.vitaeapp.ui.theme.VitaeAppTheme
-import org.intellij.lang.annotations.JdkConstants.HorizontalAlignment
-import org.jetbrains.annotations.ApiStatus.Internal
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -66,7 +60,6 @@ val fontRobotoBold = FontFamily(
 @Composable
 fun Tela(name: String, modifier: Modifier = Modifier) {
     Logo()
-    TelaHistorico()
     Menu()
 }
 
@@ -91,12 +84,12 @@ fun Menu() {
 
     val listaMenu = remember {
         mutableStateListOf(
-            MenuItem(R.mipmap.maps, ""),
-            MenuItem(R.mipmap.historico, ""),
-            MenuItem(R.mipmap.ranking, ""),
-            MenuItem(R.mipmap.sangue, ""),
-            MenuItem(R.mipmap.agenda, ""),
-            MenuItem(R.mipmap.perfil, ""),
+            MenuItem(R.mipmap.maps, Intent(contexto, DetalheHemocentroActivity::class.java)),
+            MenuItem(R.mipmap.historico, Intent(contexto, HistoricoActivity::class.java)),
+            MenuItem(R.mipmap.ranking, Intent(contexto, RankingActivity::class.java)),
+            MenuItem(R.mipmap.sangue, Intent(contexto, ConfigActivity::class.java)),
+            MenuItem(R.mipmap.agenda, Intent(contexto, ConfigActivity::class.java)),
+            MenuItem(R.mipmap.perfil, Intent(contexto, PerfilActivity::class.java)),
         )
     }
 
@@ -114,14 +107,12 @@ fun Menu() {
             listaMenu.forEach { itemId ->
                 IconButton(
                     onClick = {
-                        val telaConfig = Intent(contexto, ConfigActivity::class.java)
-
-                        contexto.startActivity(telaConfig)
+                        contexto.startActivity(itemId.tela)
                     },
                     modifier = Modifier.size(55.dp)
                 ) {
                     Image(
-                        painter = painterResource(id = itemId.iconId),
+                        painter = painterResource(id = itemId.icon),
                         contentDescription = "",
                         modifier = Modifier.size(55.dp)
                     )

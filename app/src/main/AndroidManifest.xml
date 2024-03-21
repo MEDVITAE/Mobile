@@ -27,6 +27,22 @@
             android:name=".ConfigActivity"
             android:label="ConfigActivity">
         </activity>
+        <activity
+            android:name=".HistoricoActivity"
+            android:label="HistoricoActivity">
+        </activity>
+        <activity
+            android:name=".PerfilActivity"
+            android:label="PerfilActivity">
+        </activity>
+        <activity
+            android:name=".RankingActivity"
+            android:label="RankingActivity">
+        </activity>
+        <activity
+            android:name=".DetalheHemocentroActivity"
+            android:label="DetalheHemocentroActivity">
+        </activity>
     </application>
 
 </manifest>

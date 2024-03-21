@@ -60,10 +60,12 @@ fun TelaHistorico() {
         )
     }
 
+    Logo()
     Column {
         Proxima(lista = listaHistorico)
         Anteriores(lista = listaHistorico)
     }
+    Menu()
 }
 
 @Composable

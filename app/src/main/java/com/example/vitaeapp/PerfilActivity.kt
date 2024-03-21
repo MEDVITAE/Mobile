@@ -1,5 +1,8 @@
 package com.example.vitaeapp
 
+import android.os.Bundle
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -8,6 +11,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -15,6 +19,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Divider
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -25,9 +30,28 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.vitaeapp.R.*
+import com.example.vitaeapp.ui.theme.VitaeAppTheme
+
+class PerfilActivity : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContent {
+            VitaeAppTheme {
+                // A surface container using the 'background' color from the theme
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = colorResource(id = R.color.azul_claro)
+                ) {
+                    TelaPerfil()
+                }
+            }
+        }
+    }
+}
 
 @Composable
 fun TelaPerfil() {
@@ -56,8 +80,10 @@ fun TelaPerfil() {
 fun AtributoUsuario(valor: String, paddingTop: Int, paddingBottom: Int) {
     Column {
         Text(
-            valor, fontSize = 20.sp, fontFamily = fontRobotoRegular, modifier =
-            Modifier.padding(
+            valor,
+            fontSize = 20.sp,
+            fontFamily = fontRobotoBold,
+            modifier = Modifier.padding(
                 top = paddingTop.dp,
                 start = 15.dp,
                 end = 20.dp,
@@ -109,7 +135,9 @@ fun QuadradoComTexto(imagemTexto: String, textoQuadrado: String) {
                         Text(textoQuadrado, fontSize = 14.sp, fontFamily = fontRobotoRegular)
                     }
                     Row(
-                        modifier = Modifier.fillMaxWidth().height(48.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(48.dp),
                         horizontalArrangement = Arrangement.Center,
                         verticalAlignment = Alignment.CenterVertically,
 
@@ -223,7 +251,10 @@ fun BotaoEditar(valor:String){
             modifier = Modifier
                 .width(200.dp)
                 .height(45.dp)
-                .background(color = colorResource(id = color.vermelho_rosado), shape = RoundedCornerShape(16.dp))
+                .background(
+                    color = colorResource(id = color.vermelho_rosado),
+                    shape = RoundedCornerShape(16.dp)
+                )
                 .border(
                     color = Color.Black,
                     width = 2.dp,
@@ -245,5 +276,13 @@ fun BotaoEditar(valor:String){
             )
         }
 
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun GreetingPreviewFromPerfil() {
+    VitaeAppTheme {
+        TelaPerfil()
     }
 }

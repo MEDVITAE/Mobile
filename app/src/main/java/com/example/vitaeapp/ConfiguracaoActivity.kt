@@ -67,8 +67,6 @@ class ConfigActivity : ComponentActivity() {
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-
-
             AtributoUsuarioConfig("CONFIGURAÇÕES", 70, 15)
             CampoDeEntrada(label = "Nome:", valor = nome.value) { nome.value = it }
             CampoDeEntrada(label = "E-mail:", valor = email.value) { email.value = it }
