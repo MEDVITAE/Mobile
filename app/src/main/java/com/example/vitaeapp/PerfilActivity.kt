@@ -1,5 +1,6 @@
 package com.example.vitaeapp
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -19,12 +20,14 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Divider
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -73,7 +76,6 @@ fun TelaPerfil() {
     }
     Menu()
 }
-
 
 
 @Composable
@@ -152,7 +154,6 @@ fun QuadradoComTexto(imagemTexto: String, textoQuadrado: String) {
 
     }
 }
-
 
 
 @Composable
@@ -235,47 +236,58 @@ fun QuadradoInfo() {
 
     }
 }
+
 @Composable
-fun BotaoEditar(valor:String){
-    Box(  modifier = Modifier
-        .fillMaxWidth()
-        .height(120.dp)
-        .padding(top = 10.dp)
-        .background(Color.Transparent, shape = RoundedCornerShape(16.dp)),
+fun BotaoEditar(valor: String) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(120.dp)
+            .padding(top = 10.dp)
+            .background(Color.Transparent, shape = RoundedCornerShape(16.dp)),
         contentAlignment = Alignment.Center,
 
         ) {
 
-        Row(
+        val contexto = LocalContext.current
 
+        IconButton(
             modifier = Modifier
-                .width(200.dp)
-                .height(45.dp)
-                .background(
-                    color = colorResource(id = color.vermelho_rosado),
-                    shape = RoundedCornerShape(16.dp)
-                )
-                .border(
-                    color = Color.Black,
-                    width = 2.dp,
-                    shape = RoundedCornerShape(16.dp)
-                ),
-            horizontalArrangement = Arrangement.SpaceAround,
-            verticalAlignment = Alignment.CenterVertically,
-
-            ){
-
-            Text(
-                valor, fontSize = 18.sp, fontFamily = fontRobotoBold
-            )
-            Image(
-                painter = painterResource(id = mipmap.seta_direita),
-                contentDescription = null,
+                .width(210.dp)
+                .height(45.dp),
+            onClick = {
+                contexto.startActivity(Intent(contexto, ConfigActivity::class.java))
+            }
+        ) {
+            Row(
                 modifier = Modifier
-                    .size(45.dp)
-            )
-        }
+                    .width(200.dp)
+                    .height(45.dp)
+                    .background(
+                        color = colorResource(id = color.vermelho_rosado),
+                        shape = RoundedCornerShape(16.dp)
+                    )
+                    .border(
+                        color = Color.Black,
+                        width = 2.dp,
+                        shape = RoundedCornerShape(16.dp)
+                    ),
+                horizontalArrangement = Arrangement.SpaceAround,
+                verticalAlignment = Alignment.CenterVertically,
 
+                ) {
+
+                Text(
+                    valor, fontSize = 18.sp, fontFamily = fontRobotoBold
+                )
+                Image(
+                    painter = painterResource(id = mipmap.seta_direita),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(45.dp)
+                )
+            }
+        }
     }
 }
 

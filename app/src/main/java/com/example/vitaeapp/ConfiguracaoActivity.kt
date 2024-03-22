@@ -1,5 +1,6 @@
 package com.example.vitaeapp
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -19,6 +20,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,6 +29,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -149,31 +152,43 @@ class ConfigActivity : ComponentActivity() {
                 .background(Color.Transparent, shape = RoundedCornerShape(16.dp)),
             contentAlignment = Alignment.Center,
         ) {
-            Row(
+
+            val contexto = LocalContext.current
+
+            IconButton(
                 modifier = Modifier
-                    .width(200.dp)
-                    .height(45.dp)
-                    .background(
-                        color = colorResource(id = R.color.vermelho_rosado),
-                        shape = RoundedCornerShape(16.dp)
-                    )
-                    .border(
-                        color = Color.Black,
-                        width = 2.dp,
-                        shape = RoundedCornerShape(16.dp)
-                    ),
-                horizontalArrangement = Arrangement.SpaceAround,
-                verticalAlignment = Alignment.CenterVertically,
+                    .width(210.dp)
+                    .height(45.dp),
+                onClick = {
+                    contexto.startActivity(Intent(contexto, PerfilActivity::class.java))
+                }
             ) {
-                Text(
-                    valor, fontSize = 18.sp, fontFamily = fontRobotoBold
-                )
-                Image(
-                    painter = painterResource(id = R.mipmap.seta_direita),
-                    contentDescription = null,
+                Row(
                     modifier = Modifier
-                        .size(45.dp)
-                )
+                        .width(200.dp)
+                        .height(45.dp)
+                        .background(
+                            color = colorResource(id = R.color.vermelho_rosado),
+                            shape = RoundedCornerShape(16.dp)
+                        )
+                        .border(
+                            color = Color.Black,
+                            width = 2.dp,
+                            shape = RoundedCornerShape(16.dp)
+                        ),
+                    horizontalArrangement = Arrangement.SpaceAround,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(
+                        valor, fontSize = 18.sp, fontFamily = fontRobotoBold
+                    )
+                    Image(
+                        painter = painterResource(id = R.mipmap.seta_direita),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(45.dp)
+                    )
+                }
             }
         }
     }
