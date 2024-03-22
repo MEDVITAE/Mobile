@@ -1,44 +1,34 @@
 package com.example.vitaeapp
 
+import android.content.Intent
 import android.os.Bundle
-import android.print.PrintAttributes.Margins
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Button
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.vitaeapp.ui.theme.VitaeAppTheme
 
 class MainActivity : ComponentActivity() {
@@ -48,8 +38,7 @@ class MainActivity : ComponentActivity() {
             VitaeAppTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = colorResource(id = R.color.azul_claro)
+                    modifier = Modifier.fillMaxSize()
                 ) {
                     Tela("Android")
                 }
@@ -58,15 +47,30 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+val fontFamilyRowdies = FontFamily(
+    Font(R.font.rowdies_light)
+)
+val fontRobotoRegular = FontFamily(
+    Font(R.font.roboto_regular)
+)
+val fontRobotoBold = FontFamily(
+    Font(R.font.roboto_bold)
+)
+
 @Composable
 fun Tela(name: String, modifier: Modifier = Modifier) {
-    Logo()
-    Menu()
+    val contexto = LocalContext.current
+
+    contexto.startActivity(Intent(contexto, CadastroActivity::class.java))
 }
 
 @Composable
 fun Logo() {
-    Row(modifier = Modifier.fillMaxSize().padding(10.dp), Arrangement.End) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(10.dp), Arrangement.End
+    ) {
         Image(
             painter = painterResource(id = R.mipmap.logo),
             contentDescription = "Vitae",
@@ -77,34 +81,46 @@ fun Logo() {
 
 @Composable
 fun Menu() {
+    val contexto = LocalContext.current
+
     val listaMenu = remember {
-        mutableListOf(
-            R.mipmap.maps,
-            R.mipmap.historico,
-            R.mipmap.ranking,
-            R.mipmap.sangue,
-            R.mipmap.agenda,
-            R.mipmap.perfil
+        mutableStateListOf(
+            MenuItem(R.mipmap.maps, Intent(contexto, DetalheHemocentroActivity::class.java)),
+            MenuItem(R.mipmap.historico, Intent(contexto, HistoricoActivity::class.java)),
+            MenuItem(R.mipmap.ranking, Intent(contexto, RankingActivity::class.java)),
+            MenuItem(R.mipmap.sangue, Intent(contexto, ConfigActivity::class.java)),
+            MenuItem(R.mipmap.agenda, Intent(contexto, ConfigActivity::class.java)),
+            MenuItem(R.mipmap.perfil, Intent(contexto, PerfilActivity::class.java)),
         )
     }
 
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.BottomCenter
+    Row(
+        modifier = Modifier.fillMaxHeight(),
+        verticalAlignment = Alignment.Bottom
     ) {
-        DropdownMenu(expanded = true, onDismissRequest = { /*TODO*/ }) {
-            Row(modifier = Modifier.fillMaxSize(), ) {
-                Spacer(modifier = Modifier.width(8.dp))
-                listaMenu.forEach { itemId ->
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color.White)
+                .padding(vertical = 8.dp)
+        ) {
+            Spacer(modifier = Modifier.width(8.dp))
+            listaMenu.forEach { itemId ->
+                IconButton(
+                    onClick = {
+                        contexto.startActivity(itemId.tela)
+                    },
+                    modifier = Modifier.size(55.dp)
+                ) {
                     Image(
-                        painter = painterResource(id = itemId),
+                        painter = painterResource(id = itemId.icon),
                         contentDescription = "",
                         modifier = Modifier.size(55.dp)
                     )
-                    Spacer(modifier = Modifier.width(10.dp))
                 }
-                Spacer(modifier = Modifier.width(8.dp))
+                Spacer(modifier = Modifier.width(10.dp))
             }
+            Spacer(modifier = Modifier.width(8.dp))
         }
     }
 }
