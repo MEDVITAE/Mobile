@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -31,6 +32,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -66,32 +68,28 @@ fun TelaQuiz() {
 fun Questionario() {
     val perguntas = remember { mutableStateOf(1) }
 
+    Column(Modifier.padding(30.dp, 70.dp)) {
     Text(
         "QUIZ DE APTIDÃO",
-        style = TextStyle(fontFamily = fontFamilyRowdiesBold)
+        style = TextStyle(fontFamily = fontFamilyRowdiesBold),
     )
-    Column {
         when (perguntas.value) {
-            1 -> perguntaPeso()
-            2 -> perguntaAltura()
+            1 -> perguntaAltura()
+            2 -> perguntaPeso()
             3 -> perguntaTatuagem()
             4 -> perguntaRelacao()
             5 -> perguntaDesconforto()
             6 -> perguntaMedicamento()
             7 -> perguntaDst()
-            8 -> perguntaMedicamento()
+            8 -> perguntaVacina()
         }
 
         if (perguntas.value < 8) {
-            BotaoAvancar {
-                perguntas.value++
-            }
+            BotaoAvancar(onClick = { perguntas.value++ })
         }
 
         if (perguntas.value > 1) {
-            BotaoVoltar {
-                perguntas.value--
-            }
+            BotaoVoltar(onClick = { perguntas.value-- })
         }
     }
 }
@@ -112,7 +110,7 @@ fun BotaoAvancar(onClick: () -> Unit) {
             modifier = Modifier
                 .width(210.dp)
                 .height(45.dp),
-            onClick = { }
+            onClick = onClick
         ) {
             Row(
                 modifier = Modifier
@@ -162,7 +160,7 @@ fun BotaoVoltar(onClick: () -> Unit) {
             modifier = Modifier
                 .width(210.dp)
                 .height(45.dp),
-            onClick = { }
+            onClick = onClick
         ) {
             Row(
                 modifier = Modifier
@@ -292,10 +290,16 @@ fun BotaoNao() {
 fun perguntaAltura() {
     val altura = remember { mutableStateOf("") }
 
-    Column {
+    Column(
+        modifier = Modifier
+            .padding(0.dp, 100.dp, 0.dp, 30.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         Text(
             "Informe sua altura:",
-            style = TextStyle(fontFamily = fontRobotoRegular)
+            modifier = Modifier
+                .padding(0.dp, 0.dp, 0.dp, 20.dp),
+            style = TextStyle(fontFamily = fontFamilyRowdies, fontSize = 20.sp)
         )
         TextField(
             value = altura.value,
@@ -313,10 +317,16 @@ fun perguntaAltura() {
 fun perguntaPeso() {
     val peso = remember { mutableStateOf("") }
 
-    Column {
+    Column(
+        modifier = Modifier
+            .padding(0.dp, 100.dp, 0.dp, 30.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         Text(
             "Informe seu peso:",
-            style = TextStyle(fontFamily = fontRobotoRegular)
+            modifier = Modifier
+                .padding(0.dp, 0.dp, 0.dp, 20.dp),
+            style = TextStyle(fontFamily = fontFamilyRowdies, fontSize = 20.sp)
         )
         TextField(
             value = peso.value,
@@ -332,10 +342,20 @@ fun perguntaPeso() {
 
 @Composable
 fun perguntaTatuagem() {
-    Column {
+    Column(
+        modifier = Modifier
+            .padding(0.dp, 100.dp, 0.dp, 30.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         Text(
             "Fez alguma tatuagem nos últimos 6 meses?",
-            style = TextStyle(fontFamily = fontRobotoRegular)
+            modifier = Modifier
+                .padding(0.dp, 0.dp, 0.dp, 20.dp),
+            style = TextStyle(
+                fontFamily = fontFamilyRowdies,
+                fontSize = 20.sp,
+                textAlign = TextAlign.Center
+            )
         )
         Row {
             BotaoNao()
@@ -349,10 +369,20 @@ fun perguntaTatuagem() {
 
 @Composable
 fun perguntaRelacao() {
-    Column {
+    Column(
+        modifier = Modifier
+            .padding(0.dp, 100.dp, 0.dp, 30.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         Text(
             "Teve algum tipo de relação sexual recentemente?",
-            style = TextStyle(fontFamily = fontRobotoRegular)
+            modifier = Modifier
+                .padding(0.dp, 0.dp, 0.dp, 20.dp),
+            style = TextStyle(
+                fontFamily = fontFamilyRowdies,
+                fontSize = 20.sp,
+                textAlign = TextAlign.Center
+            )
         )
         Row {
             BotaoNao()
@@ -366,10 +396,20 @@ fun perguntaRelacao() {
 
 @Composable
 fun perguntaDesconforto() {
-    Column {
+    Column(
+        modifier = Modifier
+            .padding(0.dp, 100.dp, 0.dp, 30.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         Text(
             "Sente algum desconforto, ou dor na barriga?",
-            style = TextStyle(fontFamily = fontRobotoRegular)
+            modifier = Modifier
+                .padding(0.dp, 0.dp, 0.dp, 20.dp),
+            style = TextStyle(
+                fontFamily = fontFamilyRowdies,
+                fontSize = 20.sp,
+                textAlign = TextAlign.Center
+            )
         )
         Row {
             BotaoNao()
@@ -383,10 +423,20 @@ fun perguntaDesconforto() {
 
 @Composable
 fun perguntaMedicamento() {
-    Column {
+    Column(
+        modifier = Modifier
+            .padding(0.dp, 100.dp, 0.dp, 30.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         Text(
             "Faz ou fez uso de algum tipo de medicamento?",
-            style = TextStyle(fontFamily = fontRobotoRegular)
+            modifier = Modifier
+                .padding(0.dp, 0.dp, 0.dp, 20.dp),
+            style = TextStyle(
+                fontFamily = fontFamilyRowdies,
+                fontSize = 20.sp,
+                textAlign = TextAlign.Center
+            )
         )
         Row {
             BotaoNao()
@@ -400,10 +450,20 @@ fun perguntaMedicamento() {
 
 @Composable
 fun perguntaDst() {
-    Column {
+    Column(
+        modifier = Modifier
+            .padding(0.dp, 100.dp, 0.dp, 30.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         Text(
             "Tem algum tipo de DST?",
-            style = TextStyle(fontFamily = fontRobotoRegular)
+            modifier = Modifier
+                .padding(0.dp, 0.dp, 0.dp, 20.dp),
+            style = TextStyle(
+                fontFamily = fontFamilyRowdies,
+                fontSize = 20.sp,
+                textAlign = TextAlign.Center
+            )
         )
         Row {
             BotaoNao()
@@ -417,10 +477,20 @@ fun perguntaDst() {
 
 @Composable
 fun perguntaVacina() {
-    Column {
+    Column(
+        modifier = Modifier
+            .padding(0.dp, 100.dp, 0.dp, 30.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         Text(
             "Tomou alguma vacina contra a COVID-19 recentimente? :",
-            style = TextStyle(fontFamily = fontRobotoRegular)
+            modifier = Modifier
+                .padding(0.dp, 0.dp, 0.dp, 20.dp),
+            style = TextStyle(
+                fontFamily = fontFamilyRowdies,
+                fontSize = 20.sp,
+                textAlign = TextAlign.Center
+            )
         )
         Row {
             BotaoNao()
