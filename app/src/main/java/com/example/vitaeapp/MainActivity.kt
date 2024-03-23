@@ -50,6 +50,9 @@ class MainActivity : ComponentActivity() {
 val fontFamilyRowdies = FontFamily(
     Font(R.font.rowdies_light)
 )
+val fontFamilyRowdiesBold = FontFamily(
+    Font(R.font.rowdies_bold)
+)
 val fontRobotoRegular = FontFamily(
     Font(R.font.roboto_regular)
 )

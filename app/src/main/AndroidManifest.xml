@@ -42,12 +42,18 @@
         <activity
             android:name=".DetalheHemocentroActivity"
             android:label="DetalheHemocentroActivity">
-        </activity><activity
+        </activity>
+        <activity
             android:name=".CadastroActivity"
             android:label="CadastroActivity">
-        </activity><activity
+        </activity>
+        <activity
             android:name=".LoginActivity"
             android:label="LoginActivity">
+        </activity>
+        <activity
+            android:name=".QuizActivity"
+            android:label="QuizActivity">
         </activity>
     </application>
 
