@@ -1,5 +1,9 @@
 package com.example.vitaeapp
 
+
+import android.os.Bundle
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -14,6 +18,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
@@ -21,14 +26,33 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.vitaeapp.R.*
+import androidx.compose.ui.tooling.preview.Preview
 import com.example.vitaeapp.ui.theme.Rowdies
+import com.example.vitaeapp.ui.theme.VitaeAppTheme
+
+class RankingActivity : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContent {
+            VitaeAppTheme {
+                // A surface container using the 'background' color from the theme
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = colorResource(id = R.color.azul_claro)
+                ) {
+                    Ranking("Android")
+                }
+            }
+        }
+    }
+}
 
 @Composable
 fun Ranking(name: String, modifier: Modifier = Modifier) {
@@ -43,9 +67,7 @@ fun Ranking(name: String, modifier: Modifier = Modifier) {
     }
 
     Logo()
-    Column() {
-        Posicoes(lista = listaRanking)
-    }
+    Posicoes(lista = listaRanking)
     Menu()
 }
 
@@ -122,7 +144,11 @@ fun RankingItem(ranking: Ranking, position: Int) {
             } else {
                 Text(
                     text = "$position",
-                    style = TextStyle(fontFamily = Rowdies, fontSize = 20.sp, fontWeight = FontWeight.Bold),
+                    style = TextStyle(
+                        fontFamily = Rowdies,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold
+                    ),
                     modifier = Modifier.padding(14.dp)
                 )
             }
@@ -131,7 +157,11 @@ fun RankingItem(ranking: Ranking, position: Int) {
 
             Text(
                 text = "${ranking.nome}",
-                style = TextStyle(fontFamily = Rowdies, fontSize = 19.sp, fontWeight = FontWeight.Bold),
+                style = TextStyle(
+                    fontFamily = Rowdies,
+                    fontSize = 19.sp,
+                    fontWeight = FontWeight.Bold
+                ),
                 textAlign = TextAlign.Center,
                 modifier = Modifier.weight(1f)
             )
@@ -140,9 +170,21 @@ fun RankingItem(ranking: Ranking, position: Int) {
 
             Text(
                 text = "${ranking.pontuacao}",
-                style = TextStyle(fontFamily = Rowdies, fontSize = 16.sp, fontWeight = FontWeight.Bold),
+                style = TextStyle(
+                    fontFamily = Rowdies,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold
+                ),
                 modifier = Modifier.padding(14.dp)
             )
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun GreetingPreviewFromRanking() {
+    VitaeAppTheme {
+        Ranking("Android")
     }
 }
