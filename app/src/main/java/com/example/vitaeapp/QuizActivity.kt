@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -23,12 +24,15 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -67,221 +71,216 @@ fun TelaQuiz() {
 @Composable
 fun Questionario() {
     val perguntas = remember { mutableStateOf(1) }
+    val resposta = remember { mutableStateOf(true) }
 
     Column(Modifier.padding(30.dp, 70.dp)) {
-    Text(
-        "QUIZ DE APTIDÃO",
-        style = TextStyle(fontFamily = fontFamilyRowdiesBold),
-    )
+        Text(
+            "QUIZ DE APTIDÃO",
+            style = TextStyle(fontFamily = fontFamilyRowdiesBold),
+        )
         when (perguntas.value) {
             1 -> perguntaAltura()
             2 -> perguntaPeso()
-            3 -> perguntaTatuagem()
-            4 -> perguntaRelacao()
-            5 -> perguntaDesconforto()
-            6 -> perguntaMedicamento()
-            7 -> perguntaDst()
-            8 -> perguntaVacina()
+            3 -> perguntaTatuagem(perguntas, resposta)
+            4 -> perguntaRelacao(perguntas, resposta)
+            5 -> perguntaDesconforto(perguntas, resposta)
+            6 -> perguntaMedicamento(perguntas, resposta)
+            7 -> perguntaDst(perguntas, resposta)
+            8 -> perguntaVacina(perguntas, resposta)
         }
 
-        if (perguntas.value < 8) {
-            BotaoAvancar(onClick = { perguntas.value++ })
-        }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 100.dp),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            if (perguntas.value > 1) {
+                BotaoVoltar(onClick = { perguntas.value-- })
+            }
 
-        if (perguntas.value > 1) {
-            BotaoVoltar(onClick = { perguntas.value-- })
+            if (perguntas.value === 2 || perguntas.value === 8) {
+                Spacer(modifier = Modifier.width(20.dp))
+            }
+
+            if (perguntas.value < 3) {
+                BotaoAvancar(onClick = { perguntas.value++ })
+            }
+
+            if (perguntas.value === 8) {
+                BotaoFinalizar()
+            }
         }
     }
 }
 
 @Composable
 fun BotaoAvancar(onClick: () -> Unit) {
-    Box(
+    IconButton(
         modifier = Modifier
-            .fillMaxWidth()
-            .height(120.dp)
-            .padding(top = 10.dp)
-            .background(Color.Transparent, shape = RoundedCornerShape(16.dp)),
-        contentAlignment = Alignment.Center,
-
-        ) {
-
-        IconButton(
+            .width(150.dp)
+            .height(45.dp),
+        onClick = onClick
+    ) {
+        Row(
             modifier = Modifier
-                .width(210.dp)
-                .height(45.dp),
-            onClick = onClick
+                .width(140.dp)
+                .height(45.dp)
+                .background(
+                    color = colorResource(id = R.color.vermelho_rosado),
+                    shape = RoundedCornerShape(16.dp)
+                )
+                .border(
+                    color = Color.Black,
+                    width = 2.dp,
+                    shape = RoundedCornerShape(16.dp)
+                ),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
         ) {
-            Row(
+
+            Text(
+                "Avançar", fontSize = 18.sp, fontFamily = fontRobotoBold
+            )
+            Spacer(modifier = Modifier.width(10.dp))
+            Image(
+                painter = painterResource(id = R.mipmap.seta_direita),
+                contentDescription = null,
                 modifier = Modifier
-                    .width(200.dp)
-                    .height(45.dp)
-                    .background(
-                        color = colorResource(id = R.color.vermelho_rosado),
-                        shape = RoundedCornerShape(16.dp)
-                    )
-                    .border(
-                        color = Color.Black,
-                        width = 2.dp,
-                        shape = RoundedCornerShape(16.dp)
-                    ),
-                horizontalArrangement = Arrangement.SpaceAround,
-                verticalAlignment = Alignment.CenterVertically,
-
-                ) {
-
-                Text(
-                    "Avançar", fontSize = 18.sp, fontFamily = fontRobotoBold
-                )
-                Image(
-                    painter = painterResource(id = R.mipmap.seta_direita),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .size(45.dp)
-                )
-            }
+                    .size(20.dp)
+            )
         }
     }
 }
 
 @Composable
 fun BotaoVoltar(onClick: () -> Unit) {
-    Box(
+
+    IconButton(
         modifier = Modifier
-            .fillMaxWidth()
-            .height(120.dp)
-            .padding(top = 10.dp)
-            .background(Color.Transparent, shape = RoundedCornerShape(16.dp)),
-        contentAlignment = Alignment.Center,
-
-        ) {
-
-        IconButton(
+            .width(150.dp)
+            .height(45.dp),
+        onClick = onClick
+    ) {
+        Row(
             modifier = Modifier
-                .width(210.dp)
-                .height(45.dp),
-            onClick = onClick
+                .width(140.dp)
+                .height(45.dp)
+                .background(
+                    color = colorResource(id = R.color.vermelho_rosado),
+                    shape = RoundedCornerShape(16.dp)
+                )
+                .border(
+                    color = Color.Black,
+                    width = 2.dp,
+                    shape = RoundedCornerShape(16.dp)
+                ),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
         ) {
-            Row(
+
+            Image(
+                painter = painterResource(id = R.mipmap.seta_esquerda),
+                contentDescription = null,
                 modifier = Modifier
-                    .width(200.dp)
-                    .height(45.dp)
-                    .background(
-                        color = colorResource(id = R.color.vermelho_rosado),
-                        shape = RoundedCornerShape(16.dp)
-                    )
-                    .border(
-                        color = Color.Black,
-                        width = 2.dp,
-                        shape = RoundedCornerShape(16.dp)
-                    ),
-                horizontalArrangement = Arrangement.SpaceAround,
-                verticalAlignment = Alignment.CenterVertically,
-
-                ) {
-
-                Text(
-                    "Voltar", fontSize = 18.sp, fontFamily = fontRobotoBold
-                )
-                Image(
-                    painter = painterResource(id = R.mipmap.seta_direita),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .size(45.dp)
-                )
-            }
+                    .size(20.dp)
+            )
+            Spacer(modifier = Modifier.width(10.dp))
+            Text(
+                "Voltar", fontSize = 18.sp, fontFamily = fontRobotoBold
+            )
         }
     }
 }
 
 @Composable
-fun BotaoSim() {
-    val respostaSim = remember { mutableStateOf(true) }
+fun BotaoFinalizar() {
+    val contexto = LocalContext.current
 
-    Box(
+    IconButton(
         modifier = Modifier
-            .fillMaxWidth()
-            .height(120.dp)
-            .padding(top = 10.dp)
-            .background(Color.Transparent, shape = RoundedCornerShape(16.dp)),
-        contentAlignment = Alignment.Center,
-
-        ) {
-
-        IconButton(
+            .width(150.dp)
+            .height(45.dp),
+        onClick = {
+            contexto.startActivity(Intent(contexto, PerfilActivity::class.java))
+        }
+    ) {
+        Row(
             modifier = Modifier
-                .width(210.dp)
-                .height(45.dp),
-            onClick = { }
-        ) {
-            Row(
-                modifier = Modifier
-                    .width(200.dp)
-                    .height(45.dp)
-                    .background(
-                        color = colorResource(id = R.color.vermelho_rosado),
-                        shape = RoundedCornerShape(16.dp)
-                    )
-                    .border(
-                        color = Color.Black,
-                        width = 2.dp,
-                        shape = RoundedCornerShape(16.dp)
-                    ),
-                horizontalArrangement = Arrangement.SpaceAround,
-                verticalAlignment = Alignment.CenterVertically,
-
-                ) {
-
-                Text(
-                    "Sim", fontSize = 18.sp, fontFamily = fontRobotoBold
+                .width(140.dp)
+                .height(45.dp)
+                .background(
+                    color = colorResource(id = R.color.vermelho_rosado),
+                    shape = RoundedCornerShape(16.dp)
                 )
-            }
+                .border(
+                    color = Color.Black,
+                    width = 2.dp,
+                    shape = RoundedCornerShape(16.dp)
+                ),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+
+            Text(
+                "Finalizar", fontSize = 18.sp, fontFamily = fontRobotoBold
+            )
         }
     }
 }
 
 @Composable
-fun BotaoNao() {
-    val respostaNao = remember { mutableStateOf(false) }
+fun BotaoSim(onClick: () -> Unit) {
 
-    Box(
+    IconButton(
         modifier = Modifier
-            .fillMaxWidth()
-            .height(120.dp)
-            .padding(top = 10.dp)
-            .background(Color.Transparent, shape = RoundedCornerShape(16.dp)),
-        contentAlignment = Alignment.Center,
-
-        ) {
-
-        IconButton(
+            .width(150.dp)
+            .height(45.dp),
+        onClick = onClick,
+    ) {
+        Row(
             modifier = Modifier
-                .width(210.dp)
-                .height(45.dp),
-            onClick = { }
+                .width(120.dp)
+                .height(45.dp)
+                .background(
+                    color = colorResource(id = R.color.vermelho_rosado),
+                    shape = RoundedCornerShape(8.dp)
+                ),
+            horizontalArrangement = Arrangement.SpaceAround,
+            verticalAlignment = Alignment.CenterVertically,
         ) {
-            Row(
-                modifier = Modifier
-                    .width(200.dp)
-                    .height(45.dp)
-                    .background(
-                        color = colorResource(id = R.color.vermelho_rosado),
-                        shape = RoundedCornerShape(16.dp)
-                    )
-                    .border(
-                        color = Color.Black,
-                        width = 2.dp,
-                        shape = RoundedCornerShape(16.dp)
-                    ),
-                horizontalArrangement = Arrangement.SpaceAround,
-                verticalAlignment = Alignment.CenterVertically,
 
-                ) {
+            Text(
+                "Sim", fontSize = 18.sp, fontFamily = fontRobotoBold
+            )
+        }
+    }
+}
 
-                Text(
-                    "Não", fontSize = 18.sp, fontFamily = fontRobotoBold
-                )
-            }
+@Composable
+fun BotaoNao(onClick: () -> Unit) {
+
+    IconButton(
+        modifier = Modifier
+            .width(150.dp)
+            .height(45.dp),
+        onClick = onClick
+    ) {
+        Row(
+            modifier = Modifier
+                .width(120.dp)
+                .height(45.dp)
+                .background(
+                    color = colorResource(id = R.color.vermelho_rosado),
+                    shape = RoundedCornerShape(8.dp)
+                ),
+            horizontalArrangement = Arrangement.SpaceAround,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+
+            Text(
+                "Não", fontSize = 18.sp, fontFamily = fontRobotoBold
+            )
         }
     }
 }
@@ -305,7 +304,8 @@ fun perguntaAltura() {
             value = altura.value,
             onValueChange = { altura.value = it },
             singleLine = true, // Define o TextField como uma única linha
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
         )
         Row {
             Text("1/8")
@@ -341,7 +341,7 @@ fun perguntaPeso() {
 }
 
 @Composable
-fun perguntaTatuagem() {
+fun perguntaTatuagem(perguntas: MutableState<Int>, resposta: MutableState<Boolean>) {
     Column(
         modifier = Modifier
             .padding(0.dp, 100.dp, 0.dp, 30.dp),
@@ -357,9 +357,18 @@ fun perguntaTatuagem() {
                 textAlign = TextAlign.Center
             )
         )
-        Row {
-            BotaoNao()
-            BotaoSim()
+        Row(
+            modifier = Modifier
+                .padding(0.dp, 5.dp, 0.dp, 20.dp)
+        ) {
+            BotaoSim(onClick = {
+                resposta.value = true
+                perguntas.value++
+            })
+            BotaoNao(onClick = {
+                resposta.value = true
+                perguntas.value++
+            })
         }
         Row {
             Text("3/8")
@@ -368,7 +377,7 @@ fun perguntaTatuagem() {
 }
 
 @Composable
-fun perguntaRelacao() {
+fun perguntaRelacao(perguntas: MutableState<Int>, resposta: MutableState<Boolean>) {
     Column(
         modifier = Modifier
             .padding(0.dp, 100.dp, 0.dp, 30.dp),
@@ -384,9 +393,18 @@ fun perguntaRelacao() {
                 textAlign = TextAlign.Center
             )
         )
-        Row {
-            BotaoNao()
-            BotaoSim()
+        Row(
+            modifier = Modifier
+                .padding(0.dp, 5.dp, 0.dp, 20.dp)
+        ) {
+            BotaoSim(onClick = {
+                resposta.value = true
+                perguntas.value++
+            })
+            BotaoNao(onClick = {
+                resposta.value = true
+                perguntas.value++
+            })
         }
         Row {
             Text("4/8")
@@ -395,7 +413,7 @@ fun perguntaRelacao() {
 }
 
 @Composable
-fun perguntaDesconforto() {
+fun perguntaDesconforto(perguntas:MutableState<Int>, resposta: MutableState<Boolean>) {
     Column(
         modifier = Modifier
             .padding(0.dp, 100.dp, 0.dp, 30.dp),
@@ -411,9 +429,18 @@ fun perguntaDesconforto() {
                 textAlign = TextAlign.Center
             )
         )
-        Row {
-            BotaoNao()
-            BotaoSim()
+        Row(
+            modifier = Modifier
+                .padding(0.dp, 5.dp, 0.dp, 20.dp)
+        ) {
+            BotaoSim(onClick = {
+                resposta.value = true
+                perguntas.value++
+            })
+            BotaoNao(onClick = {
+                resposta.value = true
+                perguntas.value++
+            })
         }
         Row {
             Text("5/8")
@@ -422,7 +449,8 @@ fun perguntaDesconforto() {
 }
 
 @Composable
-fun perguntaMedicamento() {
+fun perguntaMedicamento(perguntas:MutableState<Int>, resposta: MutableState<Boolean>) {
+
     Column(
         modifier = Modifier
             .padding(0.dp, 100.dp, 0.dp, 30.dp),
@@ -438,9 +466,18 @@ fun perguntaMedicamento() {
                 textAlign = TextAlign.Center
             )
         )
-        Row {
-            BotaoNao()
-            BotaoSim()
+        Row(
+            modifier = Modifier
+                .padding(0.dp, 5.dp, 0.dp, 20.dp)
+        ) {
+            BotaoSim(onClick = {
+                resposta.value = true
+                perguntas.value++
+            })
+            BotaoNao(onClick = {
+                resposta.value = true
+                perguntas.value++
+            })
         }
         Row {
             Text("6/8")
@@ -449,9 +486,10 @@ fun perguntaMedicamento() {
 }
 
 @Composable
-fun perguntaDst() {
+fun perguntaDst(perguntas:MutableState<Int>, resposta: MutableState<Boolean>) {
     Column(
         modifier = Modifier
+            .fillMaxWidth()
             .padding(0.dp, 100.dp, 0.dp, 30.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -465,9 +503,18 @@ fun perguntaDst() {
                 textAlign = TextAlign.Center
             )
         )
-        Row {
-            BotaoNao()
-            BotaoSim()
+        Row(
+            modifier = Modifier
+                .padding(0.dp, 5.dp, 0.dp, 20.dp)
+        ) {
+            BotaoSim(onClick = {
+                resposta.value = true
+                perguntas.value++
+            })
+            BotaoNao(onClick = {
+                resposta.value = true
+                perguntas.value++
+            })
         }
         Row {
             Text("7/8")
@@ -476,14 +523,15 @@ fun perguntaDst() {
 }
 
 @Composable
-fun perguntaVacina() {
+fun perguntaVacina(perguntas:MutableState<Int>, resposta: MutableState<Boolean>) {
+
     Column(
         modifier = Modifier
             .padding(0.dp, 100.dp, 0.dp, 30.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            "Tomou alguma vacina contra a COVID-19 recentimente? :",
+            "Tomou alguma vacina contra a COVID-19 recentimente?",
             modifier = Modifier
                 .padding(0.dp, 0.dp, 0.dp, 20.dp),
             style = TextStyle(
@@ -492,9 +540,18 @@ fun perguntaVacina() {
                 textAlign = TextAlign.Center
             )
         )
-        Row {
-            BotaoNao()
-            BotaoSim()
+        Row(
+            modifier = Modifier
+                .padding(0.dp, 5.dp, 0.dp, 20.dp)
+        ) {
+            BotaoSim(onClick = {
+                resposta.value = true
+                perguntas.value++
+            })
+            BotaoNao(onClick = {
+                resposta.value = true
+                perguntas.value++
+            })
         }
         Row {
             Text("8/8")
