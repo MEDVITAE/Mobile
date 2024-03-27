@@ -29,6 +29,10 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.example.vitaeapp.ui.theme.VitaeAppTheme
 
 class MainActivity : ComponentActivity() {
@@ -62,9 +66,8 @@ val fontRobotoBold = FontFamily(
 
 @Composable
 fun Tela(name: String, modifier: Modifier = Modifier) {
-    val contexto = LocalContext.current
-
-    contexto.startActivity(Intent(contexto, CadastroActivity::class.java))
+    Logo()
+    Menu(rememberNavController())
 }
 
 @Composable
@@ -83,17 +86,41 @@ fun Logo() {
 }
 
 @Composable
-fun Menu() {
+fun Menu(navController: NavHostController) {
     val contexto = LocalContext.current
+
+    NavHost(
+        navController = navController,
+        startDestination = "Perfil"
+    ){
+        composable("Perfil"){
+            TelaPerfil()
+        }
+        composable("Historico"){
+            TelaHistorico()
+        }
+        composable("Mapa"){
+            TelaDetalheHemocentro()
+        }
+        composable("Ranking"){
+            TelaRanking()
+        }
+        composable("Agenda"){
+            TelaAgendamento()
+        }
+        composable("Quiz"){
+            TelaQuiz()
+        }
+    }
 
     val listaMenu = remember {
         mutableStateListOf(
-            MenuItem(R.mipmap.maps, Intent(contexto, DetalheHemocentroActivity::class.java)),
-            MenuItem(R.mipmap.historico, Intent(contexto, HistoricoActivity::class.java)),
-            MenuItem(R.mipmap.ranking, Intent(contexto, RankingActivity::class.java)),
-            MenuItem(R.mipmap.sangue, Intent(contexto, ConfigActivity::class.java)),
-            MenuItem(R.mipmap.agenda, Intent(contexto, ConfigActivity::class.java)),
-            MenuItem(R.mipmap.perfil, Intent(contexto, PerfilActivity::class.java)),
+            MenuItem(R.mipmap.maps, "Mapa",),
+            MenuItem(R.mipmap.historico, "Historico"),
+            MenuItem(R.mipmap.ranking, "Ranking"),
+            MenuItem(R.mipmap.sangue, "Quiz"),
+            MenuItem(R.mipmap.agenda, "Agenda"),
+            MenuItem(R.mipmap.perfil, "Perfil"),
         )
     }
 
@@ -111,7 +138,7 @@ fun Menu() {
             listaMenu.forEach { itemId ->
                 IconButton(
                     onClick = {
-                        contexto.startActivity(itemId.tela)
+                        navController.navigate(itemId.tela)
                     },
                     modifier = Modifier.size(55.dp)
                 ) {

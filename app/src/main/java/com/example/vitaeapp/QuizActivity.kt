@@ -42,30 +42,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.vitaeapp.ui.theme.VitaeAppTheme
 
-class QuizActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            VitaeAppTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = colorResource(id = R.color.azul_claro)
-                ) {
-                    TelaQuiz()
-                }
-            }
-        }
-    }
-}
-
 @Composable
 fun TelaQuiz() {
-    Logo()
     Column {
         Questionario()
     }
-    Menu()
 }
 
 @Composable
@@ -202,7 +183,6 @@ fun BotaoFinalizar() {
             .width(150.dp)
             .height(45.dp),
         onClick = {
-            contexto.startActivity(Intent(contexto, PerfilActivity::class.java))
         }
     ) {
         Row(

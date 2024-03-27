@@ -45,22 +45,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.vitaeapp.ui.theme.VitaeAppTheme
 
-class AgendamentoActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            VitaeAppTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = colorResource(id = R.color.azul_claro)
-                ) {
-                    TelaAgendamento()
-                }
-            }
-        }
-    }
-}
 
 @Composable
 fun TelaAgendamento() {
@@ -75,9 +59,7 @@ fun TelaAgendamento() {
         )
     }
 
-    Logo()
     Hospitais(hospitais, nomeHospital)
-    Menu()
 }
 
 @Composable

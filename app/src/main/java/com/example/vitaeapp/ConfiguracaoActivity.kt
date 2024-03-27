@@ -65,7 +65,6 @@ class ConfigActivity : ComponentActivity() {
         var dataNasc = remember { mutableStateOf("") }
         var senha = remember { mutableStateOf("") }
 
-        Logo()
         Column(
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally
@@ -80,7 +79,6 @@ class ConfigActivity : ComponentActivity() {
             CampoDeEntrada(label = "Senha:", valor = senha.value) { senha.value = it }
             BotaoSalvar(valor = "Salvar") // Chamando o botão e passando o texto "Salvar"
             Spacer(modifier = Modifier.height(16.dp))
-            Menu()
         }
     }
 
@@ -160,7 +158,7 @@ class ConfigActivity : ComponentActivity() {
                     .width(210.dp)
                     .height(45.dp),
                 onClick = {
-                    contexto.startActivity(Intent(contexto, PerfilActivity::class.java))
+
                 }
             ) {
                 Row(

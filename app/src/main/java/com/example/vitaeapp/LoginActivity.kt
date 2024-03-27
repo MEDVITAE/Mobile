@@ -174,7 +174,6 @@ fun BotaoLogin(valor: String) {
                 .width(210.dp)
                 .height(45.dp),
             onClick = {
-                contexto.startActivity(Intent(contexto, QuizActivity::class.java))
             }
         ) {
             Row(

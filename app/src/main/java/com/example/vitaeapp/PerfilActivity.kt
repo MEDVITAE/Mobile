@@ -39,26 +39,8 @@ import androidx.compose.ui.unit.sp
 import com.example.vitaeapp.R.*
 import com.example.vitaeapp.ui.theme.VitaeAppTheme
 
-class PerfilActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            VitaeAppTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = colorResource(id = R.color.azul_claro)
-                ) {
-                    TelaPerfil()
-                }
-            }
-        }
-    }
-}
-
 @Composable
 fun TelaPerfil() {
-    Logo()
     Column {
 
         AtributoUsuario(stringResource(id = (string.ola)), 70, 15)
@@ -74,7 +56,6 @@ fun TelaPerfil() {
         BotaoEditar("Editar")
 
     }
-    Menu()
 }
 
 
