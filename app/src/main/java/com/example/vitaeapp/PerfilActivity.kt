@@ -230,14 +230,12 @@ fun BotaoEditar(valor: String) {
 
         ) {
 
-        val contexto = LocalContext.current
 
         IconButton(
             modifier = Modifier
                 .width(210.dp)
                 .height(45.dp),
             onClick = {
-                contexto.startActivity(Intent(contexto, ConfigActivity::class.java))
             }
         ) {
             Row(

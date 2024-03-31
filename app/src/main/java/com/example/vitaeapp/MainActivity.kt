@@ -24,6 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -42,9 +43,10 @@ class MainActivity : ComponentActivity() {
             VitaeAppTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier.fillMaxSize(),
+                    color = colorResource(id = R.color.azul_claro)
                 ) {
-                    Tela("Android")
+                    Tela(rememberNavController())
                 }
             }
         }
@@ -65,13 +67,52 @@ val fontRobotoBold = FontFamily(
 )
 
 @Composable
-fun Tela(name: String, modifier: Modifier = Modifier) {
-    Logo()
-    Menu(rememberNavController())
+fun Tela(navController: NavHostController, modifier: Modifier = Modifier) {
+    NavHost(
+        navController = navController,
+        startDestination = "Cadastro"
+    ) {
+
+        composable("Cadastro") {
+            TelaCadastro(navController)
+        }
+        composable("Login") {
+            TelaLogin(navController)
+        }
+        composable("Perfil") {
+            TelaPerfil()
+            Menu(navController)
+        }
+        composable("Configuracao") {
+            TelaDeConfiguracao(navController)
+            Menu(navController)
+        }
+        composable("Historico") {
+            TelaHistorico()
+            Menu(navController)
+        }
+        composable("Mapa") {
+            TelaDetalheHemocentro()
+            Menu(navController)
+        }
+        composable("Ranking") {
+            TelaRanking()
+            Menu(navController)
+        }
+        composable("Agenda") {
+            TelaAgendamento()
+            Menu(navController)
+        }
+        composable("Quiz") {
+            TelaQuiz()
+            Menu(navController)
+        }
+    }
+
 }
 
 @Composable
-fun Logo() {
+fun Logo(){
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -87,35 +128,9 @@ fun Logo() {
 
 @Composable
 fun Menu(navController: NavHostController) {
-    val contexto = LocalContext.current
-
-    NavHost(
-        navController = navController,
-        startDestination = "Perfil"
-    ){
-        composable("Perfil"){
-            TelaPerfil()
-        }
-        composable("Historico"){
-            TelaHistorico()
-        }
-        composable("Mapa"){
-            TelaDetalheHemocentro()
-        }
-        composable("Ranking"){
-            TelaRanking()
-        }
-        composable("Agenda"){
-            TelaAgendamento()
-        }
-        composable("Quiz"){
-            TelaQuiz()
-        }
-    }
-
     val listaMenu = remember {
         mutableStateListOf(
-            MenuItem(R.mipmap.maps, "Mapa",),
+            MenuItem(R.mipmap.maps, "Mapa"),
             MenuItem(R.mipmap.historico, "Historico"),
             MenuItem(R.mipmap.ranking, "Ranking"),
             MenuItem(R.mipmap.sangue, "Quiz"),
@@ -155,11 +170,10 @@ fun Menu(navController: NavHostController) {
     }
 }
 
-
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {
     VitaeAppTheme {
-        Tela("Android")
+        Tela(rememberNavController())
     }
 }
