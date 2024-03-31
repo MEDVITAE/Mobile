@@ -37,25 +37,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.example.vitaeapp.ui.theme.Rowdies
 import com.example.vitaeapp.ui.theme.VitaeAppTheme
 
-class RankingActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            VitaeAppTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = colorResource(id = R.color.azul_claro)
-                ) {
-                    Ranking("Android")
-                }
-            }
-        }
-    }
-}
-
 @Composable
-fun Ranking(name: String, modifier: Modifier = Modifier) {
+fun TelaRanking(modifier: Modifier = Modifier) {
     val listaRanking = remember {
         mutableStateListOf(
             Ranking(nome = "Vinicios Garcia", pontuacao = 10),
@@ -65,10 +48,7 @@ fun Ranking(name: String, modifier: Modifier = Modifier) {
             Ranking(nome = "Diego Costa", pontuacao = 11),
         )
     }
-
-    Logo()
     Posicoes(lista = listaRanking)
-    Menu()
 }
 
 @Composable
@@ -185,6 +165,6 @@ fun RankingItem(ranking: Ranking, position: Int) {
 @Composable
 fun GreetingPreviewFromRanking() {
     VitaeAppTheme {
-        Ranking("Android")
+        TelaRanking()
     }
 }

@@ -30,23 +30,6 @@ import com.example.vitaeapp.ui.theme.Roboto
 import com.example.vitaeapp.ui.theme.Rowdies
 import com.example.vitaeapp.ui.theme.VitaeAppTheme
 
-class HistoricoActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            VitaeAppTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = colorResource(id = R.color.azul_claro)
-                ) {
-                    TelaHistorico()
-                }
-            }
-        }
-    }
-}
-
 @Composable
 fun TelaHistorico() {
     val listaHistorico = remember {
@@ -60,12 +43,10 @@ fun TelaHistorico() {
         )
     }
 
-    Logo()
     Column {
         Proxima(lista = listaHistorico)
         Anteriores(lista = listaHistorico)
     }
-    Menu()
 }
 
 @Composable

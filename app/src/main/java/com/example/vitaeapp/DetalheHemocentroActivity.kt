@@ -29,26 +29,8 @@ import androidx.compose.ui.unit.sp
 import com.example.vitaeapp.ui.theme.Rowdies
 import com.example.vitaeapp.ui.theme.VitaeAppTheme
 
-class DetalheHemocentroActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            VitaeAppTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = colorResource(id = R.color.azul_claro)
-                ) {
-                    TelaDetalheHemocentro("Android")
-                }
-            }
-        }
-    }
-}
-
 @Composable
-fun TelaDetalheHemocentro(name: String, modifier: Modifier = Modifier) {
-    Logo()
+fun TelaDetalheHemocentro(modifier: Modifier = Modifier) {
     val tiposSangue = remember {
         mutableStateListOf(
             "A+",
@@ -120,8 +102,6 @@ fun TelaDetalheHemocentro(name: String, modifier: Modifier = Modifier) {
             Text(text = "Agendar")
         }
     }
-
-    Menu()
 }
 
 @Composable
@@ -141,6 +121,6 @@ fun tiposSangue(lista: List<String>){
 @Composable
 fun GreetingPreviewFromDetalhe() {
     VitaeAppTheme {
-        TelaDetalheHemocentro("Android")
+        TelaDetalheHemocentro()
     }
 }

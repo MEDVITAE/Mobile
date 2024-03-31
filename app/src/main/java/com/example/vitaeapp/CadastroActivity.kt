@@ -1,9 +1,5 @@
 package com.example.vitaeapp
 
-import android.content.Intent
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -21,7 +17,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Divider
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -30,40 +25,23 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.example.vitaeapp.ui.theme.VitaeAppTheme
 
-class CadastroActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            VitaeAppTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = colorResource(id = R.color.azul_claro)
-                ) {
-                    TelaCadastro("Android")
-                }
-            }
-        }
-    }
-}
-
 @Composable
-fun TelaCadastro(name: String, modifier: Modifier = Modifier) {
+fun TelaCadastro(navController: NavHostController, modifier: Modifier = Modifier) {
     Column(
         modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Logo()
         val entradaTexto by remember { mutableStateOf("") }
 
         Column(
@@ -95,8 +73,9 @@ fun TelaCadastro(name: String, modifier: Modifier = Modifier) {
 
             Spacer(modifier = Modifier.height(0.dp))
         }
-        BotaoCadastro("Cadastre-se")
-
+        BotaoCadastro("Cadastre-se"){
+            navController.navigate("Login")
+        }
     }
 }
 @Composable
@@ -148,7 +127,7 @@ fun InputGetInfoCadastro(valorInput: String) {
 }
 
 @Composable
-fun BotaoCadastro(valor:String){
+fun BotaoCadastro(valor:String, onClick: () -> Unit){
     Box(  modifier = Modifier
         .fillMaxWidth()
         .height(120.dp)
@@ -157,16 +136,11 @@ fun BotaoCadastro(valor:String){
         contentAlignment = Alignment.Center,
 
         ) {
-
-        val contexto = LocalContext.current
-
         IconButton(
             modifier = Modifier
                 .width(210.dp)
                 .height(45.dp),
-            onClick = {
-                contexto.startActivity(Intent(contexto, LoginActivity::class.java))
-            }
+            onClick = onClick
         ) {
             Row(
                 modifier = Modifier
@@ -205,6 +179,6 @@ fun BotaoCadastro(valor:String){
 @Composable
 fun GreetingPreviewFromCadastro() {
     VitaeAppTheme {
-        TelaCadastro("Android")
+        TelaCadastro(rememberNavController())
     }
 }

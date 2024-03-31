@@ -43,34 +43,17 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.example.vitaeapp.ui.theme.VitaeAppTheme
 
-class LoginActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            VitaeAppTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = colorResource(id = R.color.azul_claro)
-                ) {
-                    TelaLogin("Android")
-                }
-            }
-        }
-    }
-}
-
-
 @Composable
-fun TelaLogin(name: String, modifier: Modifier = Modifier) {
+fun TelaLogin(navController: NavHostController,  modifier: Modifier = Modifier) {
     Column(
         modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Logo()
         val entradaTextoEmail by remember { mutableStateOf("") }
         val entradaSenha by remember { mutableStateOf("") }
 
@@ -102,7 +85,9 @@ fun TelaLogin(name: String, modifier: Modifier = Modifier) {
             )
             Spacer(modifier = Modifier.height(70.dp))
 
-            BotaoLogin("Editar")
+            BotaoLogin("Entrar"){
+                navController.navigate("Perfil")
+            }
         }
     }
 }
@@ -156,7 +141,7 @@ fun InputGetInfoLogin(valorInput: String) {
 }
 
 @Composable
-fun BotaoLogin(valor: String) {
+fun BotaoLogin(valor: String, onClick: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -166,16 +151,11 @@ fun BotaoLogin(valor: String) {
         contentAlignment = Alignment.Center,
 
         ) {
-
-        val contexto = LocalContext.current
-
         IconButton(
             modifier = Modifier
                 .width(210.dp)
                 .height(45.dp),
-            onClick = {
-                contexto.startActivity(Intent(contexto, QuizActivity::class.java))
-            }
+            onClick = onClick
         ) {
             Row(
 
@@ -215,6 +195,6 @@ fun BotaoLogin(valor: String) {
 @Composable
 fun GreetingPreviewFromLogin() {
     VitaeAppTheme {
-        TelaLogin("Android")
+        TelaLogin(rememberNavController())
     }
 }

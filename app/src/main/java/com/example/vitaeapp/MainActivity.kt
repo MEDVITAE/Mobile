@@ -24,11 +24,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.example.vitaeapp.ui.theme.VitaeAppTheme
 
 class MainActivity : ComponentActivity() {
@@ -38,9 +43,10 @@ class MainActivity : ComponentActivity() {
             VitaeAppTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier.fillMaxSize(),
+                    color = colorResource(id = R.color.azul_claro)
                 ) {
-                    Tela("Android")
+                    Tela(rememberNavController())
                 }
             }
         }
@@ -61,14 +67,52 @@ val fontRobotoBold = FontFamily(
 )
 
 @Composable
-fun Tela(name: String, modifier: Modifier = Modifier) {
-    val contexto = LocalContext.current
+fun Tela(navController: NavHostController, modifier: Modifier = Modifier) {
+    NavHost(
+        navController = navController,
+        startDestination = "Cadastro"
+    ) {
 
-    contexto.startActivity(Intent(contexto, CadastroActivity::class.java))
+        composable("Cadastro") {
+            TelaCadastro(navController)
+        }
+        composable("Login") {
+            TelaLogin(navController)
+        }
+        composable("Perfil") {
+            TelaPerfil()
+            Menu(navController)
+        }
+        composable("Configuracao") {
+            TelaDeConfiguracao(navController)
+            Menu(navController)
+        }
+        composable("Historico") {
+            TelaHistorico()
+            Menu(navController)
+        }
+        composable("Mapa") {
+            TelaDetalheHemocentro()
+            Menu(navController)
+        }
+        composable("Ranking") {
+            TelaRanking()
+            Menu(navController)
+        }
+        composable("Agenda") {
+            TelaAgendamento()
+            Menu(navController)
+        }
+        composable("Quiz") {
+            TelaQuiz()
+            Menu(navController)
+        }
+    }
+
 }
 
 @Composable
-fun Logo() {
+fun Logo(){
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -83,17 +127,15 @@ fun Logo() {
 }
 
 @Composable
-fun Menu() {
-    val contexto = LocalContext.current
-
+fun Menu(navController: NavHostController) {
     val listaMenu = remember {
         mutableStateListOf(
-            MenuItem(R.mipmap.maps, Intent(contexto, DetalheHemocentroActivity::class.java)),
-            MenuItem(R.mipmap.historico, Intent(contexto, HistoricoActivity::class.java)),
-            MenuItem(R.mipmap.ranking, Intent(contexto, RankingActivity::class.java)),
-            MenuItem(R.mipmap.sangue, Intent(contexto, ConfigActivity::class.java)),
-            MenuItem(R.mipmap.agenda, Intent(contexto, ConfigActivity::class.java)),
-            MenuItem(R.mipmap.perfil, Intent(contexto, PerfilActivity::class.java)),
+            MenuItem(R.mipmap.maps, "Mapa"),
+            MenuItem(R.mipmap.historico, "Historico"),
+            MenuItem(R.mipmap.ranking, "Ranking"),
+            MenuItem(R.mipmap.sangue, "Quiz"),
+            MenuItem(R.mipmap.agenda, "Agenda"),
+            MenuItem(R.mipmap.perfil, "Perfil"),
         )
     }
 
@@ -111,7 +153,7 @@ fun Menu() {
             listaMenu.forEach { itemId ->
                 IconButton(
                     onClick = {
-                        contexto.startActivity(itemId.tela)
+                        navController.navigate(itemId.tela)
                     },
                     modifier = Modifier.size(55.dp)
                 ) {
@@ -128,11 +170,10 @@ fun Menu() {
     }
 }
 
-
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {
     VitaeAppTheme {
-        Tela("Android")
+        Tela(rememberNavController())
     }
 }
