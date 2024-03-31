@@ -68,6 +68,7 @@ val fontRobotoBold = FontFamily(
 
 @Composable
 fun Tela(navController: NavHostController, modifier: Modifier = Modifier) {
+    Logo()
     NavHost(
         navController = navController,
         startDestination = "Cadastro"
