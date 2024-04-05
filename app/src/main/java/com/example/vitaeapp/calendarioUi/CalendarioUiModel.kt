@@ -1,10 +1,9 @@
-package com.example.vitaeapp
+package com.example.vitaeapp.calendarioUi
 
 import android.os.Build
 import androidx.annotation.RequiresApi
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import java.util.Date
 
 data class CalendarioUiModel(
     val dataSelecionada: Date, // a data selecionada pelo usuário. por padrão é Hoje.

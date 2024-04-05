@@ -1,14 +1,11 @@
 package com.example.vitaeapp
 
-import android.content.Intent
 import android.os.Build
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,55 +17,53 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.vitaeapp.calendarioUi.CalendarioUiState
+import com.example.vitaeapp.calendarioUi.util.CalendarioViewModel
+import com.example.vitaeapp.calendarioUi.util.DateUtil
+import com.example.vitaeapp.calendarioUi.util.getDisplayName
 import com.example.vitaeapp.ui.theme.VitaeAppTheme
-import java.time.format.DateTimeFormatter
-import java.time.format.FormatStyle
+import java.time.YearMonth
 
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun TelaAgendamento() {
-    val nomeHospital = remember { mutableStateOf("") }
+    //val nomeHospital = remember { mutableStateOf("") }
 
-    val hospitais = remember {
-        mutableStateListOf(
-            Hospital(1, "Hospital 1", "Rua lá"),
-            Hospital(2, "Hospital 2", "Na rua de trás"),
-            Hospital(3, "Hospital 3", "Pertinho"),
-            Hospital(4, "Hospital 4", "Virando a esquina"),
-        )
-    }
+    //val hospitais = remember {
+    //    mutableStateListOf(
+    //        Hospital(1, "Hospital 1", "Rua lá"),
+    //        Hospital(2, "Hospital 2", "Na rua de trás"),
+    //        Hospital(3, "Hospital 3", "Pertinho"),
+    //        Hospital(4, "Hospital 4", "Virando a esquina"),
+    //    )
+    //}
     Calendario()
     //Hospitais(hospitais, nomeHospital)
 }
@@ -83,7 +78,7 @@ fun Hospitais(lista: List<Hospital>, nome: MutableState<String>) {
     ) {
         Text(
             "SELECIONE UM HOSPITAL",
-            style = TextStyle(
+            style = androidx.compose.ui.text.TextStyle(
                 fontFamily = fontFamilyRowdiesBold,
                 fontSize = 18.sp
             )
@@ -168,62 +163,106 @@ fun ListaHospitais(lista: List<Hospital>) {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun Calendario() {
-    val dataSource = CalendarioDataSource()
-    val calendarioUiModel = dataSource.getData(ultimoDiaSelecionado = dataSource.hoje)
+fun Calendario(viewModel: CalendarioViewModel = androidx.lifecycle.viewmodel.compose.viewModel()) {
 
-    Column(modifier = Modifier.fillMaxSize()) {
-        Cabecalho(data = calendarioUiModel)
-        Spacer(modifier = Modifier.height(30.dp))
-        Conteudo(data = calendarioUiModel)
+    val uiState = viewModel.uiState.collectAsState()
+
+    Scaffold{ padding ->
+
+        Surface(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(padding)
+        ) {
+            CalendarioWidget(
+                days = DateUtil.diasDaSemana,
+                yearMonth = uiState.value.yearMonth,
+                dates = uiState.value.dates,
+                onPreviousMonthButtonClicked = { prevMonth ->
+                    viewModel.toPreviousMonth(prevMonth)
+                },
+                onNextMonthButtonClicked = { nextMonth ->
+                    viewModel.toNextMonth(nextMonth)
+                },
+                onDateClickListener = {
+                    // TODO("set on date click listener")
+                }
+            )
+        }
     }
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun Cabecalho(data:CalendarioUiModel) {
+fun CalendarioWidget(
+    days: Array<String>,
+    yearMonth: YearMonth,
+    dates: List<CalendarioUiState.Date>,
+    onPreviousMonthButtonClicked: (YearMonth) -> Unit,
+    onNextMonthButtonClicked: (YearMonth) -> Unit,
+    onDateClickListener: (CalendarioUiState.Date) -> Unit,
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
+        Row {
+            repeat(days.size) {
+                val item = days[it]
+                DayItem(item, modifier = Modifier.weight(1f))
+            }
+        }
+        Cabecalho(
+            anoMes = yearMonth,
+            onAnteriorMesButtonClick = onPreviousMonthButtonClicked,
+            onProximoMesButtonClick = onNextMonthButtonClicked
+        )
+        Conteudo(
+            datas = dates,
+            onDateClick = onDateClickListener
+        )
+    }
+}
+
+
+@RequiresApi(Build.VERSION_CODES.O)
+@Composable
+fun Cabecalho(
+    anoMes: YearMonth,
+    onAnteriorMesButtonClick: (YearMonth) -> Unit,
+    onProximoMesButtonClick: (YearMonth) -> Unit
+) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
     ) {
-        IconButton(onClick = { }) {
+        IconButton(onClick = {
+            onAnteriorMesButtonClick.invoke(anoMes.minusMonths(1))
+        }) {
             Icon(
                 painter = painterResource(id = R.mipmap.anterior),
                 contentDescription = "Anterior",
                 modifier = Modifier.size(40.dp)
             )
         }
-        Column(
-            modifier = Modifier.padding(start = 30.dp, end = 30.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                // mostra "Hoje" se o usuário selecionar a data de hoje
-                // senão, mostra o formato completo da data
-                text = if (data.dataSelecionada.isToday) {
-                    "Today"
-                } else {
-                    data.dataSelecionada.date.format(
-                        DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL)
-                    )
-                },
-                style = TextStyle(
-                    fontFamily = fontFamilyRowdiesBold,
-                    fontSize = 18.sp
-                )
+        Text(
+            // mostra "Hoje" se o usuário selecionar a data de hoje
+            // senão, mostra o formato completo da data
+            text = anoMes.getDisplayName(),
+            style = TextStyle(
+                fontFamily = fontFamilyRowdiesBold,
+                fontSize = 18.sp
             )
-            Text(
-                "2024",
-                style = TextStyle(
-                    fontFamily = fontRobotoRegular,
-                    fontSize = 18.sp
-                )
-            )
-        }
-        IconButton(onClick = { }) {
+        )
+        IconButton(onClick = {
+            onProximoMesButtonClick.invoke(anoMes.plusMonths(1))
+        }) {
             Icon(
                 painter = painterResource(id = R.mipmap.proximo),
                 contentDescription = "Proximo",
@@ -233,49 +272,70 @@ fun Cabecalho(data:CalendarioUiModel) {
     }
 }
 
+@Composable
+fun DayItem(day: String, modifier: Modifier = Modifier) {
+    Box(modifier = modifier) {
+        Text(
+            text = day,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.primary,
+            modifier = Modifier
+                .align(Alignment.Center)
+                .padding(10.dp)
+        )
+    }
+}
+
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun Conteudo(data: CalendarioUiModel) {
-    LazyRow {
-        items(items = data.dataVisivel) { dia ->
-            ConteudoItems(dia)
+fun Conteudo(datas: List<CalendarioUiState.Date>, onDateClick: (CalendarioUiState.Date) -> Unit) {
+    Column {
+        var index = 0
+        repeat(6) {
+            if (index >= datas.size) return@repeat
+            Row {
+                repeat(7) {
+                    val item =
+                        if (index < datas.size) datas[index] else CalendarioUiState.Date.Empty
+                    ConteudoItems(
+                        date = item,
+                        onClick = onDateClick,
+                        modifier = Modifier.weight(1f)
+                    )
+                    index++
+                }
+            }
         }
     }
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun ConteudoItems(date: CalendarioUiModel.Date) {
-    Card(
-        modifier = Modifier
-            .padding(vertical = 4.dp, horizontal = 4.dp),
-        colors = CardDefaults.cardColors(
-            // cores de fundo da data selecionada
-            // e a data não selecionada são diferentes
-            containerColor = if (date.isSelected) {
-                MaterialTheme.colorScheme.primary
-            } else {
-                MaterialTheme.colorScheme.secondary
+fun ConteudoItems(
+    date: CalendarioUiState.Date,
+    onClick: (CalendarioUiState.Date) -> Unit,
+    modifier: Modifier
+) {
+    Box(
+        modifier = modifier
+            .background(
+                color = if (date.isSelected) {
+                    MaterialTheme.colorScheme.secondaryContainer
+                } else {
+                    Color.Transparent
+                }
+            )
+            .clickable {
+                onClick(date)
             }
-        ),
     ) {
-        Column(
+        Text(
+            text = date.diaDoMes,
+            style = MaterialTheme.typography.bodyMedium,
             modifier = Modifier
-                .width(40.dp)
-                .height(48.dp)
-                .padding(4.dp)
-        ) {
-            Text(
-                text = date.dia,
-                modifier = Modifier.align(Alignment.CenterHorizontally),
-                style = MaterialTheme.typography.bodySmall
-            )
-            Text(
-                text = date.date.dayOfMonth.toString(),
-                modifier = Modifier.align(Alignment.CenterHorizontally),
-                style = MaterialTheme.typography.bodyMedium,
-            )
-        }
+                .align(Alignment.Center)
+                .padding(10.dp)
+        )
     }
 }
 
