@@ -1,6 +1,6 @@
-package com.example.vitaeapp
+package com.example.vitaeapp.classes
 
-data class Hospital(
+data class HospitalTest(
     val id:Int,
     val nome:String,
     val endereco:String,
