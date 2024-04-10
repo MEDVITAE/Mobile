@@ -28,7 +28,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.modifier.modifierLocalMapOf
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -58,12 +60,13 @@ fun TelaDeConfiguracao(navController: NavHostController) {
         AtributoUsuarioConfig("CONFIGURAÇÕES", 70, 15)
         CampoDeEntrada(label = "Nome:", valor = nome.value) { nome.value = it }
         CampoDeEntrada(label = "E-mail:", valor = email.value) { email.value = it }
-        CampoDeEntrada(label = "CEP:", valor = cep.value) { cep.value = it }
+        CampoDeEntrada(label = "CEP:",valor = numero.value) { numero.value = it }
+        CampoDeEntrada(label = "Número:",valor = cep.value) { cep.value = it }
         CampoDeEntrada(label = "Data de Nascimento:", valor = dataNasc.value) {
             dataNasc.value = it
         }
         CampoDeEntrada(label = "Senha:", valor = senha.value) { senha.value = it }
-        BotaoSalvar(valor = "Salvar"){
+        BotaoSalvar(valor = "Salvar") {
             navController.navigate("Perfil")
         }
         Spacer(modifier = Modifier.height(16.dp))
@@ -74,7 +77,7 @@ fun TelaDeConfiguracao(navController: NavHostController) {
 fun AtributoUsuarioConfig(valor: String, paddingTop: Int, paddingBottom: Int) {
     Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.Start) {
         Text(
-            valor, fontSize = 20.sp, fontFamily = fontRobotoBold, modifier =
+            valor, fontSize = 30.sp, fontFamily = fontRobotoBold, modifier =
             Modifier.padding(
                 top = paddingTop.dp,
                 start = 20.dp,
@@ -89,8 +92,9 @@ fun AtributoUsuarioConfig(valor: String, paddingTop: Int, paddingBottom: Int) {
 fun CampoDeEntrada(label: String, valor: String, onValueChange: (String) -> Unit) {
     Column(
         modifier = Modifier.padding(8.dp),
-        verticalArrangement = Arrangement.Center
-    ) {
+        verticalArrangement = Arrangement.Center,
+
+        ) {
         var isHintVisible = valor.isEmpty()
 
         BasicTextField(
@@ -99,31 +103,36 @@ fun CampoDeEntrada(label: String, valor: String, onValueChange: (String) -> Unit
                 onValueChange(it)
                 isHintVisible = it.isEmpty()
             },
-            textStyle = TextStyle(fontFamily = Rowdies, color = Color.Black),
+            textStyle = TextStyle(fontFamily = Rowdies, color = Color.Black, fontSize = 16.sp),
             singleLine = true,
             decorationBox = { innerTextField ->
                 Box(
                     modifier = Modifier
                         .width(350.dp)
                         .height(50.dp)
-                        .background(Color.White)
-                        .border(1.dp, Color.Gray, shape = RoundedCornerShape(7.dp)),
+                        .background(Color.White, shape = RoundedCornerShape(7.dp))
+                        .border(1.2.dp, Color.Black, RoundedCornerShape(6.dp)),
                     contentAlignment = Alignment.CenterStart
                 ) {
-                    Column {
-                        if (isHintVisible) {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.CenterStart
+                    ) {
+                        if (!isHintVisible) {
+                            innerTextField()
+                        } else {
                             Text(
-                                fontFamily = fontRobotoBold,
                                 text = label,
                                 style = TextStyle(color = Color.Black),
                                 modifier = Modifier.padding(start = 8.dp)
                             )
                         }
-//                        innerTextField()
                     }
                 }
             },
-            modifier = Modifier.padding(8.dp)
+            modifier = Modifier
+                .padding(8.dp)
+                .shadow(10.dp, shape = RoundedCornerShape(7.dp))
         )
     }
 }
@@ -154,7 +163,7 @@ fun BotaoSalvar(valor: String, onClick: () -> Unit) {
                     )
                     .border(
                         color = Color.Black,
-                        width = 2.dp,
+                        width = 1.dp,
                         shape = RoundedCornerShape(16.dp)
                     ),
                 horizontalArrangement = Arrangement.SpaceAround,
@@ -167,7 +176,7 @@ fun BotaoSalvar(valor: String, onClick: () -> Unit) {
                     painter = painterResource(id = R.mipmap.seta_direita),
                     contentDescription = null,
                     modifier = Modifier
-                        .size(45.dp)
+                        .size(30.dp)
                 )
             }
         }
