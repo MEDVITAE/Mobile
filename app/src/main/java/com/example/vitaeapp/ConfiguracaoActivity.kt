@@ -60,7 +60,8 @@ fun TelaDeConfiguracao(navController: NavHostController) {
         AtributoUsuarioConfig("CONFIGURAÇÕES", 70, 15)
         CampoDeEntrada(label = "Nome:", valor = nome.value) { nome.value = it }
         CampoDeEntrada(label = "E-mail:", valor = email.value) { email.value = it }
-        CampoDeEntrada(label = "CEP:", valor = cep.value) { cep.value = it }
+        CampoDeEntrada(label = "CEP:",valor = numero.value) { numero.value = it }
+        CampoDeEntrada(label = "Número:",valor = cep.value) { cep.value = it }
         CampoDeEntrada(label = "Data de Nascimento:", valor = dataNasc.value) {
             dataNasc.value = it
         }
@@ -122,7 +123,7 @@ fun CampoDeEntrada(label: String, valor: String, onValueChange: (String) -> Unit
                         } else {
                             Text(
                                 text = label,
-                                style = TextStyle(color = Color.Gray),
+                                style = TextStyle(color = Color.Black),
                                 modifier = Modifier.padding(start = 8.dp)
                             )
                         }
