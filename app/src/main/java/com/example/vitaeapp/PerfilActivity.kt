@@ -1,9 +1,9 @@
 package com.example.vitaeapp
 
-import android.content.Intent
-import android.os.Bundle
+import android.os.Build
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -19,11 +19,23 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Divider
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -33,26 +45,34 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.vitaeapp.R.*
 import com.example.vitaeapp.ui.theme.VitaeAppTheme
+import java.time.format.TextStyle
 
 @Composable
 fun TelaPerfil() {
+    var nome = remember { mutableStateOf("") }
+    var peso = remember { mutableStateOf("") }
+    var altura = remember { mutableStateOf("") }
+    var cpf = remember { mutableStateOf("") }
+
+
     Column {
 
         AtributoUsuario(stringResource(id = (string.ola)), 70, 15)
         QuadradoInfo()
         AtributoUsuario(stringResource(id = (string.title_input_nome)), 12, 5)
-        InputGetInfo("Joao Vitor de Souza Tenorio")
+        InputGetInfo( valor = nome.value) { nome.value = it }
         AtributoUsuario(stringResource(id = (string.title_input_cpf)), 12, 10)
-        InputGetInfo(valorInput = "413654667-97")
+        InputGetInfo(valor = cpf.value) { cpf.value = it }
         AtributoUsuario(stringResource(id = (string.title_input_peso)), 12, 10)
-        InputGetInfo(valorInput = "68 kg")
+        InputGetInfo(valor = peso.value) { peso.value = it }
         AtributoUsuario(stringResource(id = (string.title_input_altura)), 12, 10)
-        InputGetInfo(valorInput = "1,70")
+        InputGetInfo( valor = altura.value) { altura.value = it }
         BotaoEditar("Editar")
 
     }
@@ -76,20 +96,38 @@ fun AtributoUsuario(valor: String, paddingTop: Int, paddingBottom: Int) {
     }
 }
 
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun InputGetInfo(valorInput: String) {
+fun InputGetInfo( valor: String, onValueChange: (String) -> Unit) {
+    val valorInput = remember { mutableStateOf("") }
     Column(
         modifier = Modifier
-            .width(300.dp)
+            .width(450.dp)
             .padding(start = 15.dp)
     ) {
-        Text(valorInput, fontSize = 16.sp, fontFamily = fontRobotoBold)
-        Divider(
-            modifier = Modifier.fillMaxWidth(),
-            color = Color.Black
-        )
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(25.dp) // Definindo a altura do Box como 50
+                .background(Color.Transparent)
+        ) {
+            TextField(
+                value = valorInput.value,
+                onValueChange = { onValueChange(it); valorInput.value = it },
+                singleLine = true,
+                textStyle = androidx.compose.ui.text.TextStyle(fontSize = 17.sp,fontFamily=fontRobotoBold, color = Color.Black),
+                colors = TextFieldDefaults.textFieldColors(
+                    containerColor = Color.Transparent,
+                ),
+                modifier = Modifier.width(350.dp)
+            )
+        }
+
     }
 }
+
+
 
 @Composable
 fun QuadradoComTexto(imagemTexto: String, textoQuadrado: String) {
@@ -263,7 +301,7 @@ fun BotaoEditar(valor: String) {
                     painter = painterResource(id = mipmap.seta_direita),
                     contentDescription = null,
                     modifier = Modifier
-                        .size(45.dp)
+                        .size(30.dp)
                 )
             }
         }
