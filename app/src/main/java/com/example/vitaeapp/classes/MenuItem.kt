@@ -1,4 +1,4 @@
-package com.example.vitaeapp
+package com.example.vitaeapp.classes
 
 import android.content.Intent
 
