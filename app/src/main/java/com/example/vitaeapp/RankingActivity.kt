@@ -1,12 +1,12 @@
 package com.example.vitaeapp
 
-
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -16,10 +16,13 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -54,8 +57,11 @@ fun TelaRanking(modifier: Modifier = Modifier) {
 @Composable
 fun Posicoes(lista: List<Ranking>) {
 
-    var nome: String = ""
-    var pontuacao: Int = 0
+    val scrollState = rememberScrollState()
+
+    LaunchedEffect(Unit) {
+        scrollState.animateScrollTo(100)
+    }
 
     Column(
         Modifier.padding(30.dp, 100.dp)
@@ -78,10 +84,16 @@ fun Posicoes(lista: List<Ranking>) {
 
         val listaOrdenada = lista.sortedByDescending { it.pontuacao }
 
-        Column() {
-            // Iterar sobre a lista ordenada para exibir cada item
-            listaOrdenada.forEachIndexed { index, item ->
-                RankingItem(ranking = item, position = index + 1)
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(top = 16.dp)
+                .verticalScroll(scrollState)
+        ) {
+            Column {
+                listaOrdenada.forEachIndexed { index, item ->
+                    RankingItem(ranking = item, position = index + 1)
+                }
             }
         }
     }

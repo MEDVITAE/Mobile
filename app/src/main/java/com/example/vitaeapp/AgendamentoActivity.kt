@@ -1,9 +1,11 @@
 package com.example.vitaeapp
 
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -18,10 +20,16 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -44,8 +52,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.vitaeapp.ui.theme.VitaeAppTheme
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun TelaAgendamento() {
     val nomeHospital = remember { mutableStateOf("") }
@@ -58,8 +69,8 @@ fun TelaAgendamento() {
             Hospital(4, "Hospital 4", "Virando a esquina"),
         )
     }
-
-    Hospitais(hospitais, nomeHospital)
+    Calendario()
+    //Hospitais(hospitais, nomeHospital)
 }
 
 @Composable
@@ -72,7 +83,10 @@ fun Hospitais(lista: List<Hospital>, nome: MutableState<String>) {
     ) {
         Text(
             "SELECIONE UM HOSPITAL",
-            style = TextStyle(fontFamily = fontFamilyRowdiesBold)
+            style = TextStyle(
+                fontFamily = fontFamilyRowdiesBold,
+                fontSize = 18.sp
+            )
         )
         Spacer(modifier = Modifier.height(5.dp))
         BasicTextField(
@@ -131,10 +145,22 @@ fun ListaHospitais(lista: List<Hospital>) {
                     verticalArrangement = Arrangement.Center
                 ) {
                     Row(modifier = Modifier.padding(start = 15.dp)) {
-                        Text("Nome: ${itens.nome}")
+                        Text(
+                            "Nome: ",
+                            style = TextStyle(
+                                fontFamily = fontRobotoBold
+                            )
+                        )
+                        Text("${itens.nome}")
                     }
                     Row(modifier = Modifier.padding(start = 15.dp)) {
-                        Text("Endereço: ${itens.endereco}")
+                        Text(
+                            "Endereço: ",
+                            style = TextStyle(
+                                fontFamily = fontRobotoBold
+                            )
+                        )
+                        Text("${itens.endereco}")
                     }
                 }
             }
@@ -142,6 +168,119 @@ fun ListaHospitais(lista: List<Hospital>) {
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
+@Composable
+fun Calendario() {
+    val dataSource = CalendarioDataSource()
+    val calendarioUiModel = dataSource.getData(ultimoDiaSelecionado = dataSource.hoje)
+
+    Column(modifier = Modifier.fillMaxSize()) {
+        Cabecalho(data = calendarioUiModel)
+        Spacer(modifier = Modifier.height(30.dp))
+        Conteudo(data = calendarioUiModel)
+    }
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
+@Composable
+fun Cabecalho(data:CalendarioUiModel) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center
+    ) {
+        IconButton(onClick = { }) {
+            Icon(
+                painter = painterResource(id = R.mipmap.anterior),
+                contentDescription = "Anterior",
+                modifier = Modifier.size(40.dp)
+            )
+        }
+        Column(
+            modifier = Modifier.padding(start = 30.dp, end = 30.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                // mostra "Hoje" se o usuário selecionar a data de hoje
+                // senão, mostra o formato completo da data
+                text = if (data.dataSelecionada.isToday) {
+                    "Today"
+                } else {
+                    data.dataSelecionada.date.format(
+                        DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL)
+                    )
+                },
+                style = TextStyle(
+                    fontFamily = fontFamilyRowdiesBold,
+                    fontSize = 18.sp
+                )
+            )
+            Text(
+                "2024",
+                style = TextStyle(
+                    fontFamily = fontRobotoRegular,
+                    fontSize = 18.sp
+                )
+            )
+        }
+        IconButton(onClick = { }) {
+            Icon(
+                painter = painterResource(id = R.mipmap.proximo),
+                contentDescription = "Proximo",
+                modifier = Modifier.size(40.dp)
+            )
+        }
+    }
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
+@Composable
+fun Conteudo(data: CalendarioUiModel) {
+    LazyRow {
+        items(items = data.dataVisivel) { dia ->
+            ConteudoItems(dia)
+        }
+    }
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
+@Composable
+fun ConteudoItems(date: CalendarioUiModel.Date) {
+    Card(
+        modifier = Modifier
+            .padding(vertical = 4.dp, horizontal = 4.dp),
+        colors = CardDefaults.cardColors(
+            // cores de fundo da data selecionada
+            // e a data não selecionada são diferentes
+            containerColor = if (date.isSelected) {
+                MaterialTheme.colorScheme.primary
+            } else {
+                MaterialTheme.colorScheme.secondary
+            }
+        ),
+    ) {
+        Column(
+            modifier = Modifier
+                .width(40.dp)
+                .height(48.dp)
+                .padding(4.dp)
+        ) {
+            Text(
+                text = date.dia,
+                modifier = Modifier.align(Alignment.CenterHorizontally),
+                style = MaterialTheme.typography.bodySmall
+            )
+            Text(
+                text = date.date.dayOfMonth.toString(),
+                modifier = Modifier.align(Alignment.CenterHorizontally),
+                style = MaterialTheme.typography.bodyMedium,
+            )
+        }
+    }
+}
+
+
+@RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreviewFromAgendamento() {
