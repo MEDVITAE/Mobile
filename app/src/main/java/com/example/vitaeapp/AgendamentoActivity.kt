@@ -31,17 +31,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -180,30 +169,20 @@ fun Calendario(viewModel: CalendarioViewModel = androidx.lifecycle.viewmodel.com
 
     val uiState = viewModel.uiState.collectAsState()
 
-    Scaffold{ padding ->
-
-        Surface(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(padding)
-        ) {
-            CalendarioWidget(
-                days = DateUtil.diasDaSemana,
-                yearMonth = uiState.value.yearMonth,
-                dates = uiState.value.dates,
-                onPreviousMonthButtonClicked = { prevMonth ->
-                    viewModel.toPreviousMonth(prevMonth)
-                },
-                onNextMonthButtonClicked = { nextMonth ->
-                    viewModel.toNextMonth(nextMonth)
-                },
-                onDateClickListener = {
-                    // TODO("set on date click listener")
-                }
-            )
+    CalendarioWidget(
+        days = DateUtil.diasDaSemana,
+        yearMonth = uiState.value.yearMonth,
+        dates = uiState.value.dates,
+        onPreviousMonthButtonClicked = { prevMonth ->
+            viewModel.toPreviousMonth(prevMonth)
+        },
+        onNextMonthButtonClicked = { nextMonth ->
+            viewModel.toNextMonth(nextMonth)
+        },
+        onDateClickListener = {
+            // TODO("set on date click listener")
         }
-    }
+    )
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -218,20 +197,19 @@ fun CalendarioWidget(
 ) {
     Column(
         modifier = Modifier
-            .fillMaxSize()
             .padding(16.dp)
     ) {
-        Row {
-            repeat(days.size) {
-                val item = days[it]
-                DayItem(item, modifier = Modifier.weight(1f))
-            }
-        }//teste
         Cabecalho(
             anoMes = yearMonth,
             onAnteriorMesButtonClick = onPreviousMonthButtonClicked,
             onProximoMesButtonClick = onNextMonthButtonClicked
         )
+        Row(modifier = Modifier.fillMaxWidth()) {
+            repeat(days.size) {
+                val item = days[it]
+                DayItem(item)
+            }
+        }
         Conteudo(
             datas = dates,
             onDateClick = onDateClickListener
@@ -262,8 +240,6 @@ fun Cabecalho(
             )
         }
         Text(
-            // mostra "Hoje" se o usuário selecionar a data de hoje
-            // senão, mostra o formato completo da data
             text = anoMes.getDisplayName(),
             style = TextStyle(
                 fontFamily = fontFamilyRowdiesBold,
@@ -283,17 +259,24 @@ fun Cabecalho(
 }
 
 @Composable
-fun DayItem(day: String, modifier: Modifier = Modifier) {
-    Box(modifier = modifier) {
+fun DayItem(day: String) {
+    Box(
+        modifier = Modifier
+            .width(46.dp)
+            .background(
+                color = colorResource(id = R.color.vermelho_rosado),
+                shape = RoundedCornerShape(6.dp)
+            )
+    ) {
         Text(
             text = day,
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.primary,
+            style = TextStyle(fontFamily = fontRobotoBold),
             modifier = Modifier
                 .align(Alignment.Center)
-                .padding(10.dp)
+                .padding(0.dp, 5.dp, 0.dp, 5.dp)
         )
     }
+    Spacer(modifier = Modifier.width(6.dp))
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -332,7 +315,7 @@ fun ConteudoItems(
                 color = if (date.isSelected) {
                     MaterialTheme.colorScheme.secondaryContainer
                 } else {
-                    Color.Transparent
+                    Color.White
                 }
             )
             .clickable {
@@ -347,6 +330,7 @@ fun ConteudoItems(
                 .padding(10.dp)
         )
     }
+    Spacer(modifier = Modifier.width(5.dp).height(5.dp))
 }
 
 

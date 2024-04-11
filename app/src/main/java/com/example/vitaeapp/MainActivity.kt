@@ -1,9 +1,6 @@
 package com.example.vitaeapp
 
-<<<<<<< HEAD
 import android.content.Intent
-=======
->>>>>>> qa
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
