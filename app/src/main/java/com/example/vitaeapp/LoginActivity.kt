@@ -24,6 +24,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -45,18 +46,31 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.example.vitaeapp.api.RetrofitServices
+import com.example.vitaeapp.classes.UsuarioLogin
 import com.example.vitaeapp.ui.theme.VitaeAppTheme
+import retrofit2.Call
+import retrofit2.Response
 
 @Composable
-fun TelaLogin(navController: NavHostController,  modifier: Modifier = Modifier) {
+fun TelaLogin(navController: NavHostController, modifier: Modifier = Modifier) {
     Column(
         modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        val entradaTextoEmail by remember { mutableStateOf("") }
-        val entradaSenha by remember { mutableStateOf("") }
+        val validacao = remember {
+            mutableStateOf(
+                UsuarioLogin(0, "", "", "")
+            )
+        }
+        val entradaTextoEmail = remember { mutableStateOf("") }
+        val entradaSenha = remember { mutableStateOf("") }
 
+        val erroApi = remember { mutableStateOf("") }
+        val acertoApi = remember { mutableStateOf("") }
+
+        val apiLogin = RetrofitServices.getLoginService()
 
         Column(
             modifier = Modifier
@@ -72,10 +86,14 @@ fun TelaLogin(navController: NavHostController,  modifier: Modifier = Modifier) 
                 20
             )
             Spacer(modifier = Modifier.height(15.dp))
-            AtributoUsuarioLogin(valor = "Email", paddingTop = 0, paddingBottom = 10, 20)
-            InputGetInfoLogin(valorInput = "email@Gmail.com")
-            AtributoUsuarioLogin(valor = "Senha", paddingTop = 20, paddingBottom = 10, 20)
-            InputGetInfoLogin(valorInput = "Digite senha")
+            TextField(
+                value = entradaTextoEmail.value,
+                onValueChange = { entradaTextoEmail.value = it })
+            TextField(value = entradaSenha.value, onValueChange = { entradaSenha.value = it })
+            //AtributoUsuarioLogin(valor = "Email", paddingTop = 0, paddingBottom = 10, 20)
+            //InputGetInfoLogin(valorInput = "email@Gmail.com")
+            //AtributoUsuarioLogin(valor = "Senha", paddingTop = 20, paddingBottom = 10, 20)
+            //InputGetInfoLogin(valorInput = "Digite senha")
             Text(
                 "Esqueci minha senha",
                 style = MaterialTheme.typography.bodyMedium
@@ -85,8 +103,44 @@ fun TelaLogin(navController: NavHostController,  modifier: Modifier = Modifier) 
             )
             Spacer(modifier = Modifier.height(70.dp))
 
-            BotaoLogin("Entrar"){
-                navController.navigate("Perfil")
+            BotaoLogin("Entrar") {
+                val usuario =
+                    UsuarioLogin(email = entradaTextoEmail.value, senha = entradaSenha.value)
+                val post = apiLogin.postLogin(usuario)
+
+                post.enqueue(object : retrofit2.Callback<UsuarioLogin> {
+                    override fun onResponse(
+                        call: Call<UsuarioLogin>,
+                        response: Response<UsuarioLogin>
+                    ) {
+                        if (response.isSuccessful) {
+                            val usuario = response.body()
+                            if (usuario != null) {
+                                acertoApi.value = "Usuário verificado"
+                                validacao.value = UsuarioLogin(
+                                    usuario.Id,
+                                    usuario.email,
+                                    usuario.senha,
+                                    usuario.token
+                                )
+                            } else {
+                                erroApi.value = "Erro ao verificar usuário"
+                            }
+                        } else {
+                            erroApi.value = "Erro na solicitação: ${response.code()}"
+                        }
+                    }
+
+                    override fun onFailure(call: Call<UsuarioLogin>, t: Throwable) {
+                        erroApi.value = "Falha na solicitação: ${t.message}"
+                    }
+                })
+            }
+            if (erroApi.value.isNotBlank()) {
+                Text("${erroApi.value}")
+            } else if (acertoApi.value.isNotBlank()) {
+                Text("${acertoApi.value}")
+                Text("${validacao.value}")
             }
         }
     }
