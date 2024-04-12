@@ -31,6 +31,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -52,18 +55,19 @@ import java.time.YearMonth
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun TelaAgendamento() {
-    //val nomeHospital = remember { mutableStateOf("") }
+    val nomeHospital = remember { mutableStateOf("") }
 
-    //val hospitais = remember {
-    //    mutableStateListOf(
-    //        Hospital(1, "Hospital 1", "Rua l"),
-    //        Hospital(2, "Hospital 2", "Na rua de trás"),
-    //        Hospital(3, "Hospital 3", "Pertinho"),
-    //        Hospital(4, "Hospital 4", "Virando a esquina"),
-    //    )
-    //}
+    val hospitais = remember {
+        mutableStateListOf(
+            HospitalTest(1, "Hospital 1", "Rua l"),
+            HospitalTest(2, "Hospital 2", "Na rua de trás"),
+            HospitalTest(3, "Hospital 3", "Pertinho"),
+            HospitalTest(4, "Hospital 4", "Virando a esquina"),
+       )
+    }
 
-    Calendario()
+    //Horarios()
+    //Calendario()
     //Hospitais(hospitais, nomeHospital)
 }
 
@@ -298,6 +302,7 @@ fun Conteudo(datas: List<CalendarioUiState.Date>, onDateClick: (CalendarioUiStat
                     index++
                 }
             }
+            Spacer(modifier = Modifier.height(6.dp))
         }
     }
 }
@@ -330,7 +335,78 @@ fun ConteudoItems(
                 .padding(10.dp)
         )
     }
-    Spacer(modifier = Modifier.width(5.dp).height(5.dp))
+    Spacer(
+        modifier = Modifier
+            .width(6.dp)
+    )
+}
+
+@Composable
+fun Horarios() {
+    var index = 0
+    val horarios = remember {
+        mutableStateListOf(
+            "08:00",
+            "08:30",
+            "09:00",
+            "09:30",
+            "10:00",
+            "10:30",
+            "11:00",
+            "11:30",
+            "13:00",
+            "13:30",
+            "14:00",
+            "14:30",
+            "15:00",
+            "15:30",
+            "16:00",
+            "16:30",
+            "17:00",
+            "17:30",
+            "18:00",
+            "18:30",
+            "19:00",
+        )
+    }
+
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Text(
+            "SELECIONE A HORA",
+            style = TextStyle(
+                fontFamily = fontFamilyRowdiesBold,
+                fontSize = 18.sp
+            )
+        )
+        Spacer(modifier = Modifier.height(15.dp))
+        repeat(8) {
+            if (index >= horarios.size) return@repeat
+            Row {
+                repeat(3) {
+                    val item =
+                        if (index < horarios.size) horarios[index] else ""
+                    Box(
+                        modifier = Modifier
+                            .background(
+                                color = Color.White,
+                                shape = RoundedCornerShape(4.dp)
+                            )
+                    ) {
+                        Text(
+                            text = item,
+                            modifier = Modifier
+                                .align(Alignment.Center)
+                                .padding(10.dp)
+                        )
+                    }
+                    Spacer(modifier = Modifier.width(5.dp))
+                    index++
+                }
+            }
+            Spacer(modifier = Modifier.height(5.dp))
+        }
+    }
+
 }
 
 
