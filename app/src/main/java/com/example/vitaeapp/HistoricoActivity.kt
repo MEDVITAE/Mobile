@@ -122,10 +122,6 @@ fun Proxima(lista: List<Historico>) {
 @Composable
 fun Anteriores(lista: List<Historico>) {
 
-    var data: String = ""
-    var hora: String = ""
-    var hospital: String = ""
-
     var hemocentro = lista.maxBy { it.id }
 
     Column(
@@ -136,39 +132,38 @@ fun Anteriores(lista: List<Historico>) {
             Modifier.padding(0.dp, 0.dp, 0.dp, 10.dp),
             style = TextStyle(fontFamily = Rowdies)
         )
-        lista.forEach { item ->
-            if (hemocentro != item) {
-                Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Image(
-                            painter = painterResource(id = R.mipmap.hospital),
-                            contentDescription = "Doação",
-                            modifier = Modifier.size(55.dp)
-                        )
+        for (i in 1 until lista.size) {
+            val item = lista[i]
+            Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Image(
+                        painter = painterResource(id = R.mipmap.hospital),
+                        contentDescription = "Doação",
+                        modifier = Modifier.size(55.dp)
+                    )
 
+                    Column(
+                        Modifier
+                            .padding(10.dp, 0.dp, 0.dp, 20.dp)
+                            .background(Color.White)
+                            .width(350.dp)
+                    ) {
                         Column(
                             Modifier
-                                .padding(10.dp, 0.dp, 0.dp, 20.dp)
-                                .background(Color.White)
-                                .width(350.dp)
+                                .padding(10.dp)
                         ) {
-                            Column(
-                                Modifier
-                                    .padding(10.dp)
-                            ) {
-                                Text(
-                                    "Doação: n° ",
-                                    style = TextStyle(fontFamily = Roboto)
-                                )
-                                Text(
-                                    "Data: ${hemocentro.data} - Hora: ${hemocentro.hora}",
-                                    style = TextStyle(fontFamily = Roboto)
-                                )
-                                Text(
-                                    "Hemocentro: ${hemocentro.hemocentro}",
-                                    style = TextStyle(fontFamily = Roboto)
-                                )
-                            }
+                            Text(
+                                "Doação: n° ",
+                                style = TextStyle(fontFamily = Roboto)
+                            )
+                            Text(
+                                "Data: ${hemocentro.data} - Hora: ${hemocentro.hora}",
+                                style = TextStyle(fontFamily = Roboto)
+                            )
+                            Text(
+                                "Hemocentro: ${hemocentro.hemocentro}",
+                                style = TextStyle(fontFamily = Roboto)
+                            )
                         }
                     }
                 }
