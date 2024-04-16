@@ -34,7 +34,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.vitaeapp.classes.MenuItem
 import com.example.vitaeapp.ui.theme.VitaeAppTheme
 
 class MainActivity : ComponentActivity() {
@@ -71,107 +70,16 @@ val fontRobotoBold = FontFamily(
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun Tela(navController: NavHostController, modifier: Modifier = Modifier) {
-    Logo()
     NavHost(
         navController = navController,
-        startDestination = "Cadastro"
+        startDestination = "Login"
     ) {
 
-        composable("Cadastro") {
-            TelaCadastro(navController)
-        }
         composable("Login") {
             TelaLogin(navController)
         }
-        composable("Perfil") {
-            TelaPerfil()
-            Menu(navController)
-        }
-        composable("Configuracao") {
-            TelaDeConfiguracao(navController)
-            Menu(navController)
-        }
-        composable("Historico") {
-            TelaHistorico()
-            Menu(navController)
-        }
-        composable("Mapa") {
-            TelaDetalheHemocentro()
-            Menu(navController)
-        }
-        composable("Ranking") {
-            TelaRanking()
-            Menu(navController)
-        }
-        composable("Agenda") {
-            TelaAgendamento()
-            Menu(navController)
-        }
-        composable("Quiz") {
-            TelaQuiz()
-            Menu(navController)
-        }
     }
 
-}
-
-@Composable
-fun Logo(){
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(10.dp), Arrangement.End
-    ) {
-        Image(
-            painter = painterResource(id = R.mipmap.logo),
-            contentDescription = "Vitae",
-            modifier = Modifier.size(70.dp)
-        )
-    }
-}
-
-@Composable
-fun Menu(navController: NavHostController) {
-    val listaMenu = remember {
-        mutableStateListOf(
-            MenuItem(R.mipmap.maps, "Mapa"),
-            MenuItem(R.mipmap.historico, "Historico"),
-            MenuItem(R.mipmap.ranking, "Ranking"),
-            MenuItem(R.mipmap.sangue, "Quiz"),
-            MenuItem(R.mipmap.agenda, "Agenda"),
-            MenuItem(R.mipmap.perfil, "Perfil"),
-        )
-    }
-
-    Row(
-        modifier = Modifier.fillMaxHeight(),
-        verticalAlignment = Alignment.Bottom
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(Color.White)
-                .padding(vertical = 8.dp)
-        ) {
-            Spacer(modifier = Modifier.width(8.dp))
-            listaMenu.forEach { itemId ->
-                IconButton(
-                    onClick = {
-                        navController.navigate(itemId.tela)
-                    },
-                    modifier = Modifier.size(55.dp)
-                ) {
-                    Image(
-                        painter = painterResource(id = itemId.icon),
-                        contentDescription = "",
-                        modifier = Modifier.size(55.dp)
-                    )
-                }
-                Spacer(modifier = Modifier.width(10.dp))
-            }
-            Spacer(modifier = Modifier.width(8.dp))
-        }
-    }
 }
 
 @RequiresApi(Build.VERSION_CODES.O)

@@ -119,8 +119,7 @@ fun TelaLogin(navController: NavHostController, modifier: Modifier = Modifier) {
                                 acertoApi.value = "Usuário verificado"
                                 validacao.value = UsuarioLogin(
                                     usuario.Id,
-                                    usuario.email,
-                                    usuario.senha,
+                                    usuario.nome,
                                     usuario.token
                                 )
                             } else {
