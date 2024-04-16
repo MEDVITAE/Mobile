@@ -59,17 +59,23 @@ fun TelaLogin(navController: NavHostController, modifier: Modifier = Modifier) {
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        // Variável criada para receber resposta da api
         val validacao = remember {
             mutableStateOf(
                 UsuarioLogin(0, "", "", "")
             )
         }
+
+        // Variáveis para campo de digitação
         val entradaTextoEmail = remember { mutableStateOf("") }
         val entradaSenha = remember { mutableStateOf("") }
 
+
+        // Variáveis para resposta da api, seja um sucesso, ou não
         val erroApi = remember { mutableStateOf("") }
         val acertoApi = remember { mutableStateOf("") }
 
+        // Variável para conexão com api
         val apiLogin = RetrofitServices.getLoginService()
 
         Column(
@@ -90,10 +96,6 @@ fun TelaLogin(navController: NavHostController, modifier: Modifier = Modifier) {
                 value = entradaTextoEmail.value,
                 onValueChange = { entradaTextoEmail.value = it })
             TextField(value = entradaSenha.value, onValueChange = { entradaSenha.value = it })
-            //AtributoUsuarioLogin(valor = "Email", paddingTop = 0, paddingBottom = 10, 20)
-            //InputGetInfoLogin(valorInput = "email@Gmail.com")
-            //AtributoUsuarioLogin(valor = "Senha", paddingTop = 20, paddingBottom = 10, 20)
-            //InputGetInfoLogin(valorInput = "Digite senha")
             Text(
                 "Esqueci minha senha",
                 style = MaterialTheme.typography.bodyMedium
@@ -104,8 +106,11 @@ fun TelaLogin(navController: NavHostController, modifier: Modifier = Modifier) {
             Spacer(modifier = Modifier.height(70.dp))
 
             BotaoLogin("Entrar") {
+                // Variável para criação de objeto a ser mandado para api
                 val usuario =
                     UsuarioLogin(email = entradaTextoEmail.value, senha = entradaSenha.value)
+
+                // Variável para conexão com método da api
                 val post = apiLogin.postLogin(usuario)
 
                 post.enqueue(object : retrofit2.Callback<UsuarioLogin> {
@@ -123,14 +128,17 @@ fun TelaLogin(navController: NavHostController, modifier: Modifier = Modifier) {
                                     usuario.token
                                 )
                             } else {
+                                // Não foi possível achar usuário
                                 erroApi.value = "Erro ao verificar usuário"
                             }
                         } else {
+                            // Algo passado pode estar errado
                             erroApi.value = "Erro na solicitação: ${response.code()}"
                         }
                     }
 
                     override fun onFailure(call: Call<UsuarioLogin>, t: Throwable) {
+                        // Não foi possível conectar na api
                         erroApi.value = "Falha na solicitação: ${t.message}"
                     }
                 })
