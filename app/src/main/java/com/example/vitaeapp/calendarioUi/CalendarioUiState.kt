@@ -17,10 +17,12 @@ class CalendarioUiState(
     }
     data class Date(
         val diaDoMes: String,
+        val mes: String,
+        val ano: String,
         val isSelected: Boolean
     ){
         companion object {
-            val Empty = Date("", false)
+            val Empty = Date("", "", "", false)
         }
     }
 

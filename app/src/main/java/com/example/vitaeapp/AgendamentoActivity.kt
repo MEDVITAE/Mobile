@@ -49,6 +49,7 @@ import com.example.vitaeapp.calendarioUi.util.DateUtil
 import com.example.vitaeapp.calendarioUi.util.getDisplayName
 import com.example.vitaeapp.classes.HospitalTest
 import com.example.vitaeapp.ui.theme.VitaeAppTheme
+import java.time.LocalDate
 import java.time.YearMonth
 
 
@@ -63,11 +64,11 @@ fun TelaAgendamento() {
             HospitalTest(2, "Hospital 2", "Na rua de trás"),
             HospitalTest(3, "Hospital 3", "Pertinho"),
             HospitalTest(4, "Hospital 4", "Virando a esquina"),
-       )
+        )
     }
 
     //Horarios()
-    //Calendario()
+    Calendario()
     //Hospitais(hospitais, nomeHospital)
 }
 
@@ -172,6 +173,7 @@ fun ListaHospitais(lista: List<HospitalTest>) {
 fun Calendario(viewModel: CalendarioViewModel = androidx.lifecycle.viewmodel.compose.viewModel()) {
 
     val uiState = viewModel.uiState.collectAsState()
+    val conteudoItemsSelecionado = remember { mutableStateOf<CalendarioUiState.Date?>(null) }
 
     CalendarioWidget(
         days = DateUtil.diasDaSemana,
@@ -183,10 +185,12 @@ fun Calendario(viewModel: CalendarioViewModel = androidx.lifecycle.viewmodel.com
         onNextMonthButtonClicked = { nextMonth ->
             viewModel.toNextMonth(nextMonth)
         },
-        onDateClickListener = {
-            // TODO("set on date click listener")
+        onDateClickListener = { date ->
+            conteudoItemsSelecionado.value = date
         }
     )
+
+    Text("${conteudoItemsSelecionado.value}")
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -280,7 +284,7 @@ fun DayItem(day: String) {
                 .padding(0.dp, 5.dp, 0.dp, 5.dp)
         )
     }
-    Spacer(modifier = Modifier.width(6.dp))
+    Spacer(modifier = Modifier.width(5.dp))
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -318,7 +322,7 @@ fun ConteudoItems(
         modifier = modifier
             .background(
                 color = if (date.isSelected) {
-                    MaterialTheme.colorScheme.secondaryContainer
+                    colorResource(id = R.color.vermelho_rosado)
                 } else {
                     Color.White
                 }

@@ -24,6 +24,17 @@ class CalendarioDataSource {
                     } else {
                         ""
                     },
+                    mes = if (date.monthValue == yearMonth.monthValue) {
+                        "${date.monthValue}"
+                    } else {
+                        ""
+                    },
+
+                    ano = if (date.year == yearMonth.year) {
+                        "${date.year}"
+                    } else {
+                        ""
+                    },
                     isSelected = date.isEqual(LocalDate.now()) && date.monthValue == yearMonth.monthValue
                 )
             }
