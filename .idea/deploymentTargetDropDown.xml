@@ -2,10 +2,10 @@
 <project version="4">
   <component name="deploymentTargetDropDown">
     <value>
-      <entry key="GreetingPreview">
+      <entry key="GreetingPreviewFromCadastro">
         <State />
       </entry>
-      <entry key="GreetingPreview2">
+      <entry key="GreetingPreviewFromLogin">
         <State />
       </entry>
       <entry key="app">
