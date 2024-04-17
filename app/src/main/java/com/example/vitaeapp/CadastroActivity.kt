@@ -21,7 +21,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -41,19 +40,23 @@ import com.example.vitaeapp.ui.theme.VitaeAppTheme
 fun TelaCadastro(navController: NavHostController, modifier: Modifier = Modifier) {
 
     val nomeCompleto = remember { mutableStateOf("") }
+    val dtnasc = remember { mutableStateOf("") }
     val cpf = remember { mutableStateOf("") }
     val email = remember { mutableStateOf("") }
     val senha = remember { mutableStateOf("") }
 
     val nomeCompletoError = remember { mutableStateOf("") }
+    val dtNascError = remember { mutableStateOf("") }
     val cpfError = remember { mutableStateOf("") }
     val emailError = remember { mutableStateOf("") }
     val senhaError = remember { mutableStateOf("") }
 
     val isNomeCompletoValid = remember { mutableStateOf(true) }
+    val isDtNascValid = remember { mutableStateOf(true) }
     val isCpfValid = remember { mutableStateOf(true) }
     val isEmailValid = remember { mutableStateOf(true) }
     val isSenhaValid = remember { mutableStateOf(true) }
+
 
     Column(
         modifier = modifier.fillMaxSize(),
@@ -89,6 +92,22 @@ fun TelaCadastro(navController: NavHostController, modifier: Modifier = Modifier
                 errorMessage = nomeCompletoError.value,
                 dica = if (nomeCompletoError.value.isBlank()) "O seu nome deve conter 3 ou mais letras" else "",
                 isFieldValid = isNomeCompletoValid.value
+            )
+
+            AtributoUsuarioCadastro(
+                valor = "Data Nascimento",
+                paddingTop = 20,
+                paddingBottom = 10,
+                tamanho = 20
+            )
+            InputGetInfoCadastro(
+                valorInput = dtnasc.value,
+                exemplo = "01-01-1999",
+                onValueChange = { dtnasc.value = it },
+                isError = dtNascError.value.isNotBlank(),
+                errorMessage = dtNascError.value,
+                dica = if (dtNascError.value.isBlank()) "A data de nascimento deve ser 01-01-1999" else "",
+                isFieldValid = isSenhaValid.value
             )
 
             AtributoUsuarioCadastro(
@@ -141,6 +160,7 @@ fun TelaCadastro(navController: NavHostController, modifier: Modifier = Modifier
 
             // Exibir mensagens de erro
             if (nomeCompletoError.value.isNotBlank() ||
+                dtNascError.value.isNotBlank() ||
                 cpfError.value.isNotBlank() ||
                 emailError.value.isNotBlank() ||
                 senhaError.value.isNotBlank()
@@ -159,13 +179,15 @@ fun TelaCadastro(navController: NavHostController, modifier: Modifier = Modifier
         BotaoCadastro("Cadastre-se") {
 
             isNomeCompletoValid.value = validarNomeCompleto(nomeCompleto.value)
+            isDtNascValid.value = validarDtNasc(dtnasc.value)
             isCpfValid.value = validarCPF(cpf.value)
             isEmailValid.value = validarEmail(email.value)
             isSenhaValid.value = validarSenha(senha.value)
 
 
-            if (!isNomeCompletoValid.value || !isCpfValid.value || !isEmailValid.value || !isSenhaValid.value) {
+            if (!isNomeCompletoValid.value || !isCpfValid.value || !isEmailValid.value || !isSenhaValid.value || !isDtNascValid.value) {
                 nomeCompletoError.value = if (!isNomeCompletoValid.value) "Nome inválido" else ""
+                dtNascError.value = if (!isDtNascValid.value) "Data Nascimento inválida" else ""
                 cpfError.value = if (!isCpfValid.value) "CPF inválido" else ""
                 emailError.value = if (!isEmailValid.value) "Email inválido" else ""
                 senhaError.value = if (!isSenhaValid.value) "Senha inválida" else ""
@@ -178,6 +200,10 @@ fun TelaCadastro(navController: NavHostController, modifier: Modifier = Modifier
 
 fun validarNomeCompleto(nomeCompleto: String): Boolean {
     return nomeCompleto.isNotBlank() && nomeCompleto.length >= 3
+}
+
+fun validarDtNasc(dtNasc: String): Boolean {
+    return dtNasc.isNotBlank() && dtNasc.length == 10
 }
 
 fun validarCPF(cpf: String): Boolean {
