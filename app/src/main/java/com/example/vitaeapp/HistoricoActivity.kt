@@ -29,6 +29,7 @@ import com.example.vitaeapp.ui.theme.VitaeAppTheme
 fun TelaHistorico() {
     val listaHistorico = remember {
         mutableStateListOf(
+            Historico(id = 7, data = "2024/08/21", hora = "12:00", hemocentro = "Hospital Sei"),
             Historico(id = 6, data = "2024/08/20", hora = "12:00", hemocentro = "Hospital Teste"),
             Historico(id = 5, data = "2024/06/26", hora = "10:30", hemocentro = "Hospital Teste"),
             Historico(id = 4, data = "2024/05/14", hora = "10:00", hemocentro = "Hospital Teste"),
@@ -137,7 +138,7 @@ fun Anteriores(lista: List<Historico>) {
             style = TextStyle(fontFamily = Rowdies)
         )
         lista.forEach { item ->
-            if (hemocentro != item) {
+            if (hemocentro.id != item.id) {
                 Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Image(
@@ -161,11 +162,11 @@ fun Anteriores(lista: List<Historico>) {
                                     style = TextStyle(fontFamily = Roboto)
                                 )
                                 Text(
-                                    "Data: ${hemocentro.data} - Hora: ${hemocentro.hora}",
+                                    "Data: ${item.data} - Hora: ${item.hora}",
                                     style = TextStyle(fontFamily = Roboto)
                                 )
                                 Text(
-                                    "Hemocentro: ${hemocentro.hemocentro}",
+                                    "Hemocentro: ${item.hemocentro}",
                                     style = TextStyle(fontFamily = Roboto)
                                 )
                             }
