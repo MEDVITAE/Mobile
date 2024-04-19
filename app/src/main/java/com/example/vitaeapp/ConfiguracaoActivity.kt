@@ -24,6 +24,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -40,16 +41,28 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.example.vitaeapp.api.ApiConfiguracao
+import com.example.vitaeapp.api.RetrofitServices
+import com.example.vitaeapp.classes.Configuracao
 import com.example.vitaeapp.ui.theme.Rowdies
 import com.example.vitaeapp.ui.theme.VitaeAppTheme
+import retrofit2.Call
+import retrofit2.Response
 
 @Composable
 fun TelaDeConfiguracao(navController: NavHostController) {
+
+    // Variáveis para resposta da api, seja um sucesso, ou não
+    val erroApi = remember { mutableStateOf("") }
+    val acertoApi = remember { mutableStateOf("") }
+
+    val apiConfig = RetrofitServices.ApiConfiguracao()
+
     // Valores iniciais dos campos de entrada
     var nome = remember { mutableStateOf("") }
     var email = remember { mutableStateOf("") }
+    var token = remember { mutableStateOf("") }
     var cep = remember { mutableStateOf("") }
-    var numero = remember { mutableStateOf("") }
     var dataNasc = remember { mutableStateOf("") }
     var senha = remember { mutableStateOf("") }
 
@@ -57,21 +70,79 @@ fun TelaDeConfiguracao(navController: NavHostController) {
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+
+        // Variável criada para receber resposta da api
+        val validacao = remember {
+            mutableStateOf(
+                Configuracao("", "", "", "", "", "")
+            )
+        }
+
         AtributoUsuarioConfig("CONFIGURAÇÕES", 70, 15)
         CampoDeEntrada(label = "Nome:", valor = nome.value) { nome.value = it }
         CampoDeEntrada(label = "E-mail:", valor = email.value) { email.value = it }
-        CampoDeEntrada(label = "CEP:",valor = numero.value) { numero.value = it }
-        CampoDeEntrada(label = "Número:",valor = cep.value) { cep.value = it }
-        CampoDeEntrada(label = "Data de Nascimento:", valor = dataNasc.value) {
-            dataNasc.value = it
-        }
+        CampoDeEntrada(label = "CEP:", valor = cep.value) { cep.value = it }
+        CampoDeEntrada(label = "Data de Nascimento:", valor = dataNasc.value) { dataNasc.value = it }
         CampoDeEntrada(label = "Senha:", valor = senha.value) { senha.value = it }
+
         BotaoSalvar(valor = "Salvar") {
-            navController.navigate("Perfil")
+            // Variável para criação de objeto a ser mandado para api
+            val config =
+                Configuracao(
+                    nome = nome.value,
+                    email = email.value,
+                    token = token.value,
+                    cep = cep.value,
+                    dataNasc = dataNasc.value,
+                    senha = senha.value
+                 )
+
+            // Variável para conexão com método da api
+            val put = apiConfig.putConfig(config)
+
+            put.enqueue(object : retrofit2.Callback<Configuracao> {
+                override fun onResponse(
+                    call: Call<Configuracao>,
+                    response: Response<Configuracao>
+                ) {
+                    if (response.isSuccessful) {
+                        val config = response.body()
+                        if (config != null) {
+                            acertoApi.value = "Usuário verificado"
+                            validacao.value = Configuracao(
+                                config.nome,
+                                config.email,
+                                config.token,
+                                config.cep,
+                                config.dataNasc,
+                                config.senha,
+                            )
+                        } else {
+                            // Não foi possível achar usuário
+                            erroApi.value = "Erro ao verificar usuário"
+                        }
+                    } else {
+                        // Algo passado pode estar errado
+                        erroApi.value = "Erro na solicitação: ${response.code()}"
+                    }
+                }
+
+                override fun onFailure(call: Call<Configuracao>, t: Throwable) {
+                    // Não foi possível conectar na api
+                    erroApi.value = "Falha na solicitação: ${t.message}"
+                }
+            })
         }
-        Spacer(modifier = Modifier.height(16.dp))
+        if (erroApi.value.isNotBlank()) {
+            Text("${erroApi.value}")
+        } else if (acertoApi.value.isNotBlank()) {
+            Text("${acertoApi.value}")
+            Text("${validacao.value}")
+        }
     }
+    Spacer(modifier = Modifier.height(16.dp))
 }
+
 
 @Composable
 fun AtributoUsuarioConfig(valor: String, paddingTop: Int, paddingBottom: Int) {

@@ -1,10 +1,10 @@
-package com.example.vitaeapp
+package com.example.vitaeapp.classes
 
 data class Configuracao(
     val nome: String,
     val email: String,
+    val token: String,
     val cep: String,
-    var numero: Int,
     val dataNasc: String,
     val senha: String
 ) {

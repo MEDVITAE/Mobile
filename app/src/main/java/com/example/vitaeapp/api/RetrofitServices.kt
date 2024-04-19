@@ -1,22 +1,23 @@
 package com.example.vitaeapp.api
 
+import com.example.vitaeapp.classes.Configuracao
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitServices {
 
-    //Exemplo de acesso de funções http
+    // Exemplo de acesso de funções http, onde é necessário a adicionar
+    //o IP da sua própria máquina para rodar localmente
+    const val BASE_URL = "http://172.26.192.1:8082/"
 
-    //const val BASE_URL = "<colocar a url do back end sem endpoint>"
+    fun ApiConfiguracao(): ApiConfiguracao {
+        val config =
+            Retrofit.Builder()
+                .baseUrl(BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build()
+                .create(ApiConfiguracao::class.java)
 
-    //fun <get<nome da INTERFACE para acessar as funções>Service>(): <INTERFACE>{
-    //    val <VARIAVEL> =
-    //        Retrofit.Builder()
-    //            .baseUrl(BASE_URL)
-    //            .addConverterFactory(GsonConverterFactory.create())
-    //            .build()
-    //            .create(<INTERFACE>::class.java)
-
-    //    return <VARIAVEL>
-    //}
+        return config
+    }
 }
