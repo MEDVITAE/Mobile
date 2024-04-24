@@ -12,6 +12,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -20,24 +21,43 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.vitaeapp.api.RetrofitServices
 import com.example.vitaeapp.classes.Historico
 import com.example.vitaeapp.ui.theme.Roboto
 import com.example.vitaeapp.ui.theme.Rowdies
 import com.example.vitaeapp.ui.theme.VitaeAppTheme
+import retrofit2.Call
+import retrofit2.Response
 
 @Composable
 fun TelaHistorico() {
-    val listaHistorico = remember {
-        mutableStateListOf(
-            Historico(id = 7, data = "2024/08/21", hora = "12:00", hemocentro = "Hospital Sei"),
-            Historico(id = 6, data = "2024/08/20", hora = "12:00", hemocentro = "Hospital Teste"),
-            Historico(id = 5, data = "2024/06/26", hora = "10:30", hemocentro = "Hospital Teste"),
-            Historico(id = 4, data = "2024/05/14", hora = "10:00", hemocentro = "Hospital Teste"),
-            Historico(id = 3, data = "2024/02/27", hora = "10:30", hemocentro = "Hospital Exemplo"),
-            Historico(id = 2, data = "2023/11/01", hora = "10:00", hemocentro = "Hospital Exemplo"),
-            Historico(id = 1, data = "2023/09/06", hora = "10:30", hemocentro = "Hospital Exemplo"),
-        )
-    }
+    val listaHistorico = remember { mutableStateListOf<Historico>() }
+    val erroApi = remember { mutableStateOf("") }
+
+    val apiHistorico = RetrofitServices.getHistoricoService()
+    val get = apiHistorico.getHistorico(1)
+
+    get.enqueue(object : retrofit2.Callback<List<Historico>> {
+        override fun onResponse(call: Call<List<Historico>>, response: Response<List<Historico>>) {
+            if (response.isSuccessful) {
+                val lista = response.body()
+                if (lista != null) {
+                    listaHistorico.clear()
+                    listaHistorico.addAll(lista)
+                } else {
+                    erroApi.value = "Erro ao buscar histórico"
+                }
+            } else {
+                // Algo passado pode estar errado
+                erroApi.value = "Erro na solicitação: ${response.code()}"
+            }
+        }
+
+        override fun onFailure(call: Call<List<Historico>>, t: Throwable) {
+            // Não foi possível conectar na api
+            erroApi.value = "Falha na solicitação: ${t.message}"
+        }
+    })
 
     Column {
         Proxima(lista = listaHistorico)
@@ -47,32 +67,8 @@ fun TelaHistorico() {
 
 @Composable
 fun Proxima(lista: List<Historico>) {
-
-    var data: String = ""
-    var hora: String = ""
-    var hospital: String = ""
-
-
+    
     var hemocentro = lista.maxBy { it.id }
-
-    /*
-    val sein = remember { mutableStateOf("") }
-    lista.forEach { itemIdMaior ->
-        lista.forEach {
-            itemIdMenor ->
-            if (itemIdMaior.id > itemIdMenor.id){
-                data = itemIdMaior.data
-                hora = itemIdMaior.hora
-                hospital = itemIdMaior.hemocentro
-            }
-        }
-    }
-
-     Button(onClick = { sein.value = "um" }) {
-            Text("CRICA")
-        }
-        Text(sein.value)
-     */
 
     Column(
         Modifier.padding(30.dp, 70.dp)
@@ -122,11 +118,6 @@ fun Proxima(lista: List<Historico>) {
 
 @Composable
 fun Anteriores(lista: List<Historico>) {
-
-    var data: String = ""
-    var hora: String = ""
-    var hospital: String = ""
-
     var hemocentro = lista.maxBy { it.id }
 
     Column(

@@ -1,22 +1,21 @@
 package com.example.vitaeapp.api
 
+import com.example.vitaeapp.classes.Historico
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitServices {
 
-    //Exemplo de acesso de funções http
+    const val BASE_URL = "http://192.168.68.114:8082/"
 
-    //const val BASE_URL = "<colocar a url do back end sem endpoint>"
+    fun getHistoricoService(): ApiHistorico{
+        val cliente =
+            Retrofit.Builder()
+                .baseUrl(BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build()
+                .create(ApiHistorico::class.java)
 
-    //fun <get<nome da INTERFACE para acessar as funções>Service>(): <INTERFACE>{
-    //    val <VARIAVEL> =
-    //        Retrofit.Builder()
-    //            .baseUrl(BASE_URL)
-    //            .addConverterFactory(GsonConverterFactory.create())
-    //            .build()
-    //            .create(<INTERFACE>::class.java)
-
-    //    return <VARIAVEL>
-    //}
+        return cliente
+    }
 }
