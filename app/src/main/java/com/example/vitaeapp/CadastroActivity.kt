@@ -34,7 +34,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.example.vitaeapp.api.RetrofitServices
+import com.example.vitaeapp.classes.UsuarioCadastro
+import com.example.vitaeapp.classes.UsuarioLogin
 import com.example.vitaeapp.ui.theme.VitaeAppTheme
+import retrofit2.Call
+import retrofit2.Response
 
 @Composable
 fun TelaCadastro(navController: NavHostController, modifier: Modifier = Modifier) {
@@ -57,12 +62,23 @@ fun TelaCadastro(navController: NavHostController, modifier: Modifier = Modifier
     val isEmailValid = remember { mutableStateOf(true) }
     val isSenhaValid = remember { mutableStateOf(true) }
 
+    val erroApi = remember { mutableStateOf("") }
+    val acertoApi = remember { mutableStateOf("") }
+
+    val apiCadastro = RetrofitServices.getCadastroService()
 
     Column(
         modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+
+        val validacao = remember {
+            mutableStateOf(
+                UsuarioCadastro("", "", "", "", "")
+            )
+        }
+
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -178,23 +194,70 @@ fun TelaCadastro(navController: NavHostController, modifier: Modifier = Modifier
 
         BotaoCadastro("Cadastre-se") {
 
-            isNomeCompletoValid.value = validarNomeCompleto(nomeCompleto.value)
-            isDtNascValid.value = validarDtNasc(dtnasc.value)
-            isCpfValid.value = validarCPF(cpf.value)
-            isEmailValid.value = validarEmail(email.value)
-            isSenhaValid.value = validarSenha(senha.value)
+            val cadastroUsuario = UsuarioCadastro(
+                nome = nomeCompleto.value,
+                cpf = cpf.value,
+                email = email.value,
+                senha = senha.value,
+                role = "PACIENTE"
+            )
 
+            val post = apiCadastro.postCadastro(cadastroUsuario)
 
-            if (!isNomeCompletoValid.value || !isCpfValid.value || !isEmailValid.value || !isSenhaValid.value || !isDtNascValid.value) {
-                nomeCompletoError.value = if (!isNomeCompletoValid.value) "Nome inválido" else ""
-                dtNascError.value = if (!isDtNascValid.value) "Data Nascimento inválida" else ""
-                cpfError.value = if (!isCpfValid.value) "CPF inválido" else ""
-                emailError.value = if (!isEmailValid.value) "Email inválido" else ""
-                senhaError.value = if (!isSenhaValid.value) "Senha inválida" else ""
-            } else {
-                navController.navigate("Login")
-            }
+            post.enqueue(object : retrofit2.Callback<UsuarioCadastro> {
+                override fun onResponse(
+                    call: Call<UsuarioCadastro>,
+                    response: Response<UsuarioCadastro>
+                ) {
+                    if (response.isSuccessful) {
+                        val usuario = response.body()
+                        if (usuario != null) {
+                            acertoApi.value = "Usuario Cadastrado"
+                            validacao.value = UsuarioCadastro(
+                                usuario.nome,
+                                usuario.cpf,
+                                usuario.email,
+                                usuario.senha,
+                                usuario.role
+                            )
+                        } else {
+                            erroApi.value = "Erro ao cadastrar o usuário"
+                        }
+                    } else {
+                        erroApi.value = "Erro na solicitaaçãao: ${response.code()}"
+                    }
+                }
+
+                override fun onFailure(call: Call<UsuarioCadastro>, t: Throwable) {
+                    erroApi.value = "Falha na solicitação: ${t.message}"
+                }
+
+            })
         }
+        if (erroApi.value.isNotBlank()){
+            Text("${erroApi.value}")
+        }else if (acertoApi.value.isNotBlank()){
+            Text("${acertoApi.value}")
+            Text("${validacao.value}")
+        // navController.navigate("Login")
+        }
+//            isNomeCompletoValid.value = validarNomeCompleto(nomeCompleto.value)
+//            isDtNascValid.value = validarDtNasc(dtnasc.value)
+//            isCpfValid.value = validarCPF(cpf.value)
+//            isEmailValid.value = validarEmail(email.value)
+//            isSenhaValid.value = validarSenha(senha.value)
+//
+//
+//            if (!isNomeCompletoValid.value || !isCpfValid.value || !isEmailValid.value || !isSenhaValid.value || !isDtNascValid.value) {
+//                nomeCompletoError.value = if (!isNomeCompletoValid.value) "Nome inválido" else ""
+//                dtNascError.value = if (!isDtNascValid.value) "Data Nascimento inválida" else ""
+//                cpfError.value = if (!isCpfValid.value) "CPF inválido" else ""
+//                emailError.value = if (!isEmailValid.value) "Email inválido" else ""
+//                senhaError.value = if (!isSenhaValid.value) "Senha inválida" else ""
+//            } else {
+//                navController.navigate("Login")
+//            }
+
     }
 }
 
@@ -365,6 +428,7 @@ fun BotaoCadastro(valor:String, onClick: () -> Unit){
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreviewFromCadastro() {
+    val navController = rememberNavController()
     VitaeAppTheme {
         TelaCadastro(rememberNavController())
     }

@@ -7,16 +7,29 @@ object RetrofitServices {
 
     //Exemplo de acesso de funções http
 
-    //const val BASE_URL = "<colocar a url do back end sem endpoint>"
+    const val BASE_URL = "http://172.28.224.1:8082/"
 
-    //fun <get<nome da INTERFACE para acessar as funções>Service>(): <INTERFACE>{
-    //    val <VARIAVEL> =
-    //        Retrofit.Builder()
-    //            .baseUrl(BASE_URL)
-    //            .addConverterFactory(GsonConverterFactory.create())
-    //            .build()
-    //            .create(<INTERFACE>::class.java)
+    fun getLoginService(): ApiLogin{
+        val login =
+            Retrofit.Builder()
+                .baseUrl(BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build()
+                .create(ApiLogin::class.java)
 
-    //    return <VARIAVEL>
-    //}
+        return login
+    }
+
+    fun getCadastroService(): ApiCadastro{
+        val cadastro =
+            Retrofit.Builder()
+                .baseUrl(BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build()
+                .create(ApiCadastro::class.java)
+
+        return cadastro
+    }
+
+    //ApiCadastro
 }

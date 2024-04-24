@@ -34,7 +34,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.example.vitaeapp.api.RetrofitServices
+import com.example.vitaeapp.classes.UsuarioLogin
 import com.example.vitaeapp.ui.theme.VitaeAppTheme
+import retrofit2.Call
+import retrofit2.Response
 
 @Composable
 fun TelaLogin(navController: NavHostController, modifier: Modifier = Modifier) {
@@ -48,11 +52,23 @@ fun TelaLogin(navController: NavHostController, modifier: Modifier = Modifier) {
     val isEmailValid = remember { mutableStateOf(true) }
     val isSenhaValid = remember { mutableStateOf(true) }
 
+    val erroApi = remember { mutableStateOf("") }
+    val acertoApi = remember { mutableStateOf("") }
+
+    val apiLogin = RetrofitServices.getLoginService()
+
     Column(
         modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+
+        val validacao = remember {
+            mutableStateOf(
+                UsuarioLogin(0, "", "", "")
+            )
+        }
+
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -113,20 +129,63 @@ fun TelaLogin(navController: NavHostController, modifier: Modifier = Modifier) {
             Spacer(modifier = Modifier.height(5.dp))
 
             BotaoLogin("Entrar") {
-                // Validar os campos
-                isEmailValid.value = isEmailValid(email.value)
-                isSenhaValid.value = isPasswordValid(senha.value)
 
-                if (!isEmailValid.value || !isSenhaValid.value) {
-                    emailError.value = if (!isEmailValid.value) "Email inválido" else ""
-                    senhaError.value = if (!isSenhaValid.value) "Senha inválida" else ""
-                } else {
-                    navController.navigate("Perfil")
-                }
+                val usuario =
+                    UsuarioLogin(email = email.value, senha = senha.value)
+
+                // Variável para conexão com método da api
+                val post = apiLogin.postLogin(usuario)
+
+                post.enqueue(object : retrofit2.Callback<UsuarioLogin> {
+                    override fun onResponse(
+                        call: Call<UsuarioLogin>,
+                        response: Response<UsuarioLogin>
+                    ) {
+                        if (response.isSuccessful) {
+                            val usuario = response.body()
+                            if (usuario != null) {
+                                acertoApi.value = "Usuário verificado"
+                                validacao.value = UsuarioLogin(
+                                    usuario.Id,
+                                    usuario.nome,
+                                    usuario.token
+                                )
+                            } else {
+                                // Não foi possível achar usuário
+                                erroApi.value = "Erro ao verificar usuário"
+                            }
+                        } else {
+                            // Algo passado pode estar errado
+                            erroApi.value = "Erro na solicitação: ${response.code()}"
+                        }
+                    }
+
+                    override fun onFailure(call: Call<UsuarioLogin>, t: Throwable) {
+                        // Não foi possível conectar na api
+                        erroApi.value = "Falha na solicitação: ${t.message}"
+                    }
+                })
+            }
+            if (erroApi.value.isNotBlank()) {
+                Text("${erroApi.value}")
+            } else if (acertoApi.value.isNotBlank()) {
+                Text("${acertoApi.value}")
+                Text("${validacao.value}")
+            }
+
+                // Validar os campos
+//                isEmailValid.value = isEmailValid(email.value)
+//                isSenhaValid.value = isPasswordValid(senha.value)
+//
+//                if (!isEmailValid.value || !isSenhaValid.value) {
+//                    emailError.value = if (!isEmailValid.value) "Email inválido" else ""
+//                    senhaError.value = if (!isSenhaValid.value) "Senha inválida" else ""
+//                } else {
+//                    navController.navigate("Perfil")
+//                }
             }
         }
     }
-}
 
 @Composable
 fun AtributoUsuarioLoginBemVindo(valor: String, paddingTop: Int, paddingBottom: Int, tamanho: Int) {
