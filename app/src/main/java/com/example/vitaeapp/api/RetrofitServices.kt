@@ -7,16 +7,16 @@ object RetrofitServices {
 
     //Exemplo de acesso de funções http
 
-    //const val BASE_URL = "<colocar a url do back end sem endpoint>"
+    const val BASE_URL_RANKING = "http://10.18.32.211:8082/"
 
-    //fun <get<nome da INTERFACE para acessar as funções>Service>(): <INTERFACE>{
-    //    val <VARIAVEL> =
-    //        Retrofit.Builder()
-    //            .baseUrl(BASE_URL)
-    //            .addConverterFactory(GsonConverterFactory.create())
-    //            .build()
-    //            .create(<INTERFACE>::class.java)
+    fun getApiRanking(): ApiRanking {
+        val doador =
+            Retrofit.Builder()
+                .baseUrl(BASE_URL_RANKING)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build()
+                .create(ApiRanking::class.java)
 
-    //    return <VARIAVEL>
-    //}
+        return doador
+    }
 }
