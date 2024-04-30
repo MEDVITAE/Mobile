@@ -67,9 +67,9 @@ fun TelaAgendamento() {
         )
     }
 
-    //Horarios()
-    Calendario()
     //Hospitais(hospitais, nomeHospital)
+    Calendario()
+    //Horarios()
 }
 
 @Composable
@@ -205,7 +205,9 @@ fun CalendarioWidget(
 ) {
     Column(
         modifier = Modifier
-            .padding(16.dp)
+            .padding(top = 90.dp)
+            .fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Cabecalho(
             anoMes = yearMonth,
@@ -218,6 +220,7 @@ fun CalendarioWidget(
                 DayItem(item)
             }
         }
+        Spacer(modifier = Modifier.height(6.dp))
         Conteudo(
             datas = dates,
             onDateClick = onDateClickListener
@@ -268,6 +271,7 @@ fun Cabecalho(
 
 @Composable
 fun DayItem(day: String) {
+    Spacer(modifier = Modifier.width(5.dp))
     Box(
         modifier = Modifier
             .width(46.dp)
@@ -318,6 +322,10 @@ fun ConteudoItems(
     onClick: (CalendarioUiState.Date) -> Unit,
     modifier: Modifier
 ) {
+    Spacer(
+        modifier = Modifier
+            .width(5.dp)
+    )
     Box(
         modifier = modifier
             .background(
@@ -325,7 +333,8 @@ fun ConteudoItems(
                     colorResource(id = R.color.vermelho_rosado)
                 } else {
                     Color.White
-                }
+                },
+                shape = RoundedCornerShape(6.dp)
             )
             .clickable {
                 onClick(date)
@@ -341,7 +350,7 @@ fun ConteudoItems(
     }
     Spacer(
         modifier = Modifier
-            .width(6.dp)
+            .width(5.dp)
     )
 }
 

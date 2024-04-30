@@ -1,8 +1,8 @@
 package com.example.vitaeapp.classes
 
 data class Hospital(
-    val exemplo:String
+    val id:Int,
+    val nome:String,
+    val rua:String
 ) {
-    //CASO NECESSÁRIO CRIAR OUTRA CLASSE PARA UTILIZAR SOMENTE
-    //OS ATRIBUTOS QUE IRÁ USAR EM SUA TELA
 }

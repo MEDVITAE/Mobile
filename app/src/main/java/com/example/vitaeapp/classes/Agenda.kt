@@ -1,8 +1,11 @@
 package com.example.vitaeapp.classes
 
+import java.util.Date
+
 data class Agenda(
-    val exemplo:String
+    val idAgenda: Int,
+    val fkUsuario: Int,
+    val fkHospital: Int,
+    val horario: Date
 ) {
-    //CASO NECESSÁRIO CRIAR OUTRA CLASSE PARA UTILIZAR SOMENTE
-    //OS ATRIBUTOS QUE IRÁ USAR EM SUA TELA
 }
