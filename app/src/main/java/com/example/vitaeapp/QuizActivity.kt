@@ -27,6 +27,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -40,7 +41,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.vitaeapp.api.RetrofitServices
+import com.example.vitaeapp.classes.Quiz
+import com.example.vitaeapp.classes.Ranking
 import com.example.vitaeapp.ui.theme.VitaeAppTheme
+import retrofit2.Call
+import retrofit2.Response
+import retrofit2.http.Path
 
 @Composable
 fun TelaQuiz() {
@@ -54,6 +61,59 @@ fun Questionario() {
     val perguntas = remember { mutableStateOf(1) }
     val resposta = remember { mutableStateOf(true) }
 
+    val respostaTatuagem = remember {
+        mutableStateOf(true)
+    }
+    val respostaRelacao = remember {
+        mutableStateOf(true)
+    }
+    val respostaDesconforto = remember {
+        mutableStateOf(true)
+    }
+    val respostaMedicamento = remember {
+        mutableStateOf(true)
+    }
+    val respostaDst = remember {
+        mutableStateOf(true)
+    }
+    val respostaVacina = remember {
+        mutableStateOf(true)
+    }
+
+    val quiz = remember {
+        mutableStateOf(Quiz())
+    }
+
+    val erroApi = remember { mutableStateOf("") }
+
+    val apiQuiz = RetrofitServices.getApiQuiz()
+
+    val put = apiQuiz.put(quiz.value, perguntas.value)
+
+    put.enqueue(object : retrofit2.Callback<Quiz> {
+        // esta função é invocada caso:
+        // a chamada ao endpoint ocorra sem problemas
+        // o corpo da resposta foi convertido para o tipo indicado
+        override fun onResponse(call: Call<Quiz>, response: Response<Quiz>) {
+            if (response.isSuccessful) { // testando se a resposta não é 4xx nem 5xx
+                val lista = response.body() // recuperando o corpo da resposta
+                if (lista != null) {
+
+                }
+            } else {
+                erroApi.value = response.errorBody().toString()
+            }
+        }
+
+        // esta função é invocada caso:
+        // não seja possivel chamar a API (rede fora, por exemplo)
+        // não seja possivel converter o corpo da resposta no tipo esperado
+        override fun onFailure(call: Call<List<Quiz>>, t: Throwable) {
+            erroApi.value = t.message!!
+        }
+
+    })
+
     Column(Modifier.padding(30.dp, 70.dp)) {
         Text(
             "QUIZ DE APTIDÃO",
@@ -62,12 +122,12 @@ fun Questionario() {
         when (perguntas.value) {
             1 -> perguntaAltura()
             2 -> perguntaPeso()
-            3 -> perguntaTatuagem(perguntas, resposta)
-            4 -> perguntaRelacao(perguntas, resposta)
-            5 -> perguntaDesconforto(perguntas, resposta)
-            6 -> perguntaMedicamento(perguntas, resposta)
-            7 -> perguntaDst(perguntas, resposta)
-            8 -> perguntaVacina(perguntas, resposta)
+            3 -> perguntaTatuagem(perguntas, respostaTatuagem)
+            4 -> perguntaRelacao(perguntas, respostaRelacao)
+            5 -> perguntaDesconforto(perguntas, respostaDesconforto)
+            6 -> perguntaMedicamento(perguntas, respostaMedicamento)
+            7 -> perguntaDst(perguntas, respostaDst)
+            8 -> perguntaVacina(perguntas, respostaVacina)
         }
 
         Row(
@@ -178,6 +238,28 @@ fun BotaoVoltar(onClick: () -> Unit) {
 fun BotaoFinalizar() {
     val contexto = LocalContext.current
 
+    val quiz = remember {
+        mutableStateOf(Quiz())
+    }
+
+    if (quiz.value.altura!! < 0) {
+        println("Altura não pode ser negativa.");
+    }
+
+    if (quiz.value.peso!! < 0) {
+        println("Peso não pode ser negativo.");
+    }
+//
+//    if (quiz.value.peso.) {
+//        modalErro("Por favor, preencha todos os campos do formulário.");
+//        return;
+//    }
+//
+//    if (parseFloat(altura) <= 1 || parseFloat(altura) > 3) {
+//        modalErro("Altura inválida. Por favor, insira uma altura válida.");
+//        return;
+//    }
+
     IconButton(
         modifier = Modifier
             .width(150.dp)
@@ -266,9 +348,15 @@ fun BotaoNao(onClick: () -> Unit) {
 }
 
 @Composable
-fun perguntaAltura() {
+fun perguntaAltura(onClick: () -> Unit) {
     val altura = remember { mutableStateOf("") }
 
+    IconButton(
+        modifier = Modifier
+            .width(150.dp)
+            .height(45.dp),
+        onClick = onClick
+    ) {
     Column(
         modifier = Modifier
             .padding(0.dp, 100.dp, 0.dp, 30.dp),
@@ -294,9 +382,15 @@ fun perguntaAltura() {
 }
 
 @Composable
-fun perguntaPeso() {
+fun perguntaPeso(onClick: () -> Unit) {
     val peso = remember { mutableStateOf("") }
 
+    IconButton(
+        modifier = Modifier
+            .width(150.dp)
+            .height(45.dp),
+        onClick = onClick
+    ) {
     Column(
         modifier = Modifier
             .padding(0.dp, 100.dp, 0.dp, 30.dp),
@@ -321,7 +415,14 @@ fun perguntaPeso() {
 }
 
 @Composable
-fun perguntaTatuagem(perguntas: MutableState<Int>, resposta: MutableState<Boolean>) {
+fun perguntaTatuagem(onClick: () -> Unit, perguntas: MutableState<Int>, resposta: MutableState<Boolean>) {
+
+    IconButton(
+        modifier = Modifier
+            .width(150.dp)
+            .height(45.dp),
+        onClick = onClick
+    ) {
     Column(
         modifier = Modifier
             .padding(0.dp, 100.dp, 0.dp, 30.dp),
@@ -357,7 +458,14 @@ fun perguntaTatuagem(perguntas: MutableState<Int>, resposta: MutableState<Boolea
 }
 
 @Composable
-fun perguntaRelacao(perguntas: MutableState<Int>, resposta: MutableState<Boolean>) {
+fun perguntaRelacao(onClick: () -> Unit, perguntas: MutableState<Int>, resposta: MutableState<Boolean>) {
+
+    IconButton(
+        modifier = Modifier
+            .width(150.dp)
+            .height(45.dp),
+        onClick = onClick
+    ) {
     Column(
         modifier = Modifier
             .padding(0.dp, 100.dp, 0.dp, 30.dp),
@@ -393,7 +501,15 @@ fun perguntaRelacao(perguntas: MutableState<Int>, resposta: MutableState<Boolean
 }
 
 @Composable
-fun perguntaDesconforto(perguntas:MutableState<Int>, resposta: MutableState<Boolean>) {
+fun perguntaDesconforto(onClick: () -> Unit, perguntas:MutableState<Int>, resposta: MutableState<Boolean>) {
+
+    IconButton(
+        modifier = Modifier
+            .width(150.dp)
+            .height(45.dp),
+        onClick = onClick
+    ) {
+
     Column(
         modifier = Modifier
             .padding(0.dp, 100.dp, 0.dp, 30.dp),
@@ -429,8 +545,14 @@ fun perguntaDesconforto(perguntas:MutableState<Int>, resposta: MutableState<Bool
 }
 
 @Composable
-fun perguntaMedicamento(perguntas:MutableState<Int>, resposta: MutableState<Boolean>) {
+fun perguntaMedicamento(onClick: () -> Unit, perguntas:MutableState<Int>, resposta: MutableState<Boolean>) {
 
+    IconButton(
+        modifier = Modifier
+            .width(150.dp)
+            .height(45.dp),
+        onClick = onClick
+    ) {
     Column(
         modifier = Modifier
             .padding(0.dp, 100.dp, 0.dp, 30.dp),
@@ -466,7 +588,15 @@ fun perguntaMedicamento(perguntas:MutableState<Int>, resposta: MutableState<Bool
 }
 
 @Composable
-fun perguntaDst(perguntas:MutableState<Int>, resposta: MutableState<Boolean>) {
+fun perguntaDst(onClick: () -> Unit, perguntas:MutableState<Int>, resposta: MutableState<Boolean>) {
+
+    IconButton(
+        modifier = Modifier
+            .width(150.dp)
+            .height(45.dp),
+        onClick = onClick
+    ) {
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -503,8 +633,14 @@ fun perguntaDst(perguntas:MutableState<Int>, resposta: MutableState<Boolean>) {
 }
 
 @Composable
-fun perguntaVacina(perguntas:MutableState<Int>, resposta: MutableState<Boolean>) {
+fun perguntaVacina(onClick: () -> Unit, perguntas:MutableState<Int>, resposta: MutableState<Boolean>) {
 
+    IconButton(
+        modifier = Modifier
+            .width(150.dp)
+            .height(45.dp),
+        onClick = onClick
+    ) {
     Column(
         modifier = Modifier
             .padding(0.dp, 100.dp, 0.dp, 30.dp),
