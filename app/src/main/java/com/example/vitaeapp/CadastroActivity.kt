@@ -1,5 +1,7 @@
 package com.example.vitaeapp
 
+import android.content.Context
+import android.content.SharedPreferences
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -21,6 +23,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -35,6 +38,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.vitaeapp.api.RetrofitServices
+import com.example.vitaeapp.classes.Caracteristicas
 import com.example.vitaeapp.classes.UsuarioCadastro
 import com.example.vitaeapp.classes.UsuarioLogin
 import com.example.vitaeapp.ui.theme.VitaeAppTheme
@@ -45,19 +49,23 @@ import retrofit2.Response
 fun TelaCadastro(navController: NavHostController, modifier: Modifier = Modifier) {
 
     val nomeCompleto = remember { mutableStateOf("") }
-    val dtnasc = remember { mutableStateOf("") }
+    val nascimento = remember { mutableStateOf("") }
     val cpf = remember { mutableStateOf("") }
     val email = remember { mutableStateOf("") }
     val senha = remember { mutableStateOf("") }
+    val token = remember {
+        mutableStateOf("")
+
+    }
 
     val nomeCompletoError = remember { mutableStateOf("") }
-    val dtNascError = remember { mutableStateOf("") }
+    val nascimentoError = remember { mutableStateOf("") }
     val cpfError = remember { mutableStateOf("") }
     val emailError = remember { mutableStateOf("") }
     val senhaError = remember { mutableStateOf("") }
 
     val isNomeCompletoValid = remember { mutableStateOf(true) }
-    val isDtNascValid = remember { mutableStateOf(true) }
+    val isNascimentoValid = remember { mutableStateOf(true) }
     val isCpfValid = remember { mutableStateOf(true) }
     val isEmailValid = remember { mutableStateOf(true) }
     val isSenhaValid = remember { mutableStateOf(true) }
@@ -65,17 +73,26 @@ fun TelaCadastro(navController: NavHostController, modifier: Modifier = Modifier
     val erroApi = remember { mutableStateOf("") }
     val acertoApi = remember { mutableStateOf("") }
 
-    val apiCadastro = RetrofitServices.getCadastroService()
-
     Column(
         modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-        val validacao = remember {
+        val validacaoCadastro = remember {
             mutableStateOf(
-                UsuarioCadastro("", "", "", "", "")
+                UsuarioCadastro("", "", "", "", ""),
+            )
+        }
+        val validacaoCaracteristicas = remember {
+            mutableStateOf(
+                Caracteristicas("", "", false, "", "", false,0)
+            )
+        }
+
+        val validacaoUsuario = remember {
+            mutableStateOf(
+                UsuarioLogin(0, "", "", "")
             )
         }
 
@@ -117,12 +134,12 @@ fun TelaCadastro(navController: NavHostController, modifier: Modifier = Modifier
                 tamanho = 20
             )
             InputGetInfoCadastro(
-                valorInput = dtnasc.value,
+                valorInput = nascimento.value,
                 exemplo = "01-01-1999",
-                onValueChange = { dtnasc.value = it },
-                isError = dtNascError.value.isNotBlank(),
-                errorMessage = dtNascError.value,
-                dica = if (dtNascError.value.isBlank()) "A data de nascimento deve ser 01-01-1999" else "",
+                onValueChange = { nascimento.value = it },
+                isError = nascimentoError.value.isNotBlank(),
+                errorMessage = nascimentoError.value,
+                dica = if (nascimentoError.value.isBlank()) "A data de nascimento deve ser 01-01-1999" else "",
                 isFieldValid = isSenhaValid.value
             )
 
@@ -176,7 +193,7 @@ fun TelaCadastro(navController: NavHostController, modifier: Modifier = Modifier
 
             // Exibir mensagens de erro
             if (nomeCompletoError.value.isNotBlank() ||
-                dtNascError.value.isNotBlank() ||
+                nascimentoError.value.isNotBlank() ||
                 cpfError.value.isNotBlank() ||
                 emailError.value.isNotBlank() ||
                 senhaError.value.isNotBlank()
@@ -193,7 +210,6 @@ fun TelaCadastro(navController: NavHostController, modifier: Modifier = Modifier
         }
 
         BotaoCadastro("Cadastre-se") {
-
             val cadastroUsuario = UsuarioCadastro(
                 nome = nomeCompleto.value,
                 cpf = cpf.value,
@@ -202,63 +218,113 @@ fun TelaCadastro(navController: NavHostController, modifier: Modifier = Modifier
                 role = "PACIENTE"
             )
 
-            val post = apiCadastro.postCadastro(cadastroUsuario)
-
-            post.enqueue(object : retrofit2.Callback<UsuarioCadastro> {
-                override fun onResponse(
-                    call: Call<UsuarioCadastro>,
-                    response: Response<UsuarioCadastro>
-                ) {
-                    if (response.isSuccessful) {
-                        val usuario = response.body()
-                        if (usuario != null) {
-                            acertoApi.value = "Usuario Cadastrado"
-                            validacao.value = UsuarioCadastro(
-                                usuario.nome,
-                                usuario.cpf,
-                                usuario.email,
-                                usuario.senha,
-                                usuario.role
-                            )
-                        } else {
-                            erroApi.value = "Erro ao cadastrar o usuário"
-                        }
-                    } else {
-                        erroApi.value = "Erro na solicitaaçãao: ${response.code()}"
-                    }
-                }
-
-                override fun onFailure(call: Call<UsuarioCadastro>, t: Throwable) {
-                    erroApi.value = "Falha na solicitação: ${t.message}"
-                }
-
-            })
+            val caracteristicas = Caracteristicas(
+                peso = "",
+                altura = null,
+                tatto = false,
+                sexo = null,
+                nascimento = nascimento.value,
+                apto = false
+            )
+            cadastrarUser(cadastroUsuario, caracteristicas, acertoApi, erroApi)
         }
-        if (erroApi.value.isNotBlank()){
+
+        if (erroApi.value.isNotBlank()) {
             Text("${erroApi.value}")
-        }else if (acertoApi.value.isNotBlank()){
+        } else if (acertoApi.value.isNotBlank()) {
             Text("${acertoApi.value}")
-            Text("${validacao.value}")
-        // navController.navigate("Login")
+            Text("${validacaoCadastro.value}")
+            Text("${validacaoCaracteristicas.value}")
         }
-//            isNomeCompletoValid.value = validarNomeCompleto(nomeCompleto.value)
-//            isDtNascValid.value = validarDtNasc(dtnasc.value)
-//            isCpfValid.value = validarCPF(cpf.value)
-//            isEmailValid.value = validarEmail(email.value)
-//            isSenhaValid.value = validarSenha(senha.value)
-//
-//
-//            if (!isNomeCompletoValid.value || !isCpfValid.value || !isEmailValid.value || !isSenhaValid.value || !isDtNascValid.value) {
-//                nomeCompletoError.value = if (!isNomeCompletoValid.value) "Nome inválido" else ""
-//                dtNascError.value = if (!isDtNascValid.value) "Data Nascimento inválida" else ""
-//                cpfError.value = if (!isCpfValid.value) "CPF inválido" else ""
-//                emailError.value = if (!isEmailValid.value) "Email inválido" else ""
-//                senhaError.value = if (!isSenhaValid.value) "Senha inválida" else ""
-//            } else {
-//                navController.navigate("Login")
-//            }
-
     }
+}
+
+fun cadastrarUser(
+    cadastro: UsuarioCadastro,
+    caracteristicas: Caracteristicas,
+    acertoApi: MutableState<String>,
+    erroApi: MutableState<String>,
+) {
+    val apiCadastro = RetrofitServices.getCadastroService()
+
+    val postCad = apiCadastro.postCadastro(cadastro)
+    postCad.enqueue(object : retrofit2.Callback<UsuarioCadastro> {
+        override fun onResponse(call: Call<UsuarioCadastro>, response: Response<UsuarioCadastro>) {
+            if (response.isSuccessful) {
+                val usuario = response.body()
+                if (usuario != null) {
+                    acertoApi.value = "Usuário Cadastrado"
+                    val tokenUsuario = UsuarioLogin(
+                        email = cadastro.email,
+                        senha = cadastro.senha
+                    )
+
+                    resgateToken(tokenUsuario, caracteristicas, acertoApi, erroApi)
+                } else {
+                    erroApi.value = "Erro ao cadastrar o usuário"
+                }
+            } else {
+                erroApi.value = "Erro na solicitação cadastro: ${response.code()}"
+            }
+        }
+
+        override fun onFailure(call: Call<UsuarioCadastro>, t: Throwable) {
+            erroApi.value = "Falha na solicitação: ${t.message}"
+        }
+    })
+}
+
+fun resgateToken(
+    login: UsuarioLogin,
+    caracteristicas: Caracteristicas,
+    acertoApi: MutableState<String>,
+    erroApi: MutableState<String>
+) {
+    val apiLogin = RetrofitServices.getLoginService()
+    val postLogin = apiLogin.postLogin(login)
+    postLogin.enqueue(object : retrofit2.Callback<UsuarioLogin> {
+        override fun onResponse(call: Call<UsuarioLogin>, response: Response<UsuarioLogin>) {
+            if (response.isSuccessful) {
+                val usuario = response.body()
+                if (usuario != null) {
+                    acertoApi.value = "Usuário verificado"
+                    caracteristicas.fkUsuario = usuario.Id
+                        usuario.token?.let { cadastrarCaract(caracteristicas, acertoApi, erroApi, it) }
+                } else {
+                    erroApi.value = "Erro ao verificar usuário"
+                }
+            } else {
+                erroApi.value = "Erro na solicitação Login: ${response.code()}"
+            }
+        }
+
+        override fun onFailure(call: Call<UsuarioLogin>, t: Throwable) {
+            erroApi.value = "Falha na solicitação: ${t.message}"
+        }
+    })
+}
+
+fun cadastrarCaract(
+    caracteristicas: Caracteristicas,
+    acertoApi: MutableState<String>,
+    erroApi: MutableState<String>,
+    token: String
+) {
+    val apiCaracteristicas = RetrofitServices.getCaracteristicasService()
+    val postCarac = apiCaracteristicas.postCaracteristicas(token, caracteristicas)
+    postCarac.enqueue(object : retrofit2.Callback<Caracteristicas> {
+        override fun onResponse(call: Call<Caracteristicas>, response: Response<Caracteristicas>) {
+            if (response.isSuccessful) {
+                acertoApi.value = "Características cadastradas"
+            } else {
+                erroApi.value = "Erro ao cadastrar as características: ${response.code()}"
+            }
+        }
+
+        override fun onFailure(call: Call<Caracteristicas>, t: Throwable) {
+            erroApi.value = "Falha na solicitação: ${t.message}"
+        }
+    })
 }
 
 fun validarNomeCompleto(nomeCompleto: String): Boolean {
@@ -282,7 +348,12 @@ fun validarSenha(senha: String): Boolean {
 }
 
 @Composable
-fun AtributoUsuarioCadastroBemVindo(valor: String, paddingTop: Int, paddingBottom: Int,tamanho:Int) {
+fun AtributoUsuarioCadastroBemVindo(
+    valor: String,
+    paddingTop: Int,
+    paddingBottom: Int,
+    tamanho: Int
+) {
     Column {
         Text(
             valor,
@@ -299,7 +370,7 @@ fun AtributoUsuarioCadastroBemVindo(valor: String, paddingTop: Int, paddingBotto
 }
 
 @Composable
-fun AtributoUsuarioCadastro(valor: String, paddingTop: Int, paddingBottom: Int,tamanho:Int) {
+fun AtributoUsuarioCadastro(valor: String, paddingTop: Int, paddingBottom: Int, tamanho: Int) {
     Column {
         Text(
             valor,
@@ -377,12 +448,13 @@ fun InputGetInfoCadastro(
 
 
 @Composable
-fun BotaoCadastro(valor:String, onClick: () -> Unit){
-    Box(  modifier = Modifier
-        .fillMaxWidth()
-        .height(120.dp)
-        .padding(top = 10.dp)
-        .background(Color.Transparent, shape = RoundedCornerShape(16.dp)),
+fun BotaoCadastro(valor: String, onClick: () -> Unit) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(120.dp)
+            .padding(top = 10.dp)
+            .background(Color.Transparent, shape = RoundedCornerShape(16.dp)),
         contentAlignment = Alignment.Center,
 
         ) {

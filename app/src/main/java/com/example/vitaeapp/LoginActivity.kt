@@ -1,5 +1,7 @@
 package com.example.vitaeapp
 
+import android.content.Context
+import android.content.SharedPreferences
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -26,6 +28,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -42,6 +45,7 @@ import retrofit2.Response
 
 @Composable
 fun TelaLogin(navController: NavHostController, modifier: Modifier = Modifier) {
+    val context = LocalContext.current
 
     val email = remember { mutableStateOf("") }
     val senha = remember { mutableStateOf("") }
@@ -130,6 +134,8 @@ fun TelaLogin(navController: NavHostController, modifier: Modifier = Modifier) {
 
             BotaoLogin("Entrar") {
 
+                val sharedPreferences: SharedPreferences = context.getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+
                 val usuario =
                     UsuarioLogin(email = email.value, senha = senha.value)
 
@@ -150,6 +156,7 @@ fun TelaLogin(navController: NavHostController, modifier: Modifier = Modifier) {
                                     usuario.nome,
                                     usuario.token
                                 )
+
                             } else {
                                 // Não foi possível achar usuário
                                 erroApi.value = "Erro ao verificar usuário"
@@ -171,6 +178,8 @@ fun TelaLogin(navController: NavHostController, modifier: Modifier = Modifier) {
             } else if (acertoApi.value.isNotBlank()) {
                 Text("${acertoApi.value}")
                 Text("${validacao.value}")
+                navController.navigate("Perfil")
+
             }
 
                 // Validar os campos

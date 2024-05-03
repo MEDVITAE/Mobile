@@ -6,9 +6,6 @@ data class UsuarioCadastro (
     val cpf: String? = null,
     val email: String? = null,
     val senha: String? = null,
-    val role: String,
-    // passar caracteristicas
-){
-    //CASO NECESSÁRIO CRIAR OUTRA CLASSE PARA UTILIZAR SOMENTE
-    //OS ATRIBUTOS QUE IRÁ USAR EM SUA TELA
-}
+    val role: String
+
+)

@@ -7,7 +7,4 @@ data class UsuarioLogin (
     val token: String? = null,
     val email: String? = null,
     val senha: String? = null,
-    ){
-    //CASO NECESSÁRIO CRIAR OUTRA CLASSE PARA UTILIZAR SOMENTE
-    //OS ATRIBUTOS QUE IRÁ USAR EM SUA TELA
-}
+    ){}
