@@ -1,19 +1,12 @@
 package com.example.vitaeapp
 
-import android.content.Intent
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -21,19 +14,15 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -43,76 +32,44 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.vitaeapp.api.RetrofitServices
 import com.example.vitaeapp.classes.Quiz
-import com.example.vitaeapp.classes.Ranking
 import com.example.vitaeapp.ui.theme.VitaeAppTheme
-import retrofit2.Call
 import retrofit2.Response
-import retrofit2.http.Path
 
 @Composable
 fun TelaQuiz() {
+    val perguntas = remember { mutableStateOf(1) }
+    val altura = remember { mutableStateOf("") }
+    val peso = remember { mutableStateOf("") }
+    val perguntaTatuagem = remember { mutableStateOf(false) }
+    val perguntaRelacao = remember { mutableStateOf(false) }
+    val perguntaDesconforto = remember { mutableStateOf(false) }
+    val perguntaMedicamento = remember { mutableStateOf(false) }
+    val perguntaDst = remember { mutableStateOf(false) }
+    val perguntaVacina = remember { mutableStateOf(false) }
+    val apto = remember { mutableStateOf(false) }
+
     Column {
-        Questionario()
+        Questionario(
+            perguntas, altura, peso, perguntaTatuagem,
+            perguntaRelacao, perguntaDesconforto, perguntaMedicamento,
+            perguntaDst, perguntaVacina, apto
+        )
     }
 }
 
 @Composable
-fun Questionario() {
-    val perguntas = remember { mutableStateOf(1) }
-    val resposta = remember { mutableStateOf(true) }
-
-    val respostaTatuagem = remember {
-        mutableStateOf(true)
-    }
-    val respostaRelacao = remember {
-        mutableStateOf(true)
-    }
-    val respostaDesconforto = remember {
-        mutableStateOf(true)
-    }
-    val respostaMedicamento = remember {
-        mutableStateOf(true)
-    }
-    val respostaDst = remember {
-        mutableStateOf(true)
-    }
-    val respostaVacina = remember {
-        mutableStateOf(true)
-    }
-
-    val quiz = remember {
-        mutableStateOf(Quiz())
-    }
-
-    val erroApi = remember { mutableStateOf("") }
-
-    val apiQuiz = RetrofitServices.getApiQuiz()
-
-    val put = apiQuiz.put(quiz.value, perguntas.value)
-
-    put.enqueue(object : retrofit2.Callback<Quiz> {
-        // esta função é invocada caso:
-        // a chamada ao endpoint ocorra sem problemas
-        // o corpo da resposta foi convertido para o tipo indicado
-        override fun onResponse(call: Call<Quiz>, response: Response<Quiz>) {
-            if (response.isSuccessful) { // testando se a resposta não é 4xx nem 5xx
-                val lista = response.body() // recuperando o corpo da resposta
-                if (lista != null) {
-
-                }
-            } else {
-                erroApi.value = response.errorBody().toString()
-            }
-        }
-
-        // esta função é invocada caso:
-        // não seja possivel chamar a API (rede fora, por exemplo)
-        // não seja possivel converter o corpo da resposta no tipo esperado
-        override fun onFailure(call: Call<List<Quiz>>, t: Throwable) {
-            erroApi.value = t.message!!
-        }
-
-    })
+fun Questionario(
+    perguntas: MutableState<Int>,
+    altura: MutableState<String>,
+    peso: MutableState<String>,
+    perguntaTatuagem: MutableState<Boolean>,
+    perguntaRelacao: MutableState<Boolean>,
+    perguntaDesconforto: MutableState<Boolean>,
+    perguntaMedicamento: MutableState<Boolean>,
+    perguntaDst: MutableState<Boolean>,
+    perguntaVacina: MutableState<Boolean>,
+    apto: MutableState<Boolean>
+) {
 
     Column(Modifier.padding(30.dp, 70.dp)) {
         Text(
@@ -120,14 +77,14 @@ fun Questionario() {
             style = TextStyle(fontFamily = fontFamilyRowdiesBold),
         )
         when (perguntas.value) {
-            1 -> perguntaAltura()
-            2 -> perguntaPeso()
-            3 -> perguntaTatuagem(perguntas, respostaTatuagem)
-            4 -> perguntaRelacao(perguntas, respostaRelacao)
-            5 -> perguntaDesconforto(perguntas, respostaDesconforto)
-            6 -> perguntaMedicamento(perguntas, respostaMedicamento)
-            7 -> perguntaDst(perguntas, respostaDst)
-            8 -> perguntaVacina(perguntas, respostaVacina)
+            1 -> perguntaAltura(pergunta = altura)
+            2 -> perguntaPeso(pergunta = peso)
+            3 -> perguntaTatuagem(perguntas = perguntas, valorPergunta = perguntaTatuagem)
+            4 -> perguntaRelacao(perguntas = perguntas, valorPergunta = perguntaRelacao)
+            5 -> perguntaDesconforto(perguntas = perguntas, valorPergunta = perguntaDesconforto)
+            6 -> perguntaMedicamento(perguntas = perguntas, valorPergunta = perguntaMedicamento)
+            7 -> perguntaDst(perguntas = perguntas, valorPergunta = perguntaDst)
+            8 -> perguntaVacina(perguntas = perguntas, valorPergunta = perguntaVacina)
         }
 
         Row(
@@ -140,16 +97,19 @@ fun Questionario() {
                 BotaoVoltar(onClick = { perguntas.value-- })
             }
 
-            if (perguntas.value === 2 || perguntas.value === 8) {
+            if (perguntas.value == 2 || perguntas.value == 8) {
                 Spacer(modifier = Modifier.width(20.dp))
             }
 
-            if (perguntas.value < 3) {
+            if (perguntas.value < 8) {
                 BotaoAvancar(onClick = { perguntas.value++ })
             }
 
-            if (perguntas.value === 8) {
-                BotaoFinalizar()
+            if (perguntas.value == 9) {
+                BotaoFinalizar(
+                    perguntaTatuagem, perguntaRelacao, perguntaDesconforto, perguntaMedicamento,
+                    perguntaDst, perguntaVacina, apto, altura, peso
+                )
             }
         }
     }
@@ -194,6 +154,7 @@ fun BotaoAvancar(onClick: () -> Unit) {
     }
 }
 
+
 @Composable
 fun BotaoVoltar(onClick: () -> Unit) {
 
@@ -235,36 +196,28 @@ fun BotaoVoltar(onClick: () -> Unit) {
 }
 
 @Composable
-fun BotaoFinalizar() {
-    val contexto = LocalContext.current
-
-    val quiz = remember {
-        mutableStateOf(Quiz())
-    }
-
-    if (quiz.value.altura!! < 0) {
-        println("Altura não pode ser negativa.");
-    }
-
-    if (quiz.value.peso!! < 0) {
-        println("Peso não pode ser negativo.");
-    }
-//
-//    if (quiz.value.peso.) {
-//        modalErro("Por favor, preencha todos os campos do formulário.");
-//        return;
-//    }
-//
-//    if (parseFloat(altura) <= 1 || parseFloat(altura) > 3) {
-//        modalErro("Altura inválida. Por favor, insira uma altura válida.");
-//        return;
-//    }
+fun BotaoFinalizar(
+    perguntaTatuagem: MutableState<Boolean>,
+    perguntaRelacao: MutableState<Boolean>,
+    perguntaDesconforto: MutableState<Boolean>,
+    perguntaMedicamento: MutableState<Boolean>,
+    perguntaDst: MutableState<Boolean>,
+    perguntaVacina: MutableState<Boolean>,
+    apto: MutableState<Boolean>,
+    altura: MutableState<String>,
+    peso: MutableState<String>
+) {
 
     IconButton(
         modifier = Modifier
             .width(150.dp)
             .height(45.dp),
         onClick = {
+            validarFuncoes(
+                perguntaTatuagem,
+                perguntaRelacao, perguntaDesconforto, perguntaMedicamento,
+                perguntaDst, perguntaVacina, apto
+            )
         }
     ) {
         Row(
@@ -348,15 +301,8 @@ fun BotaoNao(onClick: () -> Unit) {
 }
 
 @Composable
-fun perguntaAltura(onClick: () -> Unit) {
-    val altura = remember { mutableStateOf("") }
+fun perguntaAltura(pergunta: MutableState<String>) {
 
-    IconButton(
-        modifier = Modifier
-            .width(150.dp)
-            .height(45.dp),
-        onClick = onClick
-    ) {
     Column(
         modifier = Modifier
             .padding(0.dp, 100.dp, 0.dp, 30.dp),
@@ -369,11 +315,10 @@ fun perguntaAltura(onClick: () -> Unit) {
             style = TextStyle(fontFamily = fontFamilyRowdies, fontSize = 20.sp)
         )
         TextField(
-            value = altura.value,
-            onValueChange = { altura.value = it },
+            value = pergunta.value,
+            onValueChange = { pergunta.value = it },
             singleLine = true, // Define o TextField como uma única linha
-            modifier = Modifier
-                .fillMaxWidth()
+            modifier = Modifier.fillMaxWidth()
         )
         Row {
             Text("1/8")
@@ -382,15 +327,8 @@ fun perguntaAltura(onClick: () -> Unit) {
 }
 
 @Composable
-fun perguntaPeso(onClick: () -> Unit) {
-    val peso = remember { mutableStateOf("") }
+fun perguntaPeso(pergunta: MutableState<String>) {
 
-    IconButton(
-        modifier = Modifier
-            .width(150.dp)
-            .height(45.dp),
-        onClick = onClick
-    ) {
     Column(
         modifier = Modifier
             .padding(0.dp, 100.dp, 0.dp, 30.dp),
@@ -403,8 +341,8 @@ fun perguntaPeso(onClick: () -> Unit) {
             style = TextStyle(fontFamily = fontFamilyRowdies, fontSize = 20.sp)
         )
         TextField(
-            value = peso.value,
-            onValueChange = { peso.value = it },
+            value = pergunta.value,
+            onValueChange = { pergunta.value = it },
             singleLine = true, // Define o TextField como uma única linha
             modifier = Modifier.fillMaxWidth()
         )
@@ -415,14 +353,7 @@ fun perguntaPeso(onClick: () -> Unit) {
 }
 
 @Composable
-fun perguntaTatuagem(onClick: () -> Unit, perguntas: MutableState<Int>, resposta: MutableState<Boolean>) {
-
-    IconButton(
-        modifier = Modifier
-            .width(150.dp)
-            .height(45.dp),
-        onClick = onClick
-    ) {
+fun perguntaTatuagem(perguntas: MutableState<Int>, valorPergunta: MutableState<Boolean>) {
     Column(
         modifier = Modifier
             .padding(0.dp, 100.dp, 0.dp, 30.dp),
@@ -443,11 +374,11 @@ fun perguntaTatuagem(onClick: () -> Unit, perguntas: MutableState<Int>, resposta
                 .padding(0.dp, 5.dp, 0.dp, 20.dp)
         ) {
             BotaoSim(onClick = {
-                resposta.value = true
+                valorPergunta.value = true
                 perguntas.value++
             })
             BotaoNao(onClick = {
-                resposta.value = true
+                valorPergunta.value = false
                 perguntas.value++
             })
         }
@@ -458,14 +389,7 @@ fun perguntaTatuagem(onClick: () -> Unit, perguntas: MutableState<Int>, resposta
 }
 
 @Composable
-fun perguntaRelacao(onClick: () -> Unit, perguntas: MutableState<Int>, resposta: MutableState<Boolean>) {
-
-    IconButton(
-        modifier = Modifier
-            .width(150.dp)
-            .height(45.dp),
-        onClick = onClick
-    ) {
+fun perguntaRelacao(perguntas: MutableState<Int>, valorPergunta: MutableState<Boolean>) {
     Column(
         modifier = Modifier
             .padding(0.dp, 100.dp, 0.dp, 30.dp),
@@ -486,11 +410,11 @@ fun perguntaRelacao(onClick: () -> Unit, perguntas: MutableState<Int>, resposta:
                 .padding(0.dp, 5.dp, 0.dp, 20.dp)
         ) {
             BotaoSim(onClick = {
-                resposta.value = true
+                valorPergunta.value = true
                 perguntas.value++
             })
             BotaoNao(onClick = {
-                resposta.value = true
+                valorPergunta.value = false
                 perguntas.value++
             })
         }
@@ -501,15 +425,7 @@ fun perguntaRelacao(onClick: () -> Unit, perguntas: MutableState<Int>, resposta:
 }
 
 @Composable
-fun perguntaDesconforto(onClick: () -> Unit, perguntas:MutableState<Int>, resposta: MutableState<Boolean>) {
-
-    IconButton(
-        modifier = Modifier
-            .width(150.dp)
-            .height(45.dp),
-        onClick = onClick
-    ) {
-
+fun perguntaDesconforto(perguntas: MutableState<Int>, valorPergunta: MutableState<Boolean>) {
     Column(
         modifier = Modifier
             .padding(0.dp, 100.dp, 0.dp, 30.dp),
@@ -530,11 +446,11 @@ fun perguntaDesconforto(onClick: () -> Unit, perguntas:MutableState<Int>, respos
                 .padding(0.dp, 5.dp, 0.dp, 20.dp)
         ) {
             BotaoSim(onClick = {
-                resposta.value = true
+                valorPergunta.value = true
                 perguntas.value++
             })
             BotaoNao(onClick = {
-                resposta.value = true
+                valorPergunta.value = false
                 perguntas.value++
             })
         }
@@ -545,14 +461,7 @@ fun perguntaDesconforto(onClick: () -> Unit, perguntas:MutableState<Int>, respos
 }
 
 @Composable
-fun perguntaMedicamento(onClick: () -> Unit, perguntas:MutableState<Int>, resposta: MutableState<Boolean>) {
-
-    IconButton(
-        modifier = Modifier
-            .width(150.dp)
-            .height(45.dp),
-        onClick = onClick
-    ) {
+fun perguntaMedicamento(perguntas: MutableState<Int>, valorPergunta: MutableState<Boolean>) {
     Column(
         modifier = Modifier
             .padding(0.dp, 100.dp, 0.dp, 30.dp),
@@ -573,11 +482,11 @@ fun perguntaMedicamento(onClick: () -> Unit, perguntas:MutableState<Int>, respos
                 .padding(0.dp, 5.dp, 0.dp, 20.dp)
         ) {
             BotaoSim(onClick = {
-                resposta.value = true
+                valorPergunta.value = true
                 perguntas.value++
             })
             BotaoNao(onClick = {
-                resposta.value = true
+                valorPergunta.value = false
                 perguntas.value++
             })
         }
@@ -588,15 +497,7 @@ fun perguntaMedicamento(onClick: () -> Unit, perguntas:MutableState<Int>, respos
 }
 
 @Composable
-fun perguntaDst(onClick: () -> Unit, perguntas:MutableState<Int>, resposta: MutableState<Boolean>) {
-
-    IconButton(
-        modifier = Modifier
-            .width(150.dp)
-            .height(45.dp),
-        onClick = onClick
-    ) {
-
+fun perguntaDst(perguntas: MutableState<Int>, valorPergunta: MutableState<Boolean>) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -618,11 +519,11 @@ fun perguntaDst(onClick: () -> Unit, perguntas:MutableState<Int>, resposta: Muta
                 .padding(0.dp, 5.dp, 0.dp, 20.dp)
         ) {
             BotaoSim(onClick = {
-                resposta.value = true
+                valorPergunta.value = true
                 perguntas.value++
             })
             BotaoNao(onClick = {
-                resposta.value = true
+                valorPergunta.value = false
                 perguntas.value++
             })
         }
@@ -633,21 +534,14 @@ fun perguntaDst(onClick: () -> Unit, perguntas:MutableState<Int>, resposta: Muta
 }
 
 @Composable
-fun perguntaVacina(onClick: () -> Unit, perguntas:MutableState<Int>, resposta: MutableState<Boolean>) {
-
-    IconButton(
-        modifier = Modifier
-            .width(150.dp)
-            .height(45.dp),
-        onClick = onClick
-    ) {
+fun perguntaVacina(perguntas: MutableState<Int>, valorPergunta: MutableState<Boolean>) {
     Column(
         modifier = Modifier
             .padding(0.dp, 100.dp, 0.dp, 30.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            "Tomou alguma vacina contra a COVID-19 recentimente?",
+            "Tomou alguma vacina contra a COVID-19 recentemente?",
             modifier = Modifier
                 .padding(0.dp, 0.dp, 0.dp, 20.dp),
             style = TextStyle(
@@ -661,11 +555,11 @@ fun perguntaVacina(onClick: () -> Unit, perguntas:MutableState<Int>, resposta: M
                 .padding(0.dp, 5.dp, 0.dp, 20.dp)
         ) {
             BotaoSim(onClick = {
-                resposta.value = true
+                valorPergunta.value = true
                 perguntas.value++
             })
             BotaoNao(onClick = {
-                resposta.value = true
+                valorPergunta.value = false
                 perguntas.value++
             })
         }
@@ -673,6 +567,85 @@ fun perguntaVacina(onClick: () -> Unit, perguntas:MutableState<Int>, resposta: M
             Text("8/8")
         }
     }
+}
+
+fun validarFuncoes(
+    perguntaTatuagem: MutableState<Boolean>,
+    perguntaRelacao: MutableState<Boolean>,
+    perguntaDesconforto: MutableState<Boolean>,
+    perguntaMedicamento: MutableState<Boolean>,
+    perguntaDst: MutableState<Boolean>,
+    perguntaVacina: MutableState<Boolean>,
+    apto: MutableState<Boolean>
+) {
+    if (perguntaTatuagem.value || perguntaRelacao.value || perguntaDesconforto.value ||
+        perguntaMedicamento.value || perguntaDst.value || perguntaVacina.value
+    ) {
+        conectarBanco(false)
+    }
+    else {
+        conectarBanco(true)
+    }
+}
+
+fun validarAlturaPeso(
+    altura: MutableState<String>,
+    peso: MutableState<String>,
+) {
+    // Verifica se a altura é um número válido
+    val alturaFloat = altura.value.toFloatOrNull()
+    if (alturaFloat == null || alturaFloat <= 0 || alturaFloat > 3) {
+        println("Altura Inválida")
+    }
+
+    // Verifica se o peso é um número válido
+    val pesoFloat = peso.value.toFloatOrNull()
+    if (pesoFloat == null || pesoFloat < 0) {
+        println("Peso Inválido")
+    }
+
+    // Verifica se os campos estão vazios
+    val camposVazios = altura.value.isEmpty() || peso.value.isEmpty()
+    if (camposVazios) {
+        println("Preencha os campos, por favor")
+    }
+}
+
+
+fun conectarBanco(validarFuncoes: Boolean) {
+
+    var erroApi = ""
+
+    val apiQuiz = RetrofitServices.getApiQuiz()
+
+    val quiz = Quiz(altura = null, peso = null, validarFuncoes)
+
+    val put = apiQuiz.put(quiz, 55, "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ2aXRhZS1zZXJ2aWNvcyIsInN1YiI6ImFtYXJlbG9AZ21haWwuY29tIiwiZXhwIjoxNzE0NjgxMzUwfQ.Q9v_uJYd1_e_78yML1suC779pnjYLEDG9mBxQFUFFFs")
+
+    put.enqueue(object : retrofit2.Callback<Quiz> {
+        // esta função é invocada caso:
+        // a chamada ao endpoint ocorra sem problemas
+        // o corpo da resposta foi convertido para o tipo indicado
+        override fun onResponse(call: retrofit2.Call<Quiz>, response: Response<Quiz>) {
+            if (response.isSuccessful) { // testando se a resposta não é 4xx nem 5xx
+                val lista = response.body() // recuperando o corpo da resposta
+                if (lista != null) {
+                    println("Ok")
+                }
+            } else {
+                erroApi = response.errorBody().toString()
+            }
+        }
+
+        // esta função é invocada caso:
+        // não seja possivel chamar a API (rede fora, por exemplo)
+        // não seja possivel converter o corpo da resposta no tipo esperado
+        override fun onFailure(call: retrofit2.Call<Quiz>, t: Throwable) {
+            erroApi = t.message!!
+        }
+
+    })
+
 }
 
 

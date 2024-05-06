@@ -7,7 +7,7 @@ object RetrofitServices {
 
     //Exemplo de acesso de funções http
 
-    const val BASE_URL = "http://10.18.32.211:8082/"
+    const val BASE_URL = "http://192.168.1.7:8082/"
 
     fun getApiRanking(): ApiRanking {
         val doador =

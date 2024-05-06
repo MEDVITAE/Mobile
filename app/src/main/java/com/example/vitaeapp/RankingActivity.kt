@@ -1,5 +1,6 @@
 package com.example.vitaeapp
 
+import android.icu.text.Transliterator.Position
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -57,29 +58,24 @@ fun Posicoes() {
 
     val apiRanking = RetrofitServices.getApiRanking()
 
-    val get = apiRanking.get()
+    val get = apiRanking.get("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ2aXRhZS1zZXJ2aWNvcyIsInN1YiI6ImFtYXJlbEBnbWFpbC5jb20iLCJleHAiOjE3MTQ5NDcxNTV9._CmO0AMYX3Uz5-q68-yKU4ASCmIMVJixWWNvd1TuCgU")
 
     val scrollState = rememberScrollState()
 
     get.enqueue(object : retrofit2.Callback<List<Ranking>> {
-        // esta função é invocada caso:
-        // a chamada ao endpoint ocorra sem problemas
-        // o corpo da resposta foi convertido para o tipo indicado
+
         override fun onResponse(call: Call<List<Ranking>>, response: Response<List<Ranking>>) {
-            if (response.isSuccessful) { // testando se a resposta não é 4xx nem 5xx
-                val lista = response.body() // recuperando o corpo da resposta
+            if (response.isSuccessful) {
+                val lista = response.body()
                 if (lista != null) {
-                    ranking.clear() // limpando o remember da lista
-                    ranking.addAll(lista) // preenchido o remember da lista
+                    ranking.clear()
+                    ranking.addAll(lista)
                 }
             } else {
                 erroApi.value = response.errorBody().toString()
             }
         }
 
-        // esta função é invocada caso:
-        // não seja possivel chamar a API (rede fora, por exemplo)
-        // não seja possivel converter o corpo da resposta no tipo esperado
         override fun onFailure(call: Call<List<Ranking>>, t: Throwable) {
             erroApi.value = t.message!!
         }
@@ -194,7 +190,7 @@ fun RankingItem(ranking: Ranking, position: Int) {
             Spacer(modifier = Modifier.width(16.dp))
 
             Text(
-                text = "${ranking.quantidade}",
+                text = "${ranking.totalDoado}",
                 style = TextStyle(
                     fontFamily = Rowdies,
                     fontSize = 16.sp,
