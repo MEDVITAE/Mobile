@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -32,6 +33,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -61,6 +63,8 @@ fun TelaLogin(navController: NavHostController, modifier: Modifier = Modifier) {
 
     val apiLogin = RetrofitServices.getLoginService()
 
+    Logo(logoPosicao = false)
+
     Column(
         modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Top,
@@ -79,6 +83,9 @@ fun TelaLogin(navController: NavHostController, modifier: Modifier = Modifier) {
                 .padding(20.dp),
             verticalArrangement = Arrangement.Center
         ) {
+
+            BtnIrParaCadastro(navController)
+
             Spacer(modifier = Modifier.height(40.dp))
             AtributoUsuarioLoginBemVindo(
                 valor = "Bem-vindo de volta",
@@ -120,7 +127,6 @@ fun TelaLogin(navController: NavHostController, modifier: Modifier = Modifier) {
                 isFieldValid = isSenhaValid.value
             )
 
-            // Exibir mensagens de erro
             if (emailError.value.isNotBlank() || senhaError.value.isNotBlank()) {
                 Spacer(modifier = Modifier.height(20.dp))
                 Text(
@@ -134,12 +140,9 @@ fun TelaLogin(navController: NavHostController, modifier: Modifier = Modifier) {
 
             BotaoLogin("Entrar") {
 
-                val sharedPreferences: SharedPreferences = context.getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
-
                 val usuario =
                     UsuarioLogin(email = email.value, senha = senha.value)
 
-                // Variável para conexão com método da api
                 val post = apiLogin.postLogin(usuario)
 
                 post.enqueue(object : retrofit2.Callback<UsuarioLogin> {
@@ -173,28 +176,39 @@ fun TelaLogin(navController: NavHostController, modifier: Modifier = Modifier) {
                     }
                 })
             }
-            if (erroApi.value.isNotBlank()) {
-                Text("${erroApi.value}")
-            } else if (acertoApi.value.isNotBlank()) {
-                Text("${acertoApi.value}")
-                Text("${validacao.value}")
-                navController.navigate("Perfil")
-
-            }
-
-                // Validar os campos
-//                isEmailValid.value = isEmailValid(email.value)
-//                isSenhaValid.value = isPasswordValid(senha.value)
-//
-//                if (!isEmailValid.value || !isSenhaValid.value) {
-//                    emailError.value = if (!isEmailValid.value) "Email inválido" else ""
-//                    senhaError.value = if (!isSenhaValid.value) "Senha inválida" else ""
-//                } else {
-//                    navController.navigate("Perfil")
-//                }
+                if (erroApi.value.isNotBlank()) {
+                    Text("${erroApi.value}")
+                } else if (acertoApi.value.isNotBlank()) {
+                    Text("${acertoApi.value}")
+                    Text("${validacao.value}")
+                    navController.navigate("Perfil")
+                }
             }
         }
     }
+
+@Composable
+fun BtnIrParaCadastro(navController: NavHostController) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.Top,
+        horizontalArrangement = Arrangement.End
+    ) {
+        Text(
+            text = "Cadastre-se",
+            fontSize = 16.sp,
+            color = Color.Black,
+            textDecoration = TextDecoration.Underline,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier
+                .padding(8.dp)
+                .clickable {
+                    navController.navigate("Cadastro")
+                }
+        )
+    }
+}
+
 
 @Composable
 fun AtributoUsuarioLoginBemVindo(valor: String, paddingTop: Int, paddingBottom: Int, tamanho: Int) {
@@ -230,15 +244,7 @@ fun AtributoUsuarioLogin(valor: String, paddingTop: Int, paddingBottom: Int, tam
 }
 
 @Composable
-fun InputGetInfoLogin(
-    valorInput: String,
-    exemplo: String,
-    onValueChange: (String) -> Unit,
-    isError: Boolean,
-    errorMessage: String,
-    dica: String,
-    isFieldValid: Boolean
-) {
+fun InputGetInfoLogin(valorInput: String,exemplo: String, onValueChange: (String) -> Unit, isError: Boolean, errorMessage: String, dica: String, isFieldValid: Boolean) {
     val fieldColor = if (isFieldValid) Color.Black else Color.Red
 
     Column(

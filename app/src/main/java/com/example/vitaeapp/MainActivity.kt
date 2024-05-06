@@ -71,10 +71,10 @@ val fontRobotoBold = FontFamily(
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun Tela(navController: NavHostController, modifier: Modifier = Modifier) {
-    Logo()
+    Logo(false)
     NavHost(
         navController = navController,
-        startDestination = "Cadastro"
+        startDestination = "Login"
     ) {
 
         composable("Cadastro") {
@@ -116,7 +116,8 @@ fun Tela(navController: NavHostController, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun Logo(){
+fun Logo(logoPosicao: Boolean){
+    if(logoPosicao){
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -125,9 +126,28 @@ fun Logo(){
         Image(
             painter = painterResource(id = R.mipmap.logo),
             contentDescription = "Vitae",
-            modifier = Modifier.size(70.dp)
+            modifier = Modifier
+                .size(70.dp)
+                .padding(top = 10.dp)
+
         )
     }
+}else{
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(10.dp)
+        ) {
+            Image(
+                painter = painterResource(id = R.mipmap.logo),
+                contentDescription = "Vitae",
+                modifier = Modifier
+                    .size(70.dp)
+                    .padding(top = 10.dp)
+
+            )
+        }
+}
 }
 
 @Composable

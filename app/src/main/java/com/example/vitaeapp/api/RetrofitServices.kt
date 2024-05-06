@@ -6,7 +6,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Interceptor
 object RetrofitServices {
 
-    private const val BASE_URL = "http://192.168.1.11:8082/"
+    private const val BASE_URL = "http://172.19.64.1:8082/"
     private const val TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ2aXRhZS1zZXJ2aWNvcyIsInN1YiI6InRlc3RlQGdtYWlsLmNvbSIsImV4cCI6MTcxNDc0NDE2MH0.EPPE9kQ6l2Yc_Kkm2kvgkdseSF6uyFjgXfX8IRbehxg"
 
     private val interceptor = Interceptor { chain ->

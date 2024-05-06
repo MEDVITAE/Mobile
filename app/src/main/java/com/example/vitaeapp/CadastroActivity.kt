@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -32,6 +33,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -53,10 +55,6 @@ fun TelaCadastro(navController: NavHostController, modifier: Modifier = Modifier
     val cpf = remember { mutableStateOf("") }
     val email = remember { mutableStateOf("") }
     val senha = remember { mutableStateOf("") }
-    val token = remember {
-        mutableStateOf("")
-
-    }
 
     val nomeCompletoError = remember { mutableStateOf("") }
     val nascimentoError = remember { mutableStateOf("") }
@@ -73,28 +71,18 @@ fun TelaCadastro(navController: NavHostController, modifier: Modifier = Modifier
     val erroApi = remember { mutableStateOf("") }
     val acertoApi = remember { mutableStateOf("") }
 
+    Logo(logoPosicao = false)
+
     Column(
         modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-        val validacaoCadastro = remember {
-            mutableStateOf(
-                UsuarioCadastro("", "", "", "", ""),
-            )
-        }
-        val validacaoCaracteristicas = remember {
-            mutableStateOf(
-                Caracteristicas("", "", false, "", "", false,0)
-            )
-        }
+        val validacaoCadastro = remember { mutableStateOf(UsuarioCadastro("", "", "", "", "")) }
+        val validacaoCaracteristicas = remember { mutableStateOf(Caracteristicas("", "", false, "", "", false, 0)) }
+        val validacaoUsuario = remember { mutableStateOf(UsuarioLogin(0, "", "", "")) }
 
-        val validacaoUsuario = remember {
-            mutableStateOf(
-                UsuarioLogin(0, "", "", "")
-            )
-        }
 
         Column(
             modifier = Modifier
@@ -102,6 +90,9 @@ fun TelaCadastro(navController: NavHostController, modifier: Modifier = Modifier
                 .padding(20.dp),
             verticalArrangement = Arrangement.Center
         ) {
+
+            BtnIrParaLogin(navController)
+
             Spacer(modifier = Modifier.height(40.dp))
             AtributoUsuarioCadastroBemVindo(
                 valor = "Seja Bem-vindo",
@@ -121,10 +112,10 @@ fun TelaCadastro(navController: NavHostController, modifier: Modifier = Modifier
                 valorInput = nomeCompleto.value,
                 exemplo = "Pedro Afonso",
                 onValueChange = { nomeCompleto.value = it },
-                isError = nomeCompletoError.value.isNotBlank(),
+                isFieldValid = isNomeCompletoValid.value,
+                validationFunction = ::validarNomeCompleto,
                 errorMessage = nomeCompletoError.value,
-                dica = if (nomeCompletoError.value.isBlank()) "O seu nome deve conter 3 ou mais letras" else "",
-                isFieldValid = isNomeCompletoValid.value
+                dica = if (nomeCompletoError.value.isBlank()) "O seu nome deve conter 3 ou mais letras" else "O seu nome deve conter 3 ou mais letras"
             )
 
             AtributoUsuarioCadastro(
@@ -135,12 +126,12 @@ fun TelaCadastro(navController: NavHostController, modifier: Modifier = Modifier
             )
             InputGetInfoCadastro(
                 valorInput = nascimento.value,
-                exemplo = "01-01-1999",
+                exemplo = "2024-12-31",
                 onValueChange = { nascimento.value = it },
-                isError = nascimentoError.value.isNotBlank(),
+                isFieldValid = isSenhaValid.value,
+                validationFunction = ::validarDtNasc,
                 errorMessage = nascimentoError.value,
-                dica = if (nascimentoError.value.isBlank()) "A data de nascimento deve ser 01-01-1999" else "",
-                isFieldValid = isSenhaValid.value
+                dica = if (nascimentoError.value.isBlank()) "A data de nascimento deve ser YYYY-MM-DD" else "A data de nascimento deve ser YYYY-MM-DD",
             )
 
             AtributoUsuarioCadastro(
@@ -153,10 +144,10 @@ fun TelaCadastro(navController: NavHostController, modifier: Modifier = Modifier
                 valorInput = cpf.value,
                 exemplo = "12345678910",
                 onValueChange = { cpf.value = it },
-                isError = cpfError.value.isNotBlank(),
+                isFieldValid = isCpfValid.value,
+                validationFunction = ::validarCPF,
                 errorMessage = cpfError.value,
-                dica = if (cpfError.value.isBlank()) "Insira apenas os números do seu CPF" else "",
-                isFieldValid = isCpfValid.value
+                dica = if (cpfError.value.isBlank()) "Insira apenas os números do seu CPF" else "Insira apenas os números do seu CPF"
             )
 
             AtributoUsuarioCadastro(
@@ -169,10 +160,10 @@ fun TelaCadastro(navController: NavHostController, modifier: Modifier = Modifier
                 valorInput = email.value,
                 exemplo = "email@example.com",
                 onValueChange = { email.value = it },
-                isError = emailError.value.isNotBlank(),
+                isFieldValid = isEmailValid.value,
+                validationFunction = ::validarEmail,
                 errorMessage = emailError.value,
-                dica = if (emailError.value.isBlank()) "Insira um email no formato nome@email.com" else "",
-                isFieldValid = isEmailValid.value
+                dica = if (emailError.value.isBlank()) "Insira um email no formato nome@email.com" else "Insira um email no formato nome@email.com"
             )
 
             AtributoUsuarioCadastro(
@@ -185,13 +176,12 @@ fun TelaCadastro(navController: NavHostController, modifier: Modifier = Modifier
                 valorInput = senha.value,
                 exemplo = "********",
                 onValueChange = { senha.value = it },
-                isError = senhaError.value.isNotBlank(),
+                isFieldValid = isSenhaValid.value,
+                validationFunction = ::validarSenha,
                 errorMessage = senhaError.value,
-                dica = if (senhaError.value.isBlank()) "A senha deve conter pelo menos 8 caracteres" else "",
-                isFieldValid = isSenhaValid.value
+                dica = if (senhaError.value.isBlank()) "A senha deve conter pelo menos 8 caracteres" else "A senha deve conter pelo menos 8 caracteres",
             )
 
-            // Exibir mensagens de erro
             if (nomeCompletoError.value.isNotBlank() ||
                 nascimentoError.value.isNotBlank() ||
                 cpfError.value.isNotBlank() ||
@@ -235,6 +225,7 @@ fun TelaCadastro(navController: NavHostController, modifier: Modifier = Modifier
             Text("${acertoApi.value}")
             Text("${validacaoCadastro.value}")
             Text("${validacaoCaracteristicas.value}")
+            //navController.navigate("Login")
         }
     }
 }
@@ -289,7 +280,7 @@ fun resgateToken(
                 if (usuario != null) {
                     acertoApi.value = "Usuário verificado"
                     caracteristicas.fkUsuario = usuario.Id
-                        usuario.token?.let { cadastrarCaract(caracteristicas, acertoApi, erroApi, it) }
+                    usuario.token?.let { cadastrarCaract(caracteristicas, acertoApi, erroApi, it) }
                 } else {
                     erroApi.value = "Erro ao verificar usuário"
                 }
@@ -327,26 +318,27 @@ fun cadastrarCaract(
     })
 }
 
-fun validarNomeCompleto(nomeCompleto: String): Boolean {
-    return nomeCompleto.isNotBlank() && nomeCompleto.length >= 3
+@Composable
+fun BtnIrParaLogin(navController: NavHostController) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.Top,
+        horizontalArrangement = Arrangement.End
+    ) {
+        Text(
+            text = "Faça Login",
+            fontSize = 16.sp,
+            color = Color.Black,
+            textDecoration = TextDecoration.Underline,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier
+                .padding(8.dp)
+                .clickable {
+                    navController.navigate("Login")
+                }
+        )
+    }
 }
-
-fun validarDtNasc(dtNasc: String): Boolean {
-    return dtNasc.isNotBlank() && dtNasc.length == 10
-}
-
-fun validarCPF(cpf: String): Boolean {
-    return cpf.isNotBlank() && cpf.length == 11
-}
-
-fun validarEmail(email: String): Boolean {
-    return email.isNotBlank() && android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
-}
-
-fun validarSenha(senha: String): Boolean {
-    return senha.isNotBlank() && senha.length >= 8
-}
-
 @Composable
 fun AtributoUsuarioCadastroBemVindo(
     valor: String,
@@ -385,17 +377,20 @@ fun AtributoUsuarioCadastro(valor: String, paddingTop: Int, paddingBottom: Int, 
     }
 }
 
+
 @Composable
 fun InputGetInfoCadastro(
     valorInput: String,
     exemplo: String,
     onValueChange: (String) -> Unit,
-    isError: Boolean,
+    isFieldValid: Boolean,
+    validationFunction: (String) -> Boolean,
     errorMessage: String,
-    dica: String,
-    isFieldValid: Boolean
+    dica: String
 ) {
+    val isError = !validationFunction(valorInput) && valorInput.isNotBlank()
     val fieldColor = if (isFieldValid) Color.Black else Color.Red
+    val errorTextColor = Color.Red
 
     Column(
         modifier = Modifier
@@ -425,7 +420,7 @@ fun InputGetInfoCadastro(
             modifier = Modifier.fillMaxWidth(),
             color = fieldColor
         )
-        // Exibir mensagem de erro se houver
+
         if (isError) {
             Text(
                 text = errorMessage,
@@ -433,9 +428,8 @@ fun InputGetInfoCadastro(
                 fontSize = 12.sp,
                 modifier = Modifier.padding(start = 15.dp, top = 4.dp)
             )
-        }
-        // Exibir dica se o campo estiver vazio e não houver erro
-        if (valorInput.isEmpty() && !isError) {
+        } else {
+            // Mostrar a dica sempre, mesmo que não haja erro
             Text(
                 text = dica,
                 color = Color.Black,
@@ -445,6 +439,7 @@ fun InputGetInfoCadastro(
         }
     }
 }
+
 
 
 @Composable
@@ -496,6 +491,25 @@ fun BotaoCadastro(valor: String, onClick: () -> Unit) {
     }
 }
 
+fun validarNomeCompleto(nomeCompleto: String): Boolean {
+    return nomeCompleto.isNotBlank() && nomeCompleto.length >= 3
+}
+
+fun validarDtNasc(dtNasc: String): Boolean {
+    return dtNasc.isNotBlank() && dtNasc.length == 10
+}
+
+fun validarCPF(cpf: String): Boolean {
+    return cpf.isNotBlank() && cpf.length == 11
+}
+
+fun validarEmail(email: String): Boolean {
+    return email.isNotBlank() && android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
+}
+
+fun validarSenha(senha: String): Boolean {
+    return senha.isNotBlank() && senha.length >= 8
+}
 
 @Preview(showBackground = true)
 @Composable
