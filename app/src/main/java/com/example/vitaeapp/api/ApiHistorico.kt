@@ -9,5 +9,5 @@ import retrofit2.http.Path
 interface ApiHistorico {
 
     @GET("Agenda/Agendamentos/{id}")
-    fun getHistorico(@Header("Authorization") token:String, @Path("id") id:Int): Call<List<Historico>>
+    fun getHistorico(@Header("Authorization") token:String, @Path("id") id:Int): Call<Historico>
 }

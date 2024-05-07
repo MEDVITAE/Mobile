@@ -35,31 +35,33 @@ import retrofit2.Response
 
 @Composable
 fun TelaHistorico() {
-    val listaHistorico = remember { mutableStateListOf<Historico>() }
+    val historico = remember {
+        mutableStateOf(
+            Historico(0, emptyList(), emptyList())
+        )
+    }
     val listaAgenda = remember { mutableStateListOf<Agenda>() }
     val listaHospital = remember { mutableStateListOf<Hospital>() }
-    val carregando = remember { mutableStateOf(true) }
 
     val erroApi = remember { mutableStateOf("") }
 
     val apiHistorico = RetrofitServices.getHistoricoService()
-    val get = apiHistorico.getHistorico("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ2aXRhZS1zZXJ2aWNvcyIsInN1YiI6ImRpZWdvQGdtYWlsLmNvbSIsImV4cCI6MTcxNTA0Mzc2OH0.X3qH4-Z52Ky0jAKwYiybJhTv_IZoskNNKlG4jGneXpk", 1)
+    val get = apiHistorico.getHistorico(
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ2aXRhZS1zZXJ2aWNvcyIsInN1YiI6ImRpZWdvQGdtYWlsLmNvbSIsImV4cCI6MTcxNTEwMTY1Nn0.Ypi4UUl_9P16b5Z6kOWqWGyx_bunaIlc60NRxNgf4Bc",
+        1
+    )
 
-    get.enqueue(object : retrofit2.Callback<List<Historico>> {
-        override fun onResponse(call: Call<List<Historico>>, response: Response<List<Historico>>) {
+    get.enqueue(object : retrofit2.Callback<Historico> {
+        override fun onResponse(call: Call<Historico>, response: Response<Historico>) {
             if (response.isSuccessful) {
                 val lista = response.body()
                 if (lista != null) {
                     listaAgenda.clear()
                     listaHospital.clear()
-                    listaHistorico.clear()
 
-                    listaHistorico.addAll(lista)
-                    listaHistorico.forEach { item ->
-                        listaAgenda.addAll(item.agenda)
-                        listaHospital.addAll(item.hospital)
-                    }
-                    carregando.value = false
+                    historico.value = lista
+                    listaAgenda.addAll(historico.value.agenda)
+                    listaHospital.addAll(historico.value.hospital)
                 } else {
                     erroApi.value = "Erro ao buscar histórico"
                 }
@@ -68,27 +70,23 @@ fun TelaHistorico() {
             }
         }
 
-        override fun onFailure(call: Call<List<Historico>>, t: Throwable) {
+        override fun onFailure(call: Call<Historico>, t: Throwable) {
             erroApi.value = "Falha na solicitação: ${t.message}"
         }
     })
 
-    if (carregando.value) {
-        Text("Carregando...")
-    } else {
     Column {
         if (erroApi.value.isNotEmpty()) {
             Text(erroApi.value)
-        } else if (listaAgenda.isNotEmpty() && listaHospital.isNotEmpty() && listaHistorico.isNotEmpty()) {
+        } else if (listaAgenda.isNotEmpty() && listaHospital.isNotEmpty()) {
             val agendaMaisRecente = listaAgenda.maxByOrNull { it.idAgenda }
             val hospitalMaisRecente = listaHospital.find { it.id == agendaMaisRecente?.fkHospital }
 
             hospitalMaisRecente?.let {
                 Proxima(agendaMaisRecente, it)
             }
-            Anteriores(listaHistorico, agendaMaisRecente)
+            Anteriores(historico.value, agendaMaisRecente)
         }
-    }
     }
 }
 
@@ -124,7 +122,7 @@ fun Proxima(agenda: Agenda?, hospital: Hospital) {
                                 .padding(10.dp)
                         ) {
                             Text(
-                                "Data: ${agenda.horario} - Hora: ${agenda.horario.time}",
+                                "Data: ${agenda.horario} - Hora: ${agenda.horario}",
                                 style = TextStyle(fontFamily = Roboto)
                             )
                             Text(
@@ -163,7 +161,7 @@ fun Proxima(agenda: Agenda?, hospital: Hospital) {
 }
 
 @Composable
-fun Anteriores(lista: List<Historico>, agenda: Agenda?) {
+fun Anteriores(historico: Historico, agenda: Agenda?) {
     if (agenda != null) {
         Column(
             Modifier.padding(30.dp, 0.dp)
@@ -173,50 +171,56 @@ fun Anteriores(lista: List<Historico>, agenda: Agenda?) {
                 Modifier.padding(0.dp, 0.dp, 0.dp, 10.dp),
                 style = TextStyle(fontFamily = Rowdies)
             )
-            lista.forEach { item ->
-                item.agenda.forEach { itemAgenda ->
-                    if (itemAgenda.idAgenda != agenda.idAgenda) {
-                        val hospital = remember {
-                            mutableStateOf(
-                                item.hospital.find { hosp -> hosp.id == agenda.fkHospital }
+
+            val qtdDoacao = remember { mutableStateOf(historico.quantidadeDoacao) }
+
+            var contador = qtdDoacao.value
+
+            historico.agenda.forEach { itemAgenda ->
+                if (itemAgenda.idAgenda != agenda.idAgenda) {
+
+                    val hospital = remember {
+                        mutableStateOf(
+                            historico.hospital.find { hosp -> hosp.id == agenda.fkHospital }
+                        )
+                    }
+
+                    Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Image(
+                                painter = painterResource(id = R.mipmap.hospital),
+                                contentDescription = "Doação",
+                                modifier = Modifier.size(55.dp)
                             )
-                        }
-                        var qtdDoacao = item.quantidadeDoacao
 
-                        Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Image(
-                                    painter = painterResource(id = R.mipmap.hospital),
-                                    contentDescription = "Doação",
-                                    modifier = Modifier.size(55.dp)
-                                )
-
+                            Column(
+                                Modifier
+                                    .padding(10.dp, 0.dp, 0.dp, 20.dp)
+                                    .background(Color.White)
+                                    .width(350.dp)
+                            ) {
                                 Column(
                                     Modifier
-                                        .padding(10.dp, 0.dp, 0.dp, 20.dp)
-                                        .background(Color.White)
-                                        .width(350.dp)
+                                        .padding(10.dp)
                                 ) {
-                                    Column(
-                                        Modifier
-                                            .padding(10.dp)
-                                    ) {
-                                        Text(
-                                            "Doação: n° ${qtdDoacao--}",
-                                            style = TextStyle(fontFamily = Roboto)
-                                        )
-                                        Text(
-                                            "Data: ${itemAgenda.horario} - Hora: ${itemAgenda.horario.time}",
-                                            style = TextStyle(fontFamily = Roboto)
-                                        )
-                                        Text(
-                                            "Hemocentro: ${hospital.value?.nome}",
-                                            style = TextStyle(fontFamily = Roboto)
-                                        )
-                                    }
+                                    Text(
+                                        "Doação: n° ${contador}",
+                                        style = TextStyle(fontFamily = Roboto)
+                                    )
+                                    Text(
+                                        "Data: ${itemAgenda.horario} - Hora: ${itemAgenda.horario}",
+                                        style = TextStyle(fontFamily = Roboto)
+                                    )
+                                    Text(
+                                        "Hemocentro: ${hospital.value?.nome}",
+                                        style = TextStyle(fontFamily = Roboto)
+                                    )
                                 }
                             }
                         }
+                    }
+                    if(contador > 0) {
+                        contador--
                     }
                 }
             }
