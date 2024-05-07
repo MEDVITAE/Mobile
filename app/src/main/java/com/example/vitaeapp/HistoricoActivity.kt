@@ -38,11 +38,12 @@ fun TelaHistorico() {
     val listaHistorico = remember { mutableStateListOf<Historico>() }
     val listaAgenda = remember { mutableStateListOf<Agenda>() }
     val listaHospital = remember { mutableStateListOf<Hospital>() }
+    val carregando = remember { mutableStateOf(true) }
 
     val erroApi = remember { mutableStateOf("") }
 
     val apiHistorico = RetrofitServices.getHistoricoService()
-    val get = apiHistorico.getHistorico(1)
+    val get = apiHistorico.getHistorico("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ2aXRhZS1zZXJ2aWNvcyIsInN1YiI6ImRpZWdvQGdtYWlsLmNvbSIsImV4cCI6MTcxNTA0Mzc2OH0.X3qH4-Z52Ky0jAKwYiybJhTv_IZoskNNKlG4jGneXpk", 1)
 
     get.enqueue(object : retrofit2.Callback<List<Historico>> {
         override fun onResponse(call: Call<List<Historico>>, response: Response<List<Historico>>) {
@@ -58,153 +59,161 @@ fun TelaHistorico() {
                         listaAgenda.addAll(item.agenda)
                         listaHospital.addAll(item.hospital)
                     }
+                    carregando.value = false
                 } else {
                     erroApi.value = "Erro ao buscar histórico"
                 }
             } else {
-                // Algo passado pode estar errado
                 erroApi.value = "Erro na solicitação: ${response.code()}"
             }
         }
 
         override fun onFailure(call: Call<List<Historico>>, t: Throwable) {
-            // Não foi possível conectar na api
             erroApi.value = "Falha na solicitação: ${t.message}"
         }
     })
 
+    if (carregando.value) {
+        Text("Carregando...")
+    } else {
     Column {
         if (erroApi.value.isNotEmpty()) {
             Text(erroApi.value)
-        } else {
-            val agendaMaisRecente = remember { mutableStateOf(listaAgenda.maxBy { it.idAgenda }) }
-            val hospitalMaisRecente = remember { mutableStateOf(
-                listaHospital.find { hosp -> hosp.id == agendaMaisRecente.value.fkHospital }
-            ) }
+        } else if (listaAgenda.isNotEmpty() && listaHospital.isNotEmpty() && listaHistorico.isNotEmpty()) {
+            val agendaMaisRecente = listaAgenda.maxByOrNull { it.idAgenda }
+            val hospitalMaisRecente = listaHospital.find { it.id == agendaMaisRecente?.fkHospital }
 
-            hospitalMaisRecente.value?.let {
-                Proxima(agenda = agendaMaisRecente.value, hospital = it)
+            hospitalMaisRecente?.let {
+                Proxima(agendaMaisRecente, it)
             }
-            Anteriores(lista = listaHistorico, agenda = agendaMaisRecente.value)
+            Anteriores(listaHistorico, agendaMaisRecente)
         }
+    }
     }
 }
 
+
 @Composable
-fun Proxima(agenda: Agenda, hospital: Hospital) {
-    Column(
-        Modifier.padding(30.dp, 70.dp)
-    ) {
+fun Proxima(agenda: Agenda?, hospital: Hospital) {
+    if (agenda != null) {
+        Column(
+            Modifier.padding(30.dp, 70.dp)
+        ) {
 
-        Text(
-            "PRÓXIMA DOAÇÃO",
-            Modifier.padding(0.dp, 0.dp, 0.dp, 10.dp),
-            style = TextStyle(fontFamily = Rowdies),
-        )
-        Column {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Image(
-                    painter = painterResource(id = R.mipmap.hospital),
-                    contentDescription = "Doação",
-                    modifier = Modifier.size(55.dp)
-                )
+            Text(
+                "PRÓXIMA DOAÇÃO",
+                Modifier.padding(0.dp, 0.dp, 0.dp, 10.dp),
+                style = TextStyle(fontFamily = Rowdies),
+            )
+            Column {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Image(
+                        painter = painterResource(id = R.mipmap.hospital),
+                        contentDescription = "Doação",
+                        modifier = Modifier.size(55.dp)
+                    )
 
-                Column(
-                    Modifier
-                        .padding(10.dp, 0.dp, 0.dp, 0.dp)
-                        .background(Color.White)
-                        .width(350.dp)
-                ) {
                     Column(
                         Modifier
-                            .padding(10.dp)
+                            .padding(10.dp, 0.dp, 0.dp, 0.dp)
+                            .background(Color.White)
+                            .width(350.dp)
                     ) {
-                        Text(
-                            "Data: ${agenda.horario} - Hora: ${agenda.horario.time}",
-                            style = TextStyle(fontFamily = Roboto)
-                        )
-                        Text(
-                            "Hemocentro: ${hospital.nome}",
-                            style = TextStyle(fontFamily = Roboto)
-                        )
-                        Text(
-                            "Endereço: ${hospital.rua}",
-                            style = TextStyle(fontFamily = Roboto)
-                        )
+                        Column(
+                            Modifier
+                                .padding(10.dp)
+                        ) {
+                            Text(
+                                "Data: ${agenda.horario} - Hora: ${agenda.horario.time}",
+                                style = TextStyle(fontFamily = Roboto)
+                            )
+                            Text(
+                                "Hemocentro: ${hospital.nome}",
+                                style = TextStyle(fontFamily = Roboto)
+                            )
+                            Text(
+                                "Endereço: ${hospital.rua}",
+                                style = TextStyle(fontFamily = Roboto)
+                            )
+                        }
                     }
                 }
             }
-        }
-        Row(Modifier.padding(vertical = 8.dp)) {
-            Button(
-                onClick = {
+            Row(Modifier.padding(vertical = 8.dp)) {
+                Button(
+                    onClick = {
 
-                },
-                modifier = Modifier.weight(1f)
-            ) {
-                Text("Cancelar")
-            }
-            Spacer(modifier = Modifier.width(8.dp))
-            Button(
-                onClick = {
-                          
-                },
-                modifier = Modifier.weight(1f)
-            ) {
-                Text("Atualizar")
+                    },
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text("Cancelar")
+                }
+                Spacer(modifier = Modifier.width(8.dp))
+                Button(
+                    onClick = {
+
+                    },
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text("Atualizar")
+                }
             }
         }
     }
 }
 
 @Composable
-fun Anteriores(lista: List<Historico>, agenda: Agenda) {
-    Column(
-        Modifier.padding(30.dp, 0.dp)
-    ) {
-        Text(
-            "HISTÓRICO",
-            Modifier.padding(0.dp, 0.dp, 0.dp, 10.dp),
-            style = TextStyle(fontFamily = Rowdies)
-        )
-        lista.forEach { item ->
-            item.agenda.forEach { itemAgenda ->
-                if (itemAgenda.idAgenda != agenda.idAgenda) {
-                    val hospital = remember { mutableStateOf(
-                        item.hospital.find { hosp -> hosp.id == agenda.fkHospital }
-                    ) }
-                    var qtdDoacao = item.quantidadeDoacao
-
-                    Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Image(
-                                painter = painterResource(id = R.mipmap.hospital),
-                                contentDescription = "Doação",
-                                modifier = Modifier.size(55.dp)
+fun Anteriores(lista: List<Historico>, agenda: Agenda?) {
+    if (agenda != null) {
+        Column(
+            Modifier.padding(30.dp, 0.dp)
+        ) {
+            Text(
+                "HISTÓRICO",
+                Modifier.padding(0.dp, 0.dp, 0.dp, 10.dp),
+                style = TextStyle(fontFamily = Rowdies)
+            )
+            lista.forEach { item ->
+                item.agenda.forEach { itemAgenda ->
+                    if (itemAgenda.idAgenda != agenda.idAgenda) {
+                        val hospital = remember {
+                            mutableStateOf(
+                                item.hospital.find { hosp -> hosp.id == agenda.fkHospital }
                             )
+                        }
+                        var qtdDoacao = item.quantidadeDoacao
 
-                            Column(
-                                Modifier
-                                    .padding(10.dp, 0.dp, 0.dp, 20.dp)
-                                    .background(Color.White)
-                                    .width(350.dp)
-                            ) {
+                        Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Image(
+                                    painter = painterResource(id = R.mipmap.hospital),
+                                    contentDescription = "Doação",
+                                    modifier = Modifier.size(55.dp)
+                                )
+
                                 Column(
                                     Modifier
-                                        .padding(10.dp)
+                                        .padding(10.dp, 0.dp, 0.dp, 20.dp)
+                                        .background(Color.White)
+                                        .width(350.dp)
                                 ) {
-                                    Text(
-                                        "Doação: n° ${qtdDoacao--}",
-                                        style = TextStyle(fontFamily = Roboto)
-                                    )
-                                    Text(
-                                        "Data: ${itemAgenda.horario} - Hora: ${itemAgenda.horario.time}",
-                                        style = TextStyle(fontFamily = Roboto)
-                                    )
-                                    Text(
-                                        "Hemocentro: ${hospital.value?.nome}",
-                                        style = TextStyle(fontFamily = Roboto)
-                                    )
+                                    Column(
+                                        Modifier
+                                            .padding(10.dp)
+                                    ) {
+                                        Text(
+                                            "Doação: n° ${qtdDoacao--}",
+                                            style = TextStyle(fontFamily = Roboto)
+                                        )
+                                        Text(
+                                            "Data: ${itemAgenda.horario} - Hora: ${itemAgenda.horario.time}",
+                                            style = TextStyle(fontFamily = Roboto)
+                                        )
+                                        Text(
+                                            "Hemocentro: ${hospital.value?.nome}",
+                                            style = TextStyle(fontFamily = Roboto)
+                                        )
+                                    }
                                 }
                             }
                         }

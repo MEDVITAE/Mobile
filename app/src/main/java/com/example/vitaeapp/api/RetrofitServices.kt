@@ -6,7 +6,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitServices {
 
-    const val BASE_URL = "http://192.168.68.114:8082/"
+    const val BASE_URL = "http://192.168.68.114:8082/Api/"
 
     fun getHistoricoService(): ApiHistorico{
         val cliente =
