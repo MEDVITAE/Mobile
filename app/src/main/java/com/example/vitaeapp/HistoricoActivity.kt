@@ -36,7 +36,7 @@ import retrofit2.Response
 @Composable
 fun TelaHistorico() {
     val token = remember { mutableStateOf(
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ2aXRhZS1zZXJ2aWNvcyIsInN1YiI6ImRpZWdvQGdtYWlsLmNvbSIsImV4cCI6MTcxNTEyMDE0MH0.HDfLEG2YXA0q6lb_1EL3gbSNg_5gfDF0jBNa_0p0xOE"
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ2aXRhZS1zZXJ2aWNvcyIsInN1YiI6ImRpZWdvQGdtYWlsLmNvbSIsImV4cCI6MTcxNTEyMTY3MH0.pmCKZFhfjwOvjG-Uq9wpLG85wct8bXU8qA5DLF2H3kg"
     ) }
 
     val id = remember { mutableStateOf(1)}
@@ -163,7 +163,7 @@ fun Botoes(token: String, id: Int){
 
                 delete.enqueue(object : retrofit2.Callback<Historico> {
                     override fun onResponse(call: Call<Historico>, response: Response<Historico>) {
-                        if (response.message() == "Request failed with status code 400") {
+                        if (response.code() == 400) {
                             erroApi.value = "Deletado com sucesso"
                         } else {
                             erroApi.value = "Erro na solicitação: ${response.code()}"
