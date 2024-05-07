@@ -1,9 +1,5 @@
 package com.example.vitaeapp
 
-import android.content.Intent
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -21,18 +17,15 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.modifier.modifierLocalMapOf
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -48,202 +41,180 @@ import com.example.vitaeapp.ui.theme.VitaeAppTheme
 import retrofit2.Call
 import retrofit2.Response
 
+@Preview(showBackground = true)
 @Composable
-fun TelaDeConfiguracao(navController: NavHostController) {
+fun GreetingPreviewFromConfig() {
+    VitaeAppTheme {
+        var config = getBanco()
+        TelaDeConfiguracao(rememberNavController(), config)
+    }
+}
 
-    // Variáveis para resposta da api, seja um sucesso, ou não
-    val erroApi = remember { mutableStateOf("") }
-    val acertoApi = remember { mutableStateOf("") }
+// Variáveis para resposta da api, seja um sucesso, ou não
+var erroApi = ""
+var acertoApi = ""
 
-    val apiConfig = RetrofitServices.putConfigService()
+val apiConfig = RetrofitServices.getConfigUsuario()
+val apiConfigDadosUser = RetrofitServices.putConfigUser()
+val apiConfigEndereco = RetrofitServices.putConfigCep()
 
+var pk =
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ2aXRhZS1zZXJ2aWNvcyIsInN1YiI6ImFudG9uaW9AZ21haWwuY29tIiwiZXhwIjoxNzE1MTIyODMyfQ.M18cmoRBJgBOJmYyZfkAD-cNZ8ifzS0um4x5GfSPh8A"
+fun getBanco(): Configuracao {
+
+    val getUser = apiConfig.getConfigDadosUser(pk, id = 85)
+    getUser.enqueue(object : retrofit2.Callback<Configuracao> {
+        override fun onResponse(
+            call: Call<Configuracao>,
+            response: Response<Configuracao>
+        ) {
+            if (response.isSuccessful) {
+                val resposta = response.body()
+                if (resposta != null) {
+                    acertoApi = "Usuário verificado"
+                    return
+                    Configuracao(
+                        nome = resposta.nome,
+                        email = resposta.email,
+                        cep = resposta.cep,
+                        dataNasc = resposta.dataNasc,
+                        senha = "********"
+                    )
+                } else {
+                    // Não foi possível achar usuário
+                    erroApi = "Erro ao verificar usuário"
+                }
+            } else {
+                // Algo passado pode estar errado
+                erroApi = "Erro na solicitação: ${response.code()}"
+            }
+        }
+
+        override fun onFailure(call: Call<Configuracao>, t: Throwable) {
+            // Não foi possível conectar na api
+            erroApi = "Falha na solicitação: ${t.message}"
+        }
+    })
+    return Configuracao("", "", "", "", "", "")
+}
+
+@Composable
+fun TelaDeConfiguracao(navController: NavHostController, config: Configuracao) {
     // Valores iniciais dos campos de entrada
-    var nome = remember { mutableStateOf("") }
-    var email = remember { mutableStateOf("") }
-    var token = remember { mutableStateOf("") }
-    var cep = remember { mutableStateOf("") }
-    var dataNasc = remember { mutableStateOf("") }
-    var senha = remember { mutableStateOf("") }
+    var nome = remember { mutableStateOf(config.nome) }
+    var email = remember { mutableStateOf(config.email) }
+    var cep = remember { mutableStateOf(config.cep) }
+    var dataNasc = remember { mutableStateOf(config.dataNasc) }
+    var senha = remember { mutableStateOf(config.senha) }
 
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-
-        // Variável criada para receber resposta da api
-        val validacao = remember {
-            mutableStateOf(
-                Configuracao("", "", "", "", "", "")
-            )
-        }
-
+        Text(
+            "${nome.value}," +
+                    "${email.value}" +
+                    "${cep.value}" +
+                    "${dataNasc.value}" +
+                    "${senha.value}"
+        )
         AtributoUsuarioConfig("CONFIGURAÇÕES", 70, 15)
-        CampoDeEntrada(label = "Nome:", valor = nome.value) { nome.value = it }
-        CampoDeEntrada(label = "E-mail:", valor = email.value) { email.value = it }
-        CampoDeEntrada(label = "CEP:", valor = cep.value) { cep.value = it }
-        CampoDeEntrada(label = "Data de Nascimento:", valor = dataNasc.value) { dataNasc.value = it }
-        CampoDeEntrada(label = "Senha:", valor = senha.value) { senha.value = it }
-
-        BotaoSalvar(valor = "Salvar") {
-            // Variável para criação de objeto a ser mandado para api
-            val config =
-                Configuracao(
-                    nome = nome.value,
-                    email = email.value,
-                    token = token.value,
-                    cep = cep.value,
-                    dataNasc = dataNasc.value,
-                    senha = senha.value
-                 )
-
-            // Variável para conexão com método da api
-            val getUser = apiConfig.getConfigUser(config)
-            val putUser = apiConfig.putConfigUser(config)
-            val putConfigCep = apiConfig.putConfigEnde(config)
-            val postCep = apiConfig.postConfigCep(config)
-
-            getUser.enqueue(object : retrofit2.Callback<Configuracao> {
-                override fun onResponse(
-                    call: Call<Configuracao>,
-                    response: Response<Configuracao>
-                ) {
-                    if (response.isSuccessful) {
-                        val config = response.body()
-                        if (config != null) {
-                            acertoApi.value = "Usuário verificado"
-                            validacao.value = Configuracao(
-                                config.nome,
-                                config.email,
-                                config.token,
-                                config.cep,
-                                config.dataNasc,
-                                config.senha,
-                            )
-                        } else {
-                            // Não foi possível achar usuário
-                            erroApi.value = "Erro ao verificar usuário"
-                        }
-                    } else {
-                        // Algo passado pode estar errado
-                        erroApi.value = "Erro na solicitação: ${response.code()}"
-                    }
-                }
-
-                override fun onFailure(call: Call<Configuracao>, t: Throwable) {
-                    // Não foi possível conectar na api
-                    erroApi.value = "Falha na solicitação: ${t.message}"
-                }
-            })
-
-            putUser.enqueue(object : retrofit2.Callback<Configuracao> {
-                override fun onResponse(
-                    call: Call<Configuracao>,
-                    response: Response<Configuracao>
-                ) {
-                    if (response.isSuccessful) {
-                        val config = response.body()
-                        if (config != null) {
-                            acertoApi.value = "Dados do Usuário cadastrado"
-                            validacao.value = Configuracao(
-                                config.nome,
-                                config.email,
-                                config.token,
-                                config.cep,
-                                config.dataNasc,
-                                config.senha,
-                            )
-                        } else {
-                            // Não foi possível achar usuário
-                            erroApi.value = "Erro ao verificar usuário"
-                        }
-                    } else {
-                        // Algo passado pode estar errado
-                        erroApi.value = "Erro na solicitação: ${response.code()}"
-                    }
-                }
-
-                override fun onFailure(call: Call<Configuracao>, t: Throwable) {
-                    // Não foi possível conectar na api
-                    erroApi.value = "Falha na solicitação: ${t.message}"
-                }
-            })
-
-            putConfigCep.enqueue(object : retrofit2.Callback<Configuracao> {
-                override fun onResponse(
-                    call: Call<Configuracao>,
-                    response: Response<Configuracao>
-                ) {
-                    if (response.isSuccessful) {
-                        val config = response.body()
-                        if (config != null) {
-                            acertoApi.value = "CEP Atualizado"
-                            validacao.value = Configuracao(
-                                config.nome,
-                                config.email,
-                                config.token,
-                                config.cep,
-                                config.dataNasc,
-                                config.senha,
-                            )
-                        } else {
-                            // Não foi possível achar usuário
-                            erroApi.value = "Erro ao atualizar CEP"
-                        }
-                    } else {
-                        // Algo passado pode estar errado
-                        erroApi.value = "Erro na solicitação: ${response.code()}"
-                    }
-                }
-
-                override fun onFailure(call: Call<Configuracao>, t: Throwable) {
-                    // Não foi possível conectar na api
-                    erroApi.value = "Falha na solicitação: ${t.message}"
-                }
-            })
-
-            postCep.enqueue(object : retrofit2.Callback<Configuracao> {
-                override fun onResponse(
-                    call: Call<Configuracao>,
-                    response: Response<Configuracao>
-                ) {
-                    if (response.isSuccessful) {
-                        val config = response.body()
-                        if (config != null) {
-                            acertoApi.value = "CEP Cadastrado"
-                            validacao.value = Configuracao(
-                                config.nome,
-                                config.email,
-                                config.token,
-                                config.cep,
-                                config.dataNasc,
-                                config.senha,
-                            )
-                        } else {
-                            // Não foi possível achar usuário
-                            erroApi.value = "Erro ao cadastrar CEP"
-                        }
-                    } else {
-                        // Algo passado pode estar errado
-                        erroApi.value = "Erro na solicitação: ${response.code()}"
-                    }
-                }
-
-                override fun onFailure(call: Call<Configuracao>, t: Throwable) {
-                    // Não foi possível conectar na api
-                    erroApi.value = "Falha na solicitação: ${t.message}"
-                }
-            })
+        nome.value?.let { CampoDeEntrada(label = "Nome:", valor = it) { nome.value = it } }
+        email.value?.let { CampoDeEntrada(label = "E-mail:", valor = it) { email.value = it } }
+        cep.value?.let { CampoDeEntrada(label = "CEP:", valor = it) { cep.value = it } }
+        dataNasc.value?.let {
+            CampoDeEntrada(label = "Data de Nascimento:", valor = it) {
+                dataNasc.value = it
+            }
         }
-        if (erroApi.value.isNotBlank()) {
-            Text("${erroApi.value}")
-        } else if (acertoApi.value.isNotBlank()) {
-            Text("${acertoApi.value}")
-            Text("${validacao.value}")
-        }
+        senha.value?.let { CampoDeEntrada(label = "Senha:", valor = it) { senha.value = it } }
+
+        BotaoSalvar(valor = "Salvar", onClick = {
+
+            val putUserDados = apiConfigDadosUser.putConfigUser(
+                token = pk,
+                id = 85,
+                config = Configuracao(
+                    nome.value,
+                    email.value,
+                    cep.value,
+                    dataNasc.value,
+                    senha.value
+                )
+            )
+
+            putUserDados.enqueue(object : retrofit2.Callback<Configuracao> {
+                override fun onResponse(
+                    call: Call<Configuracao>,
+                    response: Response<Configuracao>
+                ) {
+                    if (response.isSuccessful) {
+                        val resposta = response.body()
+                        if (resposta != null) {
+                            acertoApi = "Dados do Usuário cadastrado"
+                            Configuracao(
+                                config.nome,
+                                config.email,
+                                config.token,
+                                config.cep,
+                                config.dataNasc,
+                                config.senha,
+                            )
+                        } else {
+                            // Não foi possível achar usuário
+                            erroApi = "Erro ao verificar usuário"
+                        }
+                    } else {
+                        // Algo passado pode estar errado
+                        erroApi = "Erro na solicitação: ${response.code()}"
+                    }
+                }
+
+                override fun onFailure(call: Call<Configuracao>, t: Throwable) {
+                    // Não foi possível conectar na api
+                    erroApi = "Falha na solicitação: ${t.message}"
+                }
+            })
+
+            val putUserCep = apiConfigEndereco.putConfigEnde(
+                token = pk,
+                id = 85,
+                config = Configuracao(
+                    cep.value
+                )
+            )
+
+            putUserCep.enqueue(object : retrofit2.Callback<Configuracao> {
+                override fun onResponse(
+                    call: Call<Configuracao>,
+                    response: Response<Configuracao>
+                ) {
+                    if (response.isSuccessful) {
+                        val resposta = response.body()
+                        if (resposta != null) {
+                            acertoApi = "Dados do Usuário cadastrado"
+                            Configuracao(
+                                config.cep
+                            )
+                        } else {
+                            // Não foi possível achar usuário
+                            erroApi = "Erro ao verificar usuário"
+                        }
+                    } else {
+                        // Algo passado pode estar errado
+                        erroApi = "Erro na solicitação: ${response.code()}"
+                    }
+                }
+
+                override fun onFailure(call: Call<Configuracao>, t: Throwable) {
+                    // Não foi possível conectar na api
+                    erroApi = "Falha na solicitação: ${t.message}"
+                }
+            })
+        })
+        Spacer(modifier = Modifier.height(16.dp))
     }
-    Spacer(modifier = Modifier.height(16.dp))
 }
-
 
 @Composable
 fun AtributoUsuarioConfig(valor: String, paddingTop: Int, paddingBottom: Int) {
@@ -286,12 +257,10 @@ fun CampoDeEntrada(label: String, valor: String, onValueChange: (String) -> Unit
                         .border(1.2.dp, Color.Black, RoundedCornerShape(6.dp)),
                     contentAlignment = Alignment.CenterStart
                 ) {
-
                     Box(
                         modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.CenterStart,
+                        contentAlignment = Alignment.CenterStart
                     ) {
-
                         if (!isHintVisible) {
                             innerTextField()
                         } else {
@@ -356,12 +325,3 @@ fun BotaoSalvar(valor: String, onClick: () -> Unit) {
         }
     }
 }
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreviewFromConfig() {
-    VitaeAppTheme {
-        TelaDeConfiguracao(rememberNavController())
-    }
-}
-

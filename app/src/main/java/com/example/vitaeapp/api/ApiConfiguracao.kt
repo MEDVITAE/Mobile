@@ -5,21 +5,36 @@ import com.example.vitaeapp.classes.Configuracao;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
+import retrofit2.http.Header
 import retrofit2.http.POST
 import retrofit2.http.PUT
+import retrofit2.http.Path
 
 interface ApiConfiguracao {
-    @GET("usuario/detalhes/1")
-    fun getConfigUser(@Body config: Configuracao): Call<Configuracao>
+    @GET("Api/usuario/detalhes/{id}")
+    fun getConfigDadosUser(
+        @Header("Authorization") token: String,
+        @Path("id") id: Int
+    ): Call<Configuracao>
 
-    @PUT("usuario")
-    fun putConfigUser(@Body config: Configuracao): Call<Configuracao>
+    @PUT("Api/usuario/{id}")
+    fun putConfigUser(
+        @Header("Authorization") token: String,
+        @Body config: Configuracao,
+        @Path("id") id: Int
+    ): Call<Configuracao>
 
-    @PUT("Endereco/detalhes")
-    fun putConfigEnde(@Body config: Configuracao): Call<Configuracao>
+    @PUT("Api/Endereco/detalhes/{id}")
+    fun putConfigEnde(
+        @Header("Authorization") token: String,
+        @Body config: Configuracao,
+        @Path("id") id: Int
+    ): Call<Configuracao>
 
-    @POST("Endereco/detalhes/1")
-    fun postConfigCep(@Body config: Configuracao): Call<Configuracao>
-
-
+//    @POST("Endereco/detalhes/{id}")
+//    fun postConfigCep(
+//        @Header("Authorization") token: String,
+//        @Body config: Configuracao,
+//        @Path("id") id: Int
+//    ): Call<Configuracao>
 }
