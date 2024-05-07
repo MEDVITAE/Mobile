@@ -1,18 +1,13 @@
 package com.example.vitaeapp.api
 
+import com.example.vitaeapp.classes.Caracteristicas
 import retrofit2.Call
 import retrofit2.http.Body
-import retrofit2.http.GET
+import retrofit2.http.Header
 import retrofit2.http.POST
-import retrofit2.http.PUT
 
 interface ApiCaracteristicas {
 
-    //Exemplos de funções http
-
-    //@GET("<endpoint>")
-    //fun get(): Call<CLASSE>
-
-    //@POST("<endpoint>")
-    //fun post(@Body <VARIAVEL>: <CLASSE>): Call<CLASSE>
+    @POST("/Caracteristicas")
+    fun postCaracteristicas(@Header ("Authorization") Authorization:String, @Body caracteristicas: Caracteristicas): Call<Caracteristicas>
 }
