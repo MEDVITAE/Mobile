@@ -18,4 +18,15 @@ object RetrofitServices {
 
         return cliente
     }
+
+    fun deleteHistoricoService(): ApiHistorico{
+        val cliente =
+            Retrofit.Builder()
+                .baseUrl(BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build()
+                .create(ApiHistorico::class.java)
+
+        return cliente
+    }
 }

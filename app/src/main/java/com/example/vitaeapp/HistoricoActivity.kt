@@ -35,6 +35,12 @@ import retrofit2.Response
 
 @Composable
 fun TelaHistorico() {
+    val token = remember { mutableStateOf(
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ2aXRhZS1zZXJ2aWNvcyIsInN1YiI6ImRpZWdvQGdtYWlsLmNvbSIsImV4cCI6MTcxNTEyMDE0MH0.HDfLEG2YXA0q6lb_1EL3gbSNg_5gfDF0jBNa_0p0xOE"
+    ) }
+
+    val id = remember { mutableStateOf(1)}
+
     val historico = remember {
         mutableStateOf(
             Historico(0, emptyList(), emptyList())
@@ -47,8 +53,8 @@ fun TelaHistorico() {
 
     val apiHistorico = RetrofitServices.getHistoricoService()
     val get = apiHistorico.getHistorico(
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ2aXRhZS1zZXJ2aWNvcyIsInN1YiI6ImRpZWdvQGdtYWlsLmNvbSIsImV4cCI6MTcxNTEwMTY1Nn0.Ypi4UUl_9P16b5Z6kOWqWGyx_bunaIlc60NRxNgf4Bc",
-        1
+        token.value,
+        id.value
     )
 
     get.enqueue(object : retrofit2.Callback<Historico> {
@@ -85,6 +91,7 @@ fun TelaHistorico() {
             hospitalMaisRecente?.let {
                 Proxima(agendaMaisRecente, it)
             }
+            Botoes(token.value, 7)
             Anteriores(historico.value, agendaMaisRecente)
         }
     }
@@ -137,27 +144,52 @@ fun Proxima(agenda: Agenda?, hospital: Hospital) {
                     }
                 }
             }
-            Row(Modifier.padding(vertical = 8.dp)) {
-                Button(
-                    onClick = {
-
-                    },
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Text("Cancelar")
-                }
-                Spacer(modifier = Modifier.width(8.dp))
-                Button(
-                    onClick = {
-
-                    },
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Text("Atualizar")
-                }
-            }
         }
     }
+}
+
+@Composable
+fun Botoes(token: String, id: Int){
+    val erroApi = remember { mutableStateOf("") }
+
+    Row(Modifier.padding(top = 8.dp)) {
+        Button(
+            onClick = {
+                val apiDeleteHistorico = RetrofitServices.deleteHistoricoService()
+                val delete = apiDeleteHistorico.deleteHistorico(
+                    token,
+                    id
+                )
+
+                delete.enqueue(object : retrofit2.Callback<Historico> {
+                    override fun onResponse(call: Call<Historico>, response: Response<Historico>) {
+                        if (response.message() == "Request failed with status code 400") {
+                            erroApi.value = "Deletado com sucesso"
+                        } else {
+                            erroApi.value = "Erro na solicitação: ${response.code()}"
+                        }
+                    }
+
+                    override fun onFailure(call: Call<Historico>, t: Throwable) {
+                        erroApi.value = "Falha na solicitação: ${t.message}"
+                    }
+                })
+            },
+            modifier = Modifier.weight(1f)
+        ) {
+            Text("Cancelar")
+        }
+        Spacer(modifier = Modifier.width(8.dp))
+        Button(
+            onClick = {
+
+            },
+            modifier = Modifier.weight(1f)
+        ) {
+            Text("Atualizar")
+        }
+    }
+    Text("${erroApi.value}")
 }
 
 @Composable

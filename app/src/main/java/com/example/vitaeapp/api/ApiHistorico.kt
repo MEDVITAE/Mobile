@@ -10,4 +10,7 @@ interface ApiHistorico {
 
     @GET("Agenda/Agendamentos/{id}")
     fun getHistorico(@Header("Authorization") token:String, @Path("id") id:Int): Call<Historico>
+
+    @GET("Agenda/{id}")
+    fun deleteHistorico(@Header("Authorization") token:String, @Path("id") id:Int): Call<Historico>
 }
