@@ -70,6 +70,7 @@ fun TelaCadastro(navController: NavHostController, modifier: Modifier = Modifier
 
     val erroApi = remember { mutableStateOf("") }
     val acertoApi = remember { mutableStateOf("") }
+    val highlightFields = remember { mutableStateOf(false) }
 
     Logo(logoPosicao = false)
 
@@ -80,7 +81,8 @@ fun TelaCadastro(navController: NavHostController, modifier: Modifier = Modifier
     ) {
 
         val validacaoCadastro = remember { mutableStateOf(UsuarioCadastro("", "", "", "", "")) }
-        val validacaoCaracteristicas = remember { mutableStateOf(Caracteristicas("", "", false, "", "", false, 0)) }
+        val validacaoCaracteristicas =
+            remember { mutableStateOf(Caracteristicas("", "", false, "", "", false, 0)) }
         val validacaoUsuario = remember { mutableStateOf(UsuarioLogin(0, "", "", "")) }
 
 
@@ -115,7 +117,8 @@ fun TelaCadastro(navController: NavHostController, modifier: Modifier = Modifier
                 isFieldValid = isNomeCompletoValid.value,
                 validationFunction = ::validarNomeCompleto,
                 errorMessage = nomeCompletoError.value,
-                dica = if (nomeCompletoError.value.isBlank()) "O seu nome deve conter 3 ou mais letras" else "O seu nome deve conter 3 ou mais letras"
+                dica = if (nomeCompletoError.value.isBlank()) "O seu nome deve conter 3 ou mais letras" else "O seu nome deve conter 3 ou mais letras",
+                textColor = if (highlightFields.value) Color.Red else Color.Black
             )
 
             AtributoUsuarioCadastro(
@@ -128,11 +131,12 @@ fun TelaCadastro(navController: NavHostController, modifier: Modifier = Modifier
                 valorInput = nascimento.value,
                 exemplo = "2024-12-31",
                 onValueChange = { nascimento.value = it },
-                isFieldValid = isSenhaValid.value,
+                isFieldValid = isNascimentoValid.value,
                 validationFunction = ::validarDtNasc,
                 errorMessage = nascimentoError.value,
                 dica = if (nascimentoError.value.isBlank()) "A data de nascimento deve ser YYYY-MM-DD" else "A data de nascimento deve ser YYYY-MM-DD",
-            )
+                textColor = if (highlightFields.value) Color.Red else Color.Black
+                )
 
             AtributoUsuarioCadastro(
                 valor = "CPF",
@@ -147,7 +151,8 @@ fun TelaCadastro(navController: NavHostController, modifier: Modifier = Modifier
                 isFieldValid = isCpfValid.value,
                 validationFunction = ::validarCPF,
                 errorMessage = cpfError.value,
-                dica = if (cpfError.value.isBlank()) "Insira apenas os números do seu CPF" else "Insira apenas os números do seu CPF"
+                dica = if (cpfError.value.isBlank()) "Insira apenas os números do seu CPF" else "Insira apenas os números do seu CPF",
+                textColor = if (highlightFields.value) Color.Red else Color.Black
             )
 
             AtributoUsuarioCadastro(
@@ -163,7 +168,8 @@ fun TelaCadastro(navController: NavHostController, modifier: Modifier = Modifier
                 isFieldValid = isEmailValid.value,
                 validationFunction = ::validarEmail,
                 errorMessage = emailError.value,
-                dica = if (emailError.value.isBlank()) "Insira um email no formato nome@email.com" else "Insira um email no formato nome@email.com"
+                dica = if (emailError.value.isBlank()) "Insira um email no formato nome@email.com" else "Insira um email no formato nome@email.com",
+                textColor = if (highlightFields.value) Color.Red else Color.Black
             )
 
             AtributoUsuarioCadastro(
@@ -180,6 +186,7 @@ fun TelaCadastro(navController: NavHostController, modifier: Modifier = Modifier
                 validationFunction = ::validarSenha,
                 errorMessage = senhaError.value,
                 dica = if (senhaError.value.isBlank()) "A senha deve conter pelo menos 8 caracteres" else "A senha deve conter pelo menos 8 caracteres",
+                textColor = if (highlightFields.value) Color.Red else Color.Black
             )
 
             if (nomeCompletoError.value.isNotBlank() ||
@@ -200,35 +207,40 @@ fun TelaCadastro(navController: NavHostController, modifier: Modifier = Modifier
         }
 
         BotaoCadastro("Cadastre-se") {
-            val cadastroUsuario = UsuarioCadastro(
-                nome = nomeCompleto.value,
-                cpf = cpf.value,
-                email = email.value,
-                senha = senha.value,
-                role = "PACIENTE"
-            )
+            if (isNomeCompletoValid.value &&
+                isNascimentoValid.value &&
+                isCpfValid.value &&
+                isEmailValid.value &&
+                isSenhaValid.value
+            ) {
 
-            val caracteristicas = Caracteristicas(
-                peso = "",
-                altura = null,
-                tatto = false,
-                sexo = null,
-                nascimento = nascimento.value,
-                apto = false
-            )
-            cadastrarUser(cadastroUsuario, caracteristicas, acertoApi, erroApi)
-        }
+                val cadastroUsuario = UsuarioCadastro(
+                    nome = nomeCompleto.value,
+                    cpf = cpf.value,
+                    email = email.value,
+                    senha = senha.value,
+                    role = "PACIENTE"
+                )
 
-        if (erroApi.value.isNotBlank()) {
-            Text("${erroApi.value}")
-        } else if (acertoApi.value.isNotBlank()) {
-            Text("${acertoApi.value}")
-            Text("${validacaoCadastro.value}")
-            Text("${validacaoCaracteristicas.value}")
-            //navController.navigate("Login")
+                val caracteristicas = Caracteristicas(
+                    peso = "",
+                    altura = null,
+                    tatto = false,
+                    sexo = null,
+                    nascimento = nascimento.value,
+                    apto = false
+                )
+                cadastrarUser(cadastroUsuario, caracteristicas, acertoApi, erroApi)
+            } else {
+                highlightFields.value = true
+            }
         }
+    //navController.navigate("Login")
     }
 }
+
+
+
 
 fun cadastrarUser(
     cadastro: UsuarioCadastro,
@@ -339,6 +351,7 @@ fun BtnIrParaLogin(navController: NavHostController) {
         )
     }
 }
+
 @Composable
 fun AtributoUsuarioCadastroBemVindo(
     valor: String,
@@ -386,11 +399,11 @@ fun InputGetInfoCadastro(
     isFieldValid: Boolean,
     validationFunction: (String) -> Boolean,
     errorMessage: String,
-    dica: String
+    dica: String,
+    textColor: Color
 ) {
     val isError = !validationFunction(valorInput) && valorInput.isNotBlank()
-    val fieldColor = if (isFieldValid) Color.Black else Color.Red
-    val errorTextColor = Color.Red
+    val fieldColor = if (isError && !isFieldValid) Color.Red else Color.Black
 
     Column(
         modifier = Modifier
@@ -401,7 +414,7 @@ fun InputGetInfoCadastro(
             value = valorInput,
             onValueChange = { onValueChange(it) },
             modifier = Modifier.background(color = Color.Transparent),
-            textStyle = LocalTextStyle.current.copy(color = fieldColor),
+            textStyle = LocalTextStyle.current.copy(color = textColor),
             singleLine = true,
             decorationBox = { innerTextField ->
                 Box(contentAlignment = Alignment.CenterStart) {
@@ -421,18 +434,17 @@ fun InputGetInfoCadastro(
             color = fieldColor
         )
 
+        Text(
+            text = dica,
+            color = fieldColor,
+            fontSize = 12.sp,
+            modifier = Modifier.padding(start = 15.dp, top = 4.dp)
+        )
+
         if (isError) {
             Text(
                 text = errorMessage,
                 color = Color.Red,
-                fontSize = 12.sp,
-                modifier = Modifier.padding(start = 15.dp, top = 4.dp)
-            )
-        } else {
-            // Mostrar a dica sempre, mesmo que não haja erro
-            Text(
-                text = dica,
-                color = Color.Black,
                 fontSize = 12.sp,
                 modifier = Modifier.padding(start = 15.dp, top = 4.dp)
             )
