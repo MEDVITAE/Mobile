@@ -4,19 +4,25 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitServices {
+    const val BASE_URL = "http://192.168.18.170:8082/"
+    fun getDetalhesUser(): ApiPerfil {
+        val cliente =
+            Retrofit.Builder()
+                .baseUrl(BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build()
+                .create(ApiPerfil::class.java)
 
-    //Exemplo de acesso de funções http
+        return cliente
+    }
+    fun getDetalhesHemo(): ApiDetalhesHemo {
+        val cliente =
+            Retrofit.Builder()
+                .baseUrl(BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build()
+                .create(ApiDetalhesHemo::class.java)
 
-    //const val BASE_URL = "<colocar a url do back end sem endpoint>"
-
-    //fun <get<nome da INTERFACE para acessar as funções>Service>(): <INTERFACE>{
-    //    val <VARIAVEL> =
-    //        Retrofit.Builder()
-    //            .baseUrl(BASE_URL)
-    //            .addConverterFactory(GsonConverterFactory.create())
-    //            .build()
-    //            .create(<INTERFACE>::class.java)
-
-    //    return <VARIAVEL>
-    //}
+        return cliente
+    }
 }
