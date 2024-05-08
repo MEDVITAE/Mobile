@@ -108,8 +108,7 @@ fun Tela(navController: NavHostController, modifier: Modifier = Modifier) {
             Menu(navController)
         }
         composable("Quiz") {
-            TelaQuiz()
-            Menu(navController)
+            TelaQuiz(navController)
         }
     }
 

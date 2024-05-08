@@ -1,5 +1,7 @@
 package com.example.vitaeapp
 
+import android.app.Activity
+import android.content.Intent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -13,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -23,21 +26,26 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.example.vitaeapp.api.RetrofitServices
 import com.example.vitaeapp.classes.Quiz
 import com.example.vitaeapp.ui.theme.VitaeAppTheme
 import retrofit2.Response
 
 @Composable
-fun TelaQuiz() {
-    val perguntas = remember { mutableStateOf(1) }
+fun TelaQuiz(navController: NavHostController) {
+    val contador = remember { mutableStateOf(1) }
     val altura = remember { mutableStateOf("") }
     val peso = remember { mutableStateOf("") }
     val perguntaTatuagem = remember { mutableStateOf(false) }
@@ -50,7 +58,7 @@ fun TelaQuiz() {
 
     Column {
         Questionario(
-            perguntas, altura, peso, perguntaTatuagem,
+            navController, contador, altura, peso, perguntaTatuagem,
             perguntaRelacao, perguntaDesconforto, perguntaMedicamento,
             perguntaDst, perguntaVacina, apto
         )
@@ -59,7 +67,8 @@ fun TelaQuiz() {
 
 @Composable
 fun Questionario(
-    perguntas: MutableState<Int>,
+    navController: NavHostController,
+    contador: MutableState<Int>,
     altura: MutableState<String>,
     peso: MutableState<String>,
     perguntaTatuagem: MutableState<Boolean>,
@@ -68,7 +77,7 @@ fun Questionario(
     perguntaMedicamento: MutableState<Boolean>,
     perguntaDst: MutableState<Boolean>,
     perguntaVacina: MutableState<Boolean>,
-    apto: MutableState<Boolean>
+    apto: MutableState<Boolean>,
 ) {
 
     Column(Modifier.padding(30.dp, 70.dp)) {
@@ -76,15 +85,15 @@ fun Questionario(
             "QUIZ DE APTIDÃO",
             style = TextStyle(fontFamily = fontFamilyRowdiesBold),
         )
-        when (perguntas.value) {
+        when (contador.value) {
             1 -> perguntaAltura(pergunta = altura)
             2 -> perguntaPeso(pergunta = peso)
-            3 -> perguntaTatuagem(perguntas = perguntas, valorPergunta = perguntaTatuagem)
-            4 -> perguntaRelacao(perguntas = perguntas, valorPergunta = perguntaRelacao)
-            5 -> perguntaDesconforto(perguntas = perguntas, valorPergunta = perguntaDesconforto)
-            6 -> perguntaMedicamento(perguntas = perguntas, valorPergunta = perguntaMedicamento)
-            7 -> perguntaDst(perguntas = perguntas, valorPergunta = perguntaDst)
-            8 -> perguntaVacina(perguntas = perguntas, valorPergunta = perguntaVacina)
+            3 -> perguntaTatuagem(perguntas = contador, valorPergunta = perguntaTatuagem)
+            4 -> perguntaRelacao(perguntas = contador, valorPergunta = perguntaRelacao)
+            5 -> perguntaDesconforto(perguntas = contador, valorPergunta = perguntaDesconforto)
+            6 -> perguntaMedicamento(perguntas = contador, valorPergunta = perguntaMedicamento)
+            7 -> perguntaDst(perguntas = contador, valorPergunta = perguntaDst)
+            8 -> perguntaVacina(perguntas = contador, valorPergunta = perguntaVacina)
         }
 
         Row(
@@ -93,23 +102,34 @@ fun Questionario(
                 .padding(top = 100.dp),
             horizontalArrangement = Arrangement.Center
         ) {
-            if (perguntas.value > 1) {
-                BotaoVoltar(onClick = { perguntas.value-- })
+            if (contador.value > 1 && contador.value < 9) {
+                BotaoVoltar(onClick = { contador.value-- })
             }
 
-            if (perguntas.value == 2 || perguntas.value == 8) {
+            if (contador.value == 2 || contador.value == 8) {
                 Spacer(modifier = Modifier.width(20.dp))
             }
 
-            if (perguntas.value < 8) {
-                BotaoAvancar(onClick = { perguntas.value++ })
+            if (contador.value > 0 && contador.value < 3) {
+                BotaoAvancar(onClick = { contador.value++ })
             }
-
-            if (perguntas.value == 9) {
-                BotaoFinalizar(
-                    perguntaTatuagem, perguntaRelacao, perguntaDesconforto, perguntaMedicamento,
-                    perguntaDst, perguntaVacina, apto, altura, peso
-                )
+            if (contador.value == 9) {
+                Column {
+                    Text(
+                        "Deseja finalizar o Quiz de Aptidão?",
+                        fontSize = 18.sp,
+                        fontFamily = fontRobotoBold
+                    )
+                    Spacer(modifier = Modifier.height(70.dp))
+                    Row {
+                        BotaoVoltar(onClick = { contador.value-- })
+                        Spacer(modifier = Modifier.width(10.dp))
+                        BotaoFinalizar(
+                            navController, perguntaTatuagem, perguntaRelacao, perguntaDesconforto, perguntaMedicamento,
+                            perguntaDst, perguntaVacina, apto, altura, peso
+                        )
+                    }
+                }
             }
         }
     }
@@ -197,6 +217,7 @@ fun BotaoVoltar(onClick: () -> Unit) {
 
 @Composable
 fun BotaoFinalizar(
+    navController: NavHostController,
     perguntaTatuagem: MutableState<Boolean>,
     perguntaRelacao: MutableState<Boolean>,
     perguntaDesconforto: MutableState<Boolean>,
@@ -213,10 +234,10 @@ fun BotaoFinalizar(
             .width(150.dp)
             .height(45.dp),
         onClick = {
-            validarFuncoes(
-                perguntaTatuagem,
+            ValidarFuncoes(
+                navController = navController, perguntaTatuagem,
                 perguntaRelacao, perguntaDesconforto, perguntaMedicamento,
-                perguntaDst, perguntaVacina, apto
+                perguntaDst, perguntaVacina, apto, altura, peso
             )
         }
     ) {
@@ -317,11 +338,15 @@ fun perguntaAltura(pergunta: MutableState<String>) {
         TextField(
             value = pergunta.value,
             onValueChange = { pergunta.value = it },
-            singleLine = true, // Define o TextField como uma única linha
+            singleLine = true,
+            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
             modifier = Modifier.fillMaxWidth()
         )
         Row {
             Text("1/8")
+        }
+        if (pergunta.value.isEmpty() || pergunta.value.toDouble() <= 0.0 || pergunta.value.toDouble() > 3.0) {
+            Text("Altura Inválida")
         }
     }
 }
@@ -343,11 +368,15 @@ fun perguntaPeso(pergunta: MutableState<String>) {
         TextField(
             value = pergunta.value,
             onValueChange = { pergunta.value = it },
-            singleLine = true, // Define o TextField como uma única linha
+            singleLine = true,
+            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
             modifier = Modifier.fillMaxWidth()
         )
         Row {
             Text("2/8")
+        }
+        if (pergunta.value.isEmpty() || pergunta.value.toDouble() < 0.0) {
+            Text("Peso Inválido")
         }
     }
 }
@@ -569,83 +598,54 @@ fun perguntaVacina(perguntas: MutableState<Int>, valorPergunta: MutableState<Boo
     }
 }
 
-fun validarFuncoes(
+fun ValidarFuncoes(
+    navController: NavHostController,
     perguntaTatuagem: MutableState<Boolean>,
     perguntaRelacao: MutableState<Boolean>,
     perguntaDesconforto: MutableState<Boolean>,
     perguntaMedicamento: MutableState<Boolean>,
     perguntaDst: MutableState<Boolean>,
     perguntaVacina: MutableState<Boolean>,
-    apto: MutableState<Boolean>
+    apto: MutableState<Boolean>,
+    altura: MutableState<String>,
+    peso: MutableState<String>
 ) {
     if (perguntaTatuagem.value || perguntaRelacao.value || perguntaDesconforto.value ||
         perguntaMedicamento.value || perguntaDst.value || perguntaVacina.value
     ) {
-        conectarBanco(false)
+        conectarBanco(false, altura, peso, navController)
     }
     else {
-        conectarBanco(true)
+        conectarBanco(true, altura, peso, navController)
     }
 }
 
-fun validarAlturaPeso(
-    altura: MutableState<String>,
-    peso: MutableState<String>,
-) {
-    // Verifica se a altura é um número válido
-    val alturaFloat = altura.value.toFloatOrNull()
-    if (alturaFloat == null || alturaFloat <= 0 || alturaFloat > 3) {
-        println("Altura Inválida")
-    }
-
-    // Verifica se o peso é um número válido
-    val pesoFloat = peso.value.toFloatOrNull()
-    if (pesoFloat == null || pesoFloat < 0) {
-        println("Peso Inválido")
-    }
-
-    // Verifica se os campos estão vazios
-    val camposVazios = altura.value.isEmpty() || peso.value.isEmpty()
-    if (camposVazios) {
-        println("Preencha os campos, por favor")
-    }
-}
-
-
-fun conectarBanco(validarFuncoes: Boolean) {
+fun conectarBanco(validarFuncoes: Boolean, altura: MutableState<String>, peso: MutableState<String>, navController: NavHostController) {
 
     var erroApi = ""
 
     val apiQuiz = RetrofitServices.getApiQuiz()
 
-    val quiz = Quiz(altura = null, peso = null, validarFuncoes)
+    val quiz = Quiz(altura = altura.value, peso = peso.value, validarFuncoes)
 
-    val put = apiQuiz.put(quiz, 55, "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ2aXRhZS1zZXJ2aWNvcyIsInN1YiI6ImFtYXJlbG9AZ21haWwuY29tIiwiZXhwIjoxNzE0NjgxMzUwfQ.Q9v_uJYd1_e_78yML1suC779pnjYLEDG9mBxQFUFFFs")
+    val put = apiQuiz.put(quiz, 55, "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ2aXRhZS1zZXJ2aWNvcyIsInN1YiI6ImFtYXJlbG9AZ21haWwuY29tIiwiZXhwIjoxNzE1MjA2NzEyfQ.xoTEzRX2HbB5hqfkmxxqwB9IvhgQjvtlG3wMh1LR9As")
 
     put.enqueue(object : retrofit2.Callback<Quiz> {
-        // esta função é invocada caso:
-        // a chamada ao endpoint ocorra sem problemas
-        // o corpo da resposta foi convertido para o tipo indicado
         override fun onResponse(call: retrofit2.Call<Quiz>, response: Response<Quiz>) {
-            if (response.isSuccessful) { // testando se a resposta não é 4xx nem 5xx
-                val lista = response.body() // recuperando o corpo da resposta
+            if (response.isSuccessful) {
+                val lista = response.body()
                 if (lista != null) {
-                    println("Ok")
+                    navController.navigate("Perfil")
                 }
             } else {
                 erroApi = response.errorBody().toString()
             }
         }
-
-        // esta função é invocada caso:
-        // não seja possivel chamar a API (rede fora, por exemplo)
-        // não seja possivel converter o corpo da resposta no tipo esperado
         override fun onFailure(call: retrofit2.Call<Quiz>, t: Throwable) {
             erroApi = t.message!!
         }
 
     })
-
 }
 
 
@@ -653,6 +653,6 @@ fun conectarBanco(validarFuncoes: Boolean) {
 @Composable
 fun GreetingPreviewFromQuiz() {
     VitaeAppTheme {
-        TelaQuiz()
+        TelaQuiz(rememberNavController())
     }
 }
