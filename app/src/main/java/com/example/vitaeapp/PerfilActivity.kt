@@ -1,9 +1,5 @@
 package com.example.vitaeapp
 
-import android.os.Build
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -12,69 +8,104 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.vitaeapp.R.*
+import com.example.vitaeapp.api.RetrofitServices
+import com.example.vitaeapp.classes.UsuarioPerfil
 import com.example.vitaeapp.ui.theme.VitaeAppTheme
-import java.time.format.TextStyle
+import retrofit2.Call
+import retrofit2.Response
 
 @Composable
 fun TelaPerfil() {
+    var isLoading by remember { mutableStateOf(true) }
     var nome = remember { mutableStateOf("") }
     var peso = remember { mutableStateOf("") }
     var altura = remember { mutableStateOf("") }
     var cpf = remember { mutableStateOf("") }
+    var quantidadeDoacao = remember { mutableStateOf(0) }
+    var apto = remember { mutableStateOf(false) }
+    var tipoSangue = remember { mutableStateOf("") }
+    val apiPerfil = RetrofitServices.getDetalhesUser()
+    val get = apiPerfil.getDetalhesUsuario(
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ2aXRhZS1zZXJ2aWNvcyIsInN1YiI6ImFtYXJlbG9AZ21haWwuY29tIiwiZXhwIjoxNzE1MTg1OTcxfQ.VOii79Nb1JPO5W2MzdK3KZgzkdlojkoFApIwJIuZ3nQ",
+        1
+    )
+    val erroApi = remember { mutableStateOf("") }
+    LaunchedEffect(Unit) { // Executa quando o componente é iniciado
+        get.enqueue(object : retrofit2.Callback<UsuarioPerfil> {
+            override fun onResponse(
+                call: Call<UsuarioPerfil>,
+                response: Response<UsuarioPerfil>
+            ) {
+                if (response.isSuccessful) {
+                    val obj = response.body()
+                    if (obj != null) {
+                        nome.value = obj.nome
+                        altura.value = obj.altura
+                        peso.value = obj.peso
+                        cpf.value = obj.cpf
+                        tipoSangue.value = obj.tipo
+                        quantidadeDoacao.value = obj.numero
+                        apto.value = obj.apto
+                    } else {
+                        erroApi.value = "Erro ao buscar detalhes"
+                    }
+                } else {
+                    erroApi.value = "Erro na solicitação: ${response.code()}"
+                }
+                isLoading = false // Indica que os dados foram carregados
+            }
 
+            override fun onFailure(call: Call<UsuarioPerfil>, t: Throwable) {
+                // Lógica para lidar com falha na solicitação
+                isLoading = false // Indica que os dados foram carregados
+            }
+        })
+    }
 
-    Column {
-
-        AtributoUsuario(stringResource(id = (string.ola)), 70, 15)
-        QuadradoInfo()
-        AtributoUsuario(stringResource(id = (string.title_input_nome)), 12, 5)
-        InputGetInfo( valor = nome.value) { nome.value = it }
-        AtributoUsuario(stringResource(id = (string.title_input_cpf)), 12, 10)
-        InputGetInfo(valor = cpf.value) { cpf.value = it }
-        AtributoUsuario(stringResource(id = (string.title_input_peso)), 12, 10)
-        InputGetInfo(valor = peso.value) { peso.value = it }
-        AtributoUsuario(stringResource(id = (string.title_input_altura)), 12, 10)
-        InputGetInfo( valor = altura.value) { altura.value = it }
-        BotaoEditar("Editar")
-
+    if (isLoading) {
+        // Exibe mensagem de carregamento enquanto os dados estão sendo carregados
+        Text(text = "Carregando dados...")
+    } else {
+        // Exibe os campos com os valores recebidos da API
+        Column {
+            AtributoUsuario(stringResource(id = (string.ola)) + nome.value, 70, 15)
+            QuadradoInfo(apto.value, quantidadeDoacao.value, tipoSangue.value)
+            AtributoUsuario(stringResource(id = (string.title_input_nome)), 12, 5)
+            InputGetInfo(valor = nome.value) { nome.value = it }
+            AtributoUsuario(stringResource(id = (string.title_input_cpf)), 12, 10)
+            InputGetInfo(valor = cpf.value) { cpf.value = it }
+            AtributoUsuario(stringResource(id = (string.title_input_peso)), 12, 10)
+            InputGetInfo(valor = peso.value) { peso.value = it }
+            AtributoUsuario(stringResource(id = (string.title_input_altura)), 12, 10)
+            InputGetInfo(valor = altura.value) { altura.value = it }
+            BotaoEditar("Editar")
+        }
     }
 }
 
@@ -99,8 +130,7 @@ fun AtributoUsuario(valor: String, paddingTop: Int, paddingBottom: Int) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun InputGetInfo( valor: String, onValueChange: (String) -> Unit) {
-    val valorInput = remember { mutableStateOf("") }
+fun InputGetInfo(valor: String, onValueChange: (String) -> Unit) {
     Column(
         modifier = Modifier
             .width(450.dp)
@@ -109,28 +139,24 @@ fun InputGetInfo( valor: String, onValueChange: (String) -> Unit) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(25.dp) // Definindo a altura do Box como 50
+                .height(25.dp)
                 .background(Color.Transparent)
         ) {
-            TextField(
-                value = valorInput.value,
-                onValueChange = { onValueChange(it); valorInput.value = it },
-                singleLine = true,
-                textStyle = androidx.compose.ui.text.TextStyle(fontSize = 17.sp,fontFamily=fontRobotoBold, color = Color.Black),
-                colors = TextFieldDefaults.textFieldColors(
-                    containerColor = Color.Transparent,
-                ),
+            Text(
+                valor,
+                fontSize = 17.sp,
+                fontFamily = fontRobotoBold,
+                color = Color.Black,
                 modifier = Modifier.width(350.dp)
             )
         }
-
+        Divider(color = Color.Black, modifier = Modifier.height(1.dp))
     }
 }
 
 
-
 @Composable
-fun QuadradoComTexto(imagemTexto: String, textoQuadrado: String) {
+fun QuadradoComTexto(imagemTexto: Int, textoQuadrado: String) {
 
     Column {
         Row {
@@ -163,7 +189,7 @@ fun QuadradoComTexto(imagemTexto: String, textoQuadrado: String) {
                         verticalAlignment = Alignment.CenterVertically,
 
                         ) {
-                        Text(imagemTexto, fontSize = 30.sp, fontFamily = fontFamilyRowdies)
+                        Text("${imagemTexto}", fontSize = 30.sp, fontFamily = fontFamilyRowdies)
                     }
 
                 }
@@ -225,7 +251,7 @@ fun QuadradoComImagem(imagemId: Int, textoQuadrado: String) {
 
 
 @Composable
-fun QuadradoInfo() {
+fun QuadradoInfo(apto: Boolean, quantidadeDoacao: Int, tipoSangue: String) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -236,19 +262,34 @@ fun QuadradoInfo() {
     ) {
         Row(
         ) {
+            var ImagemApto: Int = mipmap.check
+            var ImagemTipo = mipmap.seminfo
+            if (!apto) {
+                ImagemApto = mipmap.naoapto
+            }
+            if (tipoSangue == "AB") {
+                ImagemTipo = mipmap.ab
+            } else if (tipoSangue == "-AB") {
+                ImagemTipo = mipmap.abnegativo
+            }
+            else if (tipoSangue == "-A") {
+                ImagemTipo = mipmap.anegativo
+            }else if(tipoSangue == "A"){
+                 ImagemTipo = mipmap.a
+            }
             QuadradoComImagem(
-                mipmap.check,
+                ImagemApto,
                 stringResource(id = (string.title_perfil_apto_a_doacao))
             )
             Spacer(modifier = Modifier.width(10.dp))
             QuadradoComTexto(
-                "5",
+                quantidadeDoacao,
                 stringResource(id = (string.title_perfil_quantidade_doacao))
             )
 
             Spacer(modifier = Modifier.width(10.dp))
             QuadradoComImagem(
-                mipmap.tiposangue,
+                ImagemTipo,
                 stringResource(id = (string.title_perfil_tipo_sangue))
             )
         }

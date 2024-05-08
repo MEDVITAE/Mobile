@@ -5,7 +5,7 @@
     <string name="title_input_cpf">CPF</string>
     <string name="title_input_peso">Peso</string>
     <string name="title_input_altura">Altura</string>
-    <string name="ola">Olá,Joao vitor</string>
+    <string name="ola">Olá,</string>
     <string name="title_perfil_quantidade_doacao">Doações feitas</string>
     <string name="title_perfil_apto_a_doacao">Disponibilidade</string>
     <string name="title_perfil_tipo_sangue">Tipo sanguineo</string>
