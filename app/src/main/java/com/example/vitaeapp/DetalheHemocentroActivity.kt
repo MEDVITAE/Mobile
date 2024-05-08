@@ -171,8 +171,7 @@ fun TelaDetalheHemocentro(modifier: Modifier = Modifier) {
 
         }
     }
-
-    Logo()
+    Logo(true)
 }
 
 @Composable

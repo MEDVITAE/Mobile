@@ -1,5 +1,6 @@
 package com.example.vitaeapp
 
+import android.icu.text.Transliterator.Position
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -20,6 +21,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -32,28 +34,53 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.vitaeapp.api.RetrofitServices
 import com.example.vitaeapp.classes.Ranking
+import com.example.vitaeapp.classes.Usuario
 import com.example.vitaeapp.ui.theme.Rowdies
 import com.example.vitaeapp.ui.theme.VitaeAppTheme
+import retrofit2.Call
+import retrofit2.Response
 
 @Composable
 fun TelaRanking(modifier: Modifier = Modifier) {
-    val listaRanking = remember {
-        mutableStateListOf(
-            Ranking(nome = "Vinicios Garcia", pontuacao = 10),
-            Ranking(nome = "Pedro Afonso", pontuacao = 9),
-            Ranking(nome = "Wilian Paternezi", pontuacao = 8),
-            Ranking(nome = "Maessio Damasceno", pontuacao = 9),
-            Ranking(nome = "Diego Costa", pontuacao = 11),
-        )
-    }
-    Posicoes(lista = listaRanking)
+    Posicoes()
 }
 
 @Composable
-fun Posicoes(lista: List<Ranking>) {
+fun Posicoes() {
+
+    val ranking = remember {
+        mutableStateListOf<Ranking>()
+    }
+
+    val erroApi = remember { mutableStateOf("") }
+
+    val apiRanking = RetrofitServices.getApiRanking()
+
+    val get = apiRanking.get("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ2aXRhZS1zZXJ2aWNvcyIsInN1YiI6ImFtYXJlbEBnbWFpbC5jb20iLCJleHAiOjE3MTQ5NDcxNTV9._CmO0AMYX3Uz5-q68-yKU4ASCmIMVJixWWNvd1TuCgU")
 
     val scrollState = rememberScrollState()
+
+    get.enqueue(object : retrofit2.Callback<List<Ranking>> {
+
+        override fun onResponse(call: Call<List<Ranking>>, response: Response<List<Ranking>>) {
+            if (response.isSuccessful) {
+                val lista = response.body()
+                if (lista != null) {
+                    ranking.clear()
+                    ranking.addAll(lista)
+                }
+            } else {
+                erroApi.value = response.errorBody().toString()
+            }
+        }
+
+        override fun onFailure(call: Call<List<Ranking>>, t: Throwable) {
+            erroApi.value = t.message!!
+        }
+
+    })
 
     LaunchedEffect(Unit) {
         scrollState.animateScrollTo(100)
@@ -78,7 +105,6 @@ fun Posicoes(lista: List<Ranking>) {
             }
         }
 
-        val listaOrdenada = lista.sortedByDescending { it.pontuacao }
 
         Box(
             modifier = Modifier
@@ -87,14 +113,21 @@ fun Posicoes(lista: List<Ranking>) {
                 .verticalScroll(scrollState)
         ) {
             Column {
-                listaOrdenada.forEachIndexed { index, item ->
-                    RankingItem(ranking = item, position = index + 1)
+                if (erroApi.value.isNotBlank()) {
+                    Text(erroApi.value, style = TextStyle(color = Color.Red))
+                } else {
+                    if (ranking.isEmpty()) {
+                        Text("Sem doadores no ranking")
+                    } else {
+                        ranking.forEachIndexed { index, item ->
+                            RankingItem(ranking = item, position = index + 1)
+                        }
+                    }
                 }
             }
         }
     }
 }
-
 @Composable
 fun RankingItem(ranking: Ranking, position: Int) {
 
@@ -157,7 +190,7 @@ fun RankingItem(ranking: Ranking, position: Int) {
             Spacer(modifier = Modifier.width(16.dp))
 
             Text(
-                text = "${ranking.pontuacao}",
+                text = "${ranking.totalDoado}",
                 style = TextStyle(
                     fontFamily = Rowdies,
                     fontSize = 16.sp,
