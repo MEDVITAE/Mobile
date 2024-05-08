@@ -6,6 +6,6 @@ data class Agenda(
     val idAgenda: Int,
     val fkUsuario: Int,
     val fkHospital: Int,
-    val horario: Date
+    val horario: String
 ) {
 }
