@@ -5,7 +5,7 @@
     <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
-        android:networkSecurityConfig="@xml/network_security_config"
+        android:usesCleartextTraffic="true"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -26,7 +26,38 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
+        <activity
+            android:name=".ConfigActivity"
+            android:label="ConfigActivity">
+        </activity>
+        <activity
+            android:name=".HistoricoActivity"
+            android:label="HistoricoActivity">
+        </activity>
+        <activity
+            android:name=".PerfilActivity"
+            android:label="PerfilActivity">
+        </activity>
+        <activity
+            android:name=".RankingActivity"
+            android:label="RankingActivity">
+        </activity>
+        <activity
+            android:name=".DetalheHemocentroActivity"
+            android:label="DetalheHemocentroActivity">
+        </activity>
+        <activity
+            android:name=".CadastroActivity"
+            android:label="CadastroActivity">
+        </activity>
+        <activity
+            android:name=".LoginActivity"
+            android:label="LoginActivity">
+        </activity>
+        <activity
+            android:name=".QuizActivity"
+            android:label="QuizActivity">
+        </activity>
     </application>
 
 </manifest>

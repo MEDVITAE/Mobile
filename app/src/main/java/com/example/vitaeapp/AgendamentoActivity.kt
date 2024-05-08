@@ -52,7 +52,7 @@ fun TelaAgendamento() {
 
     val hospitais = remember {
         mutableStateListOf(
-            HospitalTest(1, "Hospital 1", "Rua lá"),
+            HospitalTest(1, "Hospital 1", "Rua l"),
             HospitalTest(2, "Hospital 2", "Na rua de trás"),
             HospitalTest(3, "Hospital 3", "Pertinho"),
             HospitalTest(4, "Hospital 4", "Virando a esquina"),
