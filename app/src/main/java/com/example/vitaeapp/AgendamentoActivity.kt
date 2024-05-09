@@ -11,22 +11,17 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -43,40 +38,72 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.vitaeapp.api.RetrofitServices
 import com.example.vitaeapp.calendarioUi.CalendarioUiState
 import com.example.vitaeapp.calendarioUi.util.CalendarioViewModel
 import com.example.vitaeapp.calendarioUi.util.DateUtil
 import com.example.vitaeapp.calendarioUi.util.getDisplayName
-import com.example.vitaeapp.classes.HospitalTest
+import com.example.vitaeapp.classes.Endereco
+import com.example.vitaeapp.classes.Hospital
 import com.example.vitaeapp.ui.theme.VitaeAppTheme
-import java.time.LocalDate
+import retrofit2.Call
+import retrofit2.Response
 import java.time.YearMonth
 
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun TelaAgendamento() {
+
+    val hospitais = remember { mutableStateListOf<Hospital>() }
     val nomeHospital = remember { mutableStateOf("") }
 
-    val hospitais = remember {
-        mutableStateListOf(
-            HospitalTest(1, "Hospital 1", "Rua l"),
-            HospitalTest(2, "Hospital 2", "Na rua de trás"),
-            HospitalTest(3, "Hospital 3", "Pertinho"),
-            HospitalTest(4, "Hospital 4", "Virando a esquina"),
+    val token = remember {
+        mutableStateOf(
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ2aXRhZS1zZXJ2aWNvcyIsInN1YiI6ImRpZWdvQGdtYWlsLmNvbSIsImV4cCI6MTcxNTI3ODU1MX0.fxnk6elheD656lppwEGAcoIwoB3ciamVYp8hc8hB4_g"
         )
     }
 
-    //Hospitais(hospitais, nomeHospital)
-    Calendario()
+    val erroApi = remember { mutableStateOf("") }
+
+    val apiHospital = RetrofitServices.getHospitais()
+    val get = apiHospital.get(
+        token.value,
+    )
+
+    get.enqueue(object : retrofit2.Callback<List<Hospital>> {
+        override fun onResponse(call: Call<List<Hospital>>, response: Response<List<Hospital>>) {
+            if (response.isSuccessful) {
+                val lista = response.body()
+                if (lista != null) {
+                    hospitais.addAll(lista)
+                } else {
+                    erroApi.value = "Erro ao buscar hospital"
+                }
+            } else {
+                erroApi.value = "Erro na solicitação: ${response.code()}"
+            }
+        }
+
+        override fun onFailure(call: Call<List<Hospital>>, t: Throwable) {
+            erroApi.value = "Falha na solicitação: ${t.message}"
+        }
+    })
+
+    if (erroApi.value.isNotEmpty()) {
+        Text(erroApi.value)
+    } else {
+        Hospitais(hospitais, nomeHospital)
+    }
+    //Calendario()
     //Horarios()
 }
 
 @Composable
-fun Hospitais(lista: List<HospitalTest>, nome: MutableState<String>) {
+fun Hospitais(lista: List<Hospital>, nome: MutableState<String>) {
     Column(
         Modifier
-            .padding(30.dp, 90.dp)
+            .padding(15.dp, 90.dp)
             .fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -106,7 +133,8 @@ fun Hospitais(lista: List<HospitalTest>, nome: MutableState<String>) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 8.dp),
+                        .padding(vertical = 8.dp)
+                        .padding(start = 10.dp, end = 10.dp),
                     contentAlignment = Alignment.CenterStart
                 ) {
                     innerTextField()
@@ -118,48 +146,54 @@ fun Hospitais(lista: List<HospitalTest>, nome: MutableState<String>) {
 }
 
 @Composable
-fun ListaHospitais(lista: List<HospitalTest>) {
+fun ListaHospitais(lista: List<Hospital>) {
     Column(
         modifier = Modifier.padding(top = 50.dp)
     ) {
         lista.forEach { itens ->
-            Row(
-                modifier = Modifier.padding(bottom = 10.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Image(
-                    modifier = Modifier.size(50.dp),
-                    painter = painterResource(id = R.mipmap.hemo_sangue),
-                    contentDescription = ""
-                )
-                Spacer(modifier = Modifier.width(5.dp))
-                Column(
-                    modifier = Modifier
-                        .height(60.dp)
-                        .fillMaxWidth()
-                        .background(
-                            colorResource(id = R.color.white),
-                            shape = RoundedCornerShape(5.dp)
-                        ),
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    Row(modifier = Modifier.padding(start = 15.dp)) {
-                        Text(
-                            "Nome: ",
-                            style = TextStyle(
-                                fontFamily = fontRobotoBold
-                            )
+            itens.enderecos?.let { enderecos ->
+                if (enderecos.isNotEmpty()) {
+                    val endereco = enderecos[0]
+                    Row(
+                        modifier = Modifier.padding(bottom = 10.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Image(
+                            modifier = Modifier.size(50.dp),
+                            painter = painterResource(id = R.mipmap.hemo_sangue),
+                            contentDescription = ""
                         )
-                        Text("${itens.nome}")
-                    }
-                    Row(modifier = Modifier.padding(start = 15.dp)) {
-                        Text(
-                            "Endereço: ",
-                            style = TextStyle(
-                                fontFamily = fontRobotoBold
-                            )
-                        )
-                        Text("${itens.endereco}")
+                        Spacer(modifier = Modifier.width(5.dp))
+                        Column(
+                            modifier = Modifier
+                                .height(60.dp)
+                                .fillMaxWidth()
+                                .background(
+                                    colorResource(id = R.color.white),
+                                    shape = RoundedCornerShape(5.dp)
+                                ),
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            Row(modifier = Modifier.padding(start = 10.dp)) {
+                                Text(
+                                    "Nome: ",
+                                    style = TextStyle(
+                                        fontFamily = fontRobotoBold
+                                    )
+                                )
+                                Text(itens.nome)
+                            }
+                            Row(modifier = Modifier.padding(start = 10.dp)) {
+                                Text(
+                                    "Endereço: ",
+                                    style = TextStyle(
+                                        fontFamily = fontRobotoBold
+                                    )
+                                )
+
+                                Text(endereco.logradouro + " " + endereco.rua)
+                            }
+                        }
                     }
                 }
             }
