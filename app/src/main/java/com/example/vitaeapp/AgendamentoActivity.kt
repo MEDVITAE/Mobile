@@ -16,6 +16,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -26,6 +28,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -101,6 +104,14 @@ fun TelaAgendamento() {
 
 @Composable
 fun Hospitais(lista: List<Hospital>, nome: MutableState<String>) {
+    val filteredList = remember {
+        derivedStateOf {
+            lista.filter { hospital ->
+                hospital.nome.contains(nome.value, ignoreCase = true)
+            }
+        }
+    }
+
     Column(
         Modifier
             .padding(15.dp, 90.dp)
@@ -141,16 +152,16 @@ fun Hospitais(lista: List<Hospital>, nome: MutableState<String>) {
                 }
             }
         )
-        ListaHospitais(lista = lista)
+        ListaHospitais(lista = filteredList.value, nomeHospital = nome.value)
     }
 }
 
 @Composable
-fun ListaHospitais(lista: List<Hospital>) {
-    Column(
+fun ListaHospitais(lista: List<Hospital>, nomeHospital: String) {
+    LazyColumn(
         modifier = Modifier.padding(top = 50.dp)
     ) {
-        lista.forEach { itens ->
+        items(lista) { itens ->
             itens.enderecos?.let { enderecos ->
                 if (enderecos.isNotEmpty()) {
                     val endereco = enderecos[0]
