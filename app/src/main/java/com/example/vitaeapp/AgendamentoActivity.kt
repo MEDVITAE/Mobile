@@ -57,13 +57,16 @@ import java.time.YearMonth
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun TelaAgendamento() {
-
+    val contador = remember { mutableStateOf(0) }
     val hospitais = remember { mutableStateListOf<Hospital>() }
     val nomeHospital = remember { mutableStateOf("") }
+    val idHospital = remember { mutableStateOf(0) }
+    val dataSelecionada = remember { mutableStateOf<CalendarioUiState.Date?>(null) }
+    val horarioSelecionado = remember { mutableStateOf<String>("") }
 
     val token = remember {
         mutableStateOf(
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ2aXRhZS1zZXJ2aWNvcyIsInN1YiI6ImRpZWdvQGdtYWlsLmNvbSIsImV4cCI6MTcxNTI3ODU1MX0.fxnk6elheD656lppwEGAcoIwoB3ciamVYp8hc8hB4_g"
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ2aXRhZS1zZXJ2aWNvcyIsInN1YiI6ImRpZWdvQGdtYWlsLmNvbSIsImV4cCI6MTcxNTM2NjIwMH0.qxkCVBusQO0t9XOCDLZ_xdVR9cdjtMkmupIrML-ylUA"
         )
     }
 
@@ -96,14 +99,45 @@ fun TelaAgendamento() {
     if (erroApi.value.isNotEmpty()) {
         Text(erroApi.value)
     } else {
-        Hospitais(hospitais, nomeHospital)
+        Text("${contador.value}")
+        when (contador.value) {
+            0 -> Hospitais(hospitais, nomeHospital, idHospital = idHospital, contador = contador)
+            1 -> Calendario(dataSelecionada = dataSelecionada, contador = contador)
+            2 -> Horarios(horario = horarioSelecionado)
+        }
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 100.dp),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            if (contador.value == 1) {
+                BtnVoltar { contador.value-- }
+            }
+
+            if (contador.value == 2) {
+                BtnVoltar { contador.value-- }
+                Spacer(modifier = Modifier.width(20.dp))
+                BtnFinalizar(
+                    idUsuario = 1,
+                    idHospital = 1,
+                    data = "",
+                    horario = "",
+                    token = token.value
+                )
+            }
+        }
     }
-    //Calendario()
-    //Horarios()
 }
 
 @Composable
-fun Hospitais(lista: List<Hospital>, nome: MutableState<String>) {
+fun Hospitais(
+    lista: List<Hospital>,
+    nome: MutableState<String>,
+    idHospital: MutableState<Int>,
+    contador: MutableState<Int>
+) {
     val filteredList = remember {
         derivedStateOf {
             lista.filter { hospital ->
@@ -152,12 +186,22 @@ fun Hospitais(lista: List<Hospital>, nome: MutableState<String>) {
                 }
             }
         )
-        ListaHospitais(lista = filteredList.value, nomeHospital = nome.value)
+        ListaHospitais(
+            lista = filteredList.value,
+            nomeHospital = nome.value,
+            idHospital = idHospital,
+            contador = contador
+        )
     }
 }
 
 @Composable
-fun ListaHospitais(lista: List<Hospital>, nomeHospital: String) {
+fun ListaHospitais(
+    lista: List<Hospital>,
+    nomeHospital: String,
+    idHospital: MutableState<Int>,
+    contador: MutableState<Int>
+) {
     LazyColumn(
         modifier = Modifier.padding(top = 50.dp)
     ) {
@@ -166,7 +210,12 @@ fun ListaHospitais(lista: List<Hospital>, nomeHospital: String) {
                 if (enderecos.isNotEmpty()) {
                     val endereco = enderecos[0]
                     Row(
-                        modifier = Modifier.padding(bottom = 10.dp),
+                        modifier = Modifier
+                            .padding(bottom = 10.dp)
+                            .clickable {
+                                idHospital.value = itens.id
+                                contador.value++
+                            },
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Image(
@@ -215,11 +264,13 @@ fun ListaHospitais(lista: List<Hospital>, nomeHospital: String) {
 @OptIn(ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun Calendario(viewModel: CalendarioViewModel = androidx.lifecycle.viewmodel.compose.viewModel()) {
+fun Calendario(
+    viewModel: CalendarioViewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
+    dataSelecionada: MutableState<CalendarioUiState.Date?>,
+    contador: MutableState<Int>
+) {
 
     val uiState = viewModel.uiState.collectAsState()
-    val conteudoItemsSelecionado = remember { mutableStateOf<CalendarioUiState.Date?>(null) }
-
     CalendarioWidget(
         days = DateUtil.diasDaSemana,
         yearMonth = uiState.value.yearMonth,
@@ -231,11 +282,10 @@ fun Calendario(viewModel: CalendarioViewModel = androidx.lifecycle.viewmodel.com
             viewModel.toNextMonth(nextMonth)
         },
         onDateClickListener = { date ->
-            conteudoItemsSelecionado.value = date
-        }
+            dataSelecionada.value = date
+        },
+        contador = contador
     )
-
-    Text("${conteudoItemsSelecionado.value}")
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -247,6 +297,7 @@ fun CalendarioWidget(
     onPreviousMonthButtonClicked: (YearMonth) -> Unit,
     onNextMonthButtonClicked: (YearMonth) -> Unit,
     onDateClickListener: (CalendarioUiState.Date) -> Unit,
+    contador: MutableState<Int>
 ) {
     Column(
         modifier = Modifier
@@ -268,7 +319,8 @@ fun CalendarioWidget(
         Spacer(modifier = Modifier.height(6.dp))
         Conteudo(
             datas = dates,
-            onDateClick = onDateClickListener
+            onDateClick = onDateClickListener,
+            contador = contador
         )
     }
 }
@@ -338,7 +390,11 @@ fun DayItem(day: String) {
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun Conteudo(datas: List<CalendarioUiState.Date>, onDateClick: (CalendarioUiState.Date) -> Unit) {
+fun Conteudo(
+    datas: List<CalendarioUiState.Date>,
+    onDateClick: (CalendarioUiState.Date) -> Unit,
+    contador: MutableState<Int>
+) {
     Column {
         var index = 0
         repeat(6) {
@@ -350,6 +406,7 @@ fun Conteudo(datas: List<CalendarioUiState.Date>, onDateClick: (CalendarioUiStat
                     ConteudoItems(
                         date = item,
                         onClick = onDateClick,
+                        contador = contador,
                         modifier = Modifier.weight(1f)
                     )
                     index++
@@ -365,6 +422,7 @@ fun Conteudo(datas: List<CalendarioUiState.Date>, onDateClick: (CalendarioUiStat
 fun ConteudoItems(
     date: CalendarioUiState.Date,
     onClick: (CalendarioUiState.Date) -> Unit,
+    contador: MutableState<Int>,
     modifier: Modifier
 ) {
     Spacer(
@@ -383,6 +441,7 @@ fun ConteudoItems(
             )
             .clickable {
                 onClick(date)
+                contador.value++
             }
     ) {
         Text(
@@ -400,7 +459,7 @@ fun ConteudoItems(
 }
 
 @Composable
-fun Horarios() {
+fun Horarios(horario: MutableState<String>) {
     var index = 0
     val horarios = remember {
         mutableStateListOf(
@@ -449,6 +508,9 @@ fun Horarios() {
                                 color = Color.White,
                                 shape = RoundedCornerShape(4.dp)
                             )
+                            .clickable {
+                                horario.value = item
+                            }
                     ) {
                         Text(
                             text = item,
@@ -465,6 +527,86 @@ fun Horarios() {
         }
     }
 
+}
+
+@Composable
+fun BtnVoltar(onClick: () -> Unit) {
+
+    IconButton(
+        modifier = Modifier
+            .width(150.dp)
+            .height(45.dp),
+        onClick = onClick
+    ) {
+        Row(
+            modifier = Modifier
+                .width(140.dp)
+                .height(45.dp)
+                .background(
+                    color = colorResource(id = R.color.vermelho_rosado),
+                    shape = RoundedCornerShape(16.dp)
+                )
+                .border(
+                    color = Color.Black,
+                    width = 2.dp,
+                    shape = RoundedCornerShape(16.dp)
+                ),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+
+            Image(
+                painter = painterResource(id = R.mipmap.seta_esquerda),
+                contentDescription = null,
+                modifier = Modifier
+                    .size(20.dp)
+            )
+            Spacer(modifier = Modifier.width(10.dp))
+            Text(
+                "Voltar", fontSize = 18.sp, fontFamily = fontRobotoBold
+            )
+        }
+    }
+}
+
+@Composable
+fun BtnFinalizar(
+    idUsuario: Int,
+    idHospital: Int,
+    data: String,
+    horario: String,
+    token: String,
+) {
+    IconButton(
+        modifier = Modifier
+            .width(150.dp)
+            .height(45.dp),
+        onClick = {
+
+        }
+    ) {
+        Row(
+            modifier = Modifier
+                .width(140.dp)
+                .height(45.dp)
+                .background(
+                    color = colorResource(id = R.color.vermelho_rosado),
+                    shape = RoundedCornerShape(16.dp)
+                )
+                .border(
+                    color = Color.Black,
+                    width = 2.dp,
+                    shape = RoundedCornerShape(16.dp)
+                ),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+
+            Text(
+                "Finalizar", fontSize = 18.sp, fontFamily = fontRobotoBold
+            )
+        }
+    }
 }
 
 
