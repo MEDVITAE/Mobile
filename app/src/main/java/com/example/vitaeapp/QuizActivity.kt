@@ -58,32 +58,32 @@ fun TelaQuiz(navController: NavHostController) {
 
     Column {
         Questionario(
-            navController, contador, altura, peso, perguntaTatuagem,
-            perguntaRelacao, perguntaDesconforto, perguntaMedicamento,
-            perguntaDst, perguntaVacina, apto
+                navController, contador, altura, peso, perguntaTatuagem,
+                perguntaRelacao, perguntaDesconforto, perguntaMedicamento,
+                perguntaDst, perguntaVacina, apto
         )
     }
 }
 
 @Composable
 fun Questionario(
-    navController: NavHostController,
-    contador: MutableState<Int>,
-    altura: MutableState<String>,
-    peso: MutableState<String>,
-    perguntaTatuagem: MutableState<Boolean>,
-    perguntaRelacao: MutableState<Boolean>,
-    perguntaDesconforto: MutableState<Boolean>,
-    perguntaMedicamento: MutableState<Boolean>,
-    perguntaDst: MutableState<Boolean>,
-    perguntaVacina: MutableState<Boolean>,
-    apto: MutableState<Boolean>,
+        navController: NavHostController,
+        contador: MutableState<Int>,
+        altura: MutableState<String>,
+        peso: MutableState<String>,
+        perguntaTatuagem: MutableState<Boolean>,
+        perguntaRelacao: MutableState<Boolean>,
+        perguntaDesconforto: MutableState<Boolean>,
+        perguntaMedicamento: MutableState<Boolean>,
+        perguntaDst: MutableState<Boolean>,
+        perguntaVacina: MutableState<Boolean>,
+        apto: MutableState<Boolean>,
 ) {
 
     Column(Modifier.padding(30.dp, 70.dp)) {
         Text(
-            "QUIZ DE APTIDÃO",
-            style = TextStyle(fontFamily = fontFamilyRowdiesBold),
+                "QUIZ DE APTIDÃO",
+                style = TextStyle(fontFamily = fontFamilyRowdiesBold),
         )
         when (contador.value) {
             1 -> perguntaAltura(pergunta = altura)
@@ -97,10 +97,10 @@ fun Questionario(
         }
 
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 100.dp),
-            horizontalArrangement = Arrangement.Center
+                modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 100.dp),
+                horizontalArrangement = Arrangement.Center
         ) {
             if (contador.value > 1 && contador.value < 9) {
                 BotaoVoltar(onClick = { contador.value-- })
@@ -116,17 +116,17 @@ fun Questionario(
             if (contador.value == 9) {
                 Column {
                     Text(
-                        "Deseja finalizar o Quiz de Aptidão?",
-                        fontSize = 18.sp,
-                        fontFamily = fontRobotoBold
+                            "Deseja finalizar o Quiz de Aptidão?",
+                            fontSize = 18.sp,
+                            fontFamily = fontRobotoBold
                     )
                     Spacer(modifier = Modifier.height(70.dp))
                     Row {
                         BotaoVoltar(onClick = { contador.value-- })
                         Spacer(modifier = Modifier.width(10.dp))
                         BotaoFinalizar(
-                            navController, perguntaTatuagem, perguntaRelacao, perguntaDesconforto, perguntaMedicamento,
-                            perguntaDst, perguntaVacina, apto, altura, peso
+                                navController, perguntaTatuagem, perguntaRelacao, perguntaDesconforto, perguntaMedicamento,
+                                perguntaDst, perguntaVacina, apto, altura, peso
                         )
                     }
                 }
@@ -138,37 +138,37 @@ fun Questionario(
 @Composable
 fun BotaoAvancar(onClick: () -> Unit) {
     IconButton(
-        modifier = Modifier
-            .width(150.dp)
-            .height(45.dp),
-        onClick = onClick
+            modifier = Modifier
+                    .width(150.dp)
+                    .height(45.dp),
+            onClick = onClick
     ) {
         Row(
-            modifier = Modifier
-                .width(140.dp)
-                .height(45.dp)
-                .background(
-                    color = colorResource(id = R.color.vermelho_rosado),
-                    shape = RoundedCornerShape(16.dp)
-                )
-                .border(
-                    color = Color.Black,
-                    width = 2.dp,
-                    shape = RoundedCornerShape(16.dp)
-                ),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
+                modifier = Modifier
+                        .width(140.dp)
+                        .height(45.dp)
+                        .background(
+                                color = colorResource(id = R.color.vermelho_rosado),
+                                shape = RoundedCornerShape(16.dp)
+                        )
+                        .border(
+                                color = Color.Black,
+                                width = 2.dp,
+                                shape = RoundedCornerShape(16.dp)
+                        ),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
         ) {
 
             Text(
-                "Avançar", fontSize = 18.sp, fontFamily = fontRobotoBold
+                    "Avançar", fontSize = 18.sp, fontFamily = fontRobotoBold
             )
             Spacer(modifier = Modifier.width(10.dp))
             Image(
-                painter = painterResource(id = R.mipmap.seta_direita),
-                contentDescription = null,
-                modifier = Modifier
-                    .size(20.dp)
+                    painter = painterResource(id = R.mipmap.seta_direita),
+                    contentDescription = null,
+                    modifier = Modifier
+                            .size(20.dp)
             )
         }
     }
@@ -179,37 +179,37 @@ fun BotaoAvancar(onClick: () -> Unit) {
 fun BotaoVoltar(onClick: () -> Unit) {
 
     IconButton(
-        modifier = Modifier
-            .width(150.dp)
-            .height(45.dp),
-        onClick = onClick
+            modifier = Modifier
+                    .width(150.dp)
+                    .height(45.dp),
+            onClick = onClick
     ) {
         Row(
-            modifier = Modifier
-                .width(140.dp)
-                .height(45.dp)
-                .background(
-                    color = colorResource(id = R.color.vermelho_rosado),
-                    shape = RoundedCornerShape(16.dp)
-                )
-                .border(
-                    color = Color.Black,
-                    width = 2.dp,
-                    shape = RoundedCornerShape(16.dp)
-                ),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
+                modifier = Modifier
+                        .width(140.dp)
+                        .height(45.dp)
+                        .background(
+                                color = colorResource(id = R.color.vermelho_rosado),
+                                shape = RoundedCornerShape(16.dp)
+                        )
+                        .border(
+                                color = Color.Black,
+                                width = 2.dp,
+                                shape = RoundedCornerShape(16.dp)
+                        ),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
         ) {
 
             Image(
-                painter = painterResource(id = R.mipmap.seta_esquerda),
-                contentDescription = null,
-                modifier = Modifier
-                    .size(20.dp)
+                    painter = painterResource(id = R.mipmap.seta_esquerda),
+                    contentDescription = null,
+                    modifier = Modifier
+                            .size(20.dp)
             )
             Spacer(modifier = Modifier.width(10.dp))
             Text(
-                "Voltar", fontSize = 18.sp, fontFamily = fontRobotoBold
+                    "Voltar", fontSize = 18.sp, fontFamily = fontRobotoBold
             )
         }
     }
@@ -217,49 +217,49 @@ fun BotaoVoltar(onClick: () -> Unit) {
 
 @Composable
 fun BotaoFinalizar(
-    navController: NavHostController,
-    perguntaTatuagem: MutableState<Boolean>,
-    perguntaRelacao: MutableState<Boolean>,
-    perguntaDesconforto: MutableState<Boolean>,
-    perguntaMedicamento: MutableState<Boolean>,
-    perguntaDst: MutableState<Boolean>,
-    perguntaVacina: MutableState<Boolean>,
-    apto: MutableState<Boolean>,
-    altura: MutableState<String>,
-    peso: MutableState<String>
+        navController: NavHostController,
+        perguntaTatuagem: MutableState<Boolean>,
+        perguntaRelacao: MutableState<Boolean>,
+        perguntaDesconforto: MutableState<Boolean>,
+        perguntaMedicamento: MutableState<Boolean>,
+        perguntaDst: MutableState<Boolean>,
+        perguntaVacina: MutableState<Boolean>,
+        apto: MutableState<Boolean>,
+        altura: MutableState<String>,
+        peso: MutableState<String>
 ) {
 
     IconButton(
-        modifier = Modifier
-            .width(150.dp)
-            .height(45.dp),
-        onClick = {
-            ValidarFuncoes(
-                navController = navController, perguntaTatuagem,
-                perguntaRelacao, perguntaDesconforto, perguntaMedicamento,
-                perguntaDst, perguntaVacina, apto, altura, peso
-            )
-        }
+            modifier = Modifier
+                    .width(150.dp)
+                    .height(45.dp),
+            onClick = {
+                ValidarFuncoes(
+                        navController = navController, perguntaTatuagem,
+                        perguntaRelacao, perguntaDesconforto, perguntaMedicamento,
+                        perguntaDst, perguntaVacina, apto, altura, peso
+                )
+            }
     ) {
         Row(
-            modifier = Modifier
-                .width(140.dp)
-                .height(45.dp)
-                .background(
-                    color = colorResource(id = R.color.vermelho_rosado),
-                    shape = RoundedCornerShape(16.dp)
-                )
-                .border(
-                    color = Color.Black,
-                    width = 2.dp,
-                    shape = RoundedCornerShape(16.dp)
-                ),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
+                modifier = Modifier
+                        .width(140.dp)
+                        .height(45.dp)
+                        .background(
+                                color = colorResource(id = R.color.vermelho_rosado),
+                                shape = RoundedCornerShape(16.dp)
+                        )
+                        .border(
+                                color = Color.Black,
+                                width = 2.dp,
+                                shape = RoundedCornerShape(16.dp)
+                        ),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
         ) {
 
             Text(
-                "Finalizar", fontSize = 18.sp, fontFamily = fontRobotoBold
+                    "Finalizar", fontSize = 18.sp, fontFamily = fontRobotoBold
             )
         }
     }
@@ -269,25 +269,25 @@ fun BotaoFinalizar(
 fun BotaoSim(onClick: () -> Unit) {
 
     IconButton(
-        modifier = Modifier
-            .width(150.dp)
-            .height(45.dp),
-        onClick = onClick,
+            modifier = Modifier
+                    .width(150.dp)
+                    .height(45.dp),
+            onClick = onClick,
     ) {
         Row(
-            modifier = Modifier
-                .width(120.dp)
-                .height(45.dp)
-                .background(
-                    color = colorResource(id = R.color.vermelho_rosado),
-                    shape = RoundedCornerShape(8.dp)
-                ),
-            horizontalArrangement = Arrangement.SpaceAround,
-            verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                        .width(120.dp)
+                        .height(45.dp)
+                        .background(
+                                color = colorResource(id = R.color.vermelho_rosado),
+                                shape = RoundedCornerShape(8.dp)
+                        ),
+                horizontalArrangement = Arrangement.SpaceAround,
+                verticalAlignment = Alignment.CenterVertically,
         ) {
 
             Text(
-                "Sim", fontSize = 18.sp, fontFamily = fontRobotoBold
+                    "Sim", fontSize = 18.sp, fontFamily = fontRobotoBold
             )
         }
     }
@@ -297,25 +297,25 @@ fun BotaoSim(onClick: () -> Unit) {
 fun BotaoNao(onClick: () -> Unit) {
 
     IconButton(
-        modifier = Modifier
-            .width(150.dp)
-            .height(45.dp),
-        onClick = onClick
+            modifier = Modifier
+                    .width(150.dp)
+                    .height(45.dp),
+            onClick = onClick
     ) {
         Row(
-            modifier = Modifier
-                .width(120.dp)
-                .height(45.dp)
-                .background(
-                    color = colorResource(id = R.color.vermelho_rosado),
-                    shape = RoundedCornerShape(8.dp)
-                ),
-            horizontalArrangement = Arrangement.SpaceAround,
-            verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                        .width(120.dp)
+                        .height(45.dp)
+                        .background(
+                                color = colorResource(id = R.color.vermelho_rosado),
+                                shape = RoundedCornerShape(8.dp)
+                        ),
+                horizontalArrangement = Arrangement.SpaceAround,
+                verticalAlignment = Alignment.CenterVertically,
         ) {
 
             Text(
-                "Não", fontSize = 18.sp, fontFamily = fontRobotoBold
+                    "Não", fontSize = 18.sp, fontFamily = fontRobotoBold
             )
         }
     }
@@ -325,22 +325,22 @@ fun BotaoNao(onClick: () -> Unit) {
 fun perguntaAltura(pergunta: MutableState<String>) {
 
     Column(
-        modifier = Modifier
-            .padding(0.dp, 100.dp, 0.dp, 30.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+            modifier = Modifier
+                    .padding(0.dp, 100.dp, 0.dp, 30.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            "Informe sua altura:",
-            modifier = Modifier
-                .padding(0.dp, 0.dp, 0.dp, 20.dp),
-            style = TextStyle(fontFamily = fontFamilyRowdies, fontSize = 20.sp)
+                "Informe sua altura:",
+                modifier = Modifier
+                        .padding(0.dp, 0.dp, 0.dp, 20.dp),
+                style = TextStyle(fontFamily = fontFamilyRowdies, fontSize = 20.sp)
         )
         TextField(
-            value = pergunta.value,
-            onValueChange = { pergunta.value = it },
-            singleLine = true,
-            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
-            modifier = Modifier.fillMaxWidth()
+                value = pergunta.value,
+                onValueChange = { pergunta.value = it },
+                singleLine = true,
+                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
+                modifier = Modifier.fillMaxWidth()
         )
         Row {
             Text("1/8")
@@ -355,22 +355,22 @@ fun perguntaAltura(pergunta: MutableState<String>) {
 fun perguntaPeso(pergunta: MutableState<String>) {
 
     Column(
-        modifier = Modifier
-            .padding(0.dp, 100.dp, 0.dp, 30.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+            modifier = Modifier
+                    .padding(0.dp, 100.dp, 0.dp, 30.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            "Informe seu peso:",
-            modifier = Modifier
-                .padding(0.dp, 0.dp, 0.dp, 20.dp),
-            style = TextStyle(fontFamily = fontFamilyRowdies, fontSize = 20.sp)
+                "Informe seu peso:",
+                modifier = Modifier
+                        .padding(0.dp, 0.dp, 0.dp, 20.dp),
+                style = TextStyle(fontFamily = fontFamilyRowdies, fontSize = 20.sp)
         )
         TextField(
-            value = pergunta.value,
-            onValueChange = { pergunta.value = it },
-            singleLine = true,
-            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
-            modifier = Modifier.fillMaxWidth()
+                value = pergunta.value,
+                onValueChange = { pergunta.value = it },
+                singleLine = true,
+                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
+                modifier = Modifier.fillMaxWidth()
         )
         Row {
             Text("2/8")
@@ -384,23 +384,23 @@ fun perguntaPeso(pergunta: MutableState<String>) {
 @Composable
 fun perguntaTatuagem(perguntas: MutableState<Int>, valorPergunta: MutableState<Boolean>) {
     Column(
-        modifier = Modifier
-            .padding(0.dp, 100.dp, 0.dp, 30.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+            modifier = Modifier
+                    .padding(0.dp, 100.dp, 0.dp, 30.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            "Fez alguma tatuagem nos últimos 6 meses?",
-            modifier = Modifier
-                .padding(0.dp, 0.dp, 0.dp, 20.dp),
-            style = TextStyle(
-                fontFamily = fontFamilyRowdies,
-                fontSize = 20.sp,
-                textAlign = TextAlign.Center
-            )
+                "Fez alguma tatuagem nos últimos 6 meses?",
+                modifier = Modifier
+                        .padding(0.dp, 0.dp, 0.dp, 20.dp),
+                style = TextStyle(
+                        fontFamily = fontFamilyRowdies,
+                        fontSize = 20.sp,
+                        textAlign = TextAlign.Center
+                )
         )
         Row(
-            modifier = Modifier
-                .padding(0.dp, 5.dp, 0.dp, 20.dp)
+                modifier = Modifier
+                        .padding(0.dp, 5.dp, 0.dp, 20.dp)
         ) {
             BotaoSim(onClick = {
                 valorPergunta.value = true
@@ -420,23 +420,23 @@ fun perguntaTatuagem(perguntas: MutableState<Int>, valorPergunta: MutableState<B
 @Composable
 fun perguntaRelacao(perguntas: MutableState<Int>, valorPergunta: MutableState<Boolean>) {
     Column(
-        modifier = Modifier
-            .padding(0.dp, 100.dp, 0.dp, 30.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+            modifier = Modifier
+                    .padding(0.dp, 100.dp, 0.dp, 30.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            "Teve algum tipo de relação sexual recentemente?",
-            modifier = Modifier
-                .padding(0.dp, 0.dp, 0.dp, 20.dp),
-            style = TextStyle(
-                fontFamily = fontFamilyRowdies,
-                fontSize = 20.sp,
-                textAlign = TextAlign.Center
-            )
+                "Teve algum tipo de relação sexual recentemente?",
+                modifier = Modifier
+                        .padding(0.dp, 0.dp, 0.dp, 20.dp),
+                style = TextStyle(
+                        fontFamily = fontFamilyRowdies,
+                        fontSize = 20.sp,
+                        textAlign = TextAlign.Center
+                )
         )
         Row(
-            modifier = Modifier
-                .padding(0.dp, 5.dp, 0.dp, 20.dp)
+                modifier = Modifier
+                        .padding(0.dp, 5.dp, 0.dp, 20.dp)
         ) {
             BotaoSim(onClick = {
                 valorPergunta.value = true
@@ -456,23 +456,23 @@ fun perguntaRelacao(perguntas: MutableState<Int>, valorPergunta: MutableState<Bo
 @Composable
 fun perguntaDesconforto(perguntas: MutableState<Int>, valorPergunta: MutableState<Boolean>) {
     Column(
-        modifier = Modifier
-            .padding(0.dp, 100.dp, 0.dp, 30.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+            modifier = Modifier
+                    .padding(0.dp, 100.dp, 0.dp, 30.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            "Sente algum desconforto, ou dor na barriga?",
-            modifier = Modifier
-                .padding(0.dp, 0.dp, 0.dp, 20.dp),
-            style = TextStyle(
-                fontFamily = fontFamilyRowdies,
-                fontSize = 20.sp,
-                textAlign = TextAlign.Center
-            )
+                "Sente algum desconforto, ou dor na barriga?",
+                modifier = Modifier
+                        .padding(0.dp, 0.dp, 0.dp, 20.dp),
+                style = TextStyle(
+                        fontFamily = fontFamilyRowdies,
+                        fontSize = 20.sp,
+                        textAlign = TextAlign.Center
+                )
         )
         Row(
-            modifier = Modifier
-                .padding(0.dp, 5.dp, 0.dp, 20.dp)
+                modifier = Modifier
+                        .padding(0.dp, 5.dp, 0.dp, 20.dp)
         ) {
             BotaoSim(onClick = {
                 valorPergunta.value = true
@@ -492,23 +492,23 @@ fun perguntaDesconforto(perguntas: MutableState<Int>, valorPergunta: MutableStat
 @Composable
 fun perguntaMedicamento(perguntas: MutableState<Int>, valorPergunta: MutableState<Boolean>) {
     Column(
-        modifier = Modifier
-            .padding(0.dp, 100.dp, 0.dp, 30.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+            modifier = Modifier
+                    .padding(0.dp, 100.dp, 0.dp, 30.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            "Faz ou fez uso de algum tipo de medicamento?",
-            modifier = Modifier
-                .padding(0.dp, 0.dp, 0.dp, 20.dp),
-            style = TextStyle(
-                fontFamily = fontFamilyRowdies,
-                fontSize = 20.sp,
-                textAlign = TextAlign.Center
-            )
+                "Faz ou fez uso de algum tipo de medicamento?",
+                modifier = Modifier
+                        .padding(0.dp, 0.dp, 0.dp, 20.dp),
+                style = TextStyle(
+                        fontFamily = fontFamilyRowdies,
+                        fontSize = 20.sp,
+                        textAlign = TextAlign.Center
+                )
         )
         Row(
-            modifier = Modifier
-                .padding(0.dp, 5.dp, 0.dp, 20.dp)
+                modifier = Modifier
+                        .padding(0.dp, 5.dp, 0.dp, 20.dp)
         ) {
             BotaoSim(onClick = {
                 valorPergunta.value = true
@@ -528,24 +528,24 @@ fun perguntaMedicamento(perguntas: MutableState<Int>, valorPergunta: MutableStat
 @Composable
 fun perguntaDst(perguntas: MutableState<Int>, valorPergunta: MutableState<Boolean>) {
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(0.dp, 100.dp, 0.dp, 30.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+            modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(0.dp, 100.dp, 0.dp, 30.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            "Tem algum tipo de DST?",
-            modifier = Modifier
-                .padding(0.dp, 0.dp, 0.dp, 20.dp),
-            style = TextStyle(
-                fontFamily = fontFamilyRowdies,
-                fontSize = 20.sp,
-                textAlign = TextAlign.Center
-            )
+                "Tem algum tipo de DST?",
+                modifier = Modifier
+                        .padding(0.dp, 0.dp, 0.dp, 20.dp),
+                style = TextStyle(
+                        fontFamily = fontFamilyRowdies,
+                        fontSize = 20.sp,
+                        textAlign = TextAlign.Center
+                )
         )
         Row(
-            modifier = Modifier
-                .padding(0.dp, 5.dp, 0.dp, 20.dp)
+                modifier = Modifier
+                        .padding(0.dp, 5.dp, 0.dp, 20.dp)
         ) {
             BotaoSim(onClick = {
                 valorPergunta.value = true
@@ -565,23 +565,23 @@ fun perguntaDst(perguntas: MutableState<Int>, valorPergunta: MutableState<Boolea
 @Composable
 fun perguntaVacina(perguntas: MutableState<Int>, valorPergunta: MutableState<Boolean>) {
     Column(
-        modifier = Modifier
-            .padding(0.dp, 100.dp, 0.dp, 30.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+            modifier = Modifier
+                    .padding(0.dp, 100.dp, 0.dp, 30.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            "Tomou alguma vacina contra a COVID-19 recentemente?",
-            modifier = Modifier
-                .padding(0.dp, 0.dp, 0.dp, 20.dp),
-            style = TextStyle(
-                fontFamily = fontFamilyRowdies,
-                fontSize = 20.sp,
-                textAlign = TextAlign.Center
-            )
+                "Tomou alguma vacina contra a COVID-19 recentemente?",
+                modifier = Modifier
+                        .padding(0.dp, 0.dp, 0.dp, 20.dp),
+                style = TextStyle(
+                        fontFamily = fontFamilyRowdies,
+                        fontSize = 20.sp,
+                        textAlign = TextAlign.Center
+                )
         )
         Row(
-            modifier = Modifier
-                .padding(0.dp, 5.dp, 0.dp, 20.dp)
+                modifier = Modifier
+                        .padding(0.dp, 5.dp, 0.dp, 20.dp)
         ) {
             BotaoSim(onClick = {
                 valorPergunta.value = true
@@ -599,23 +599,22 @@ fun perguntaVacina(perguntas: MutableState<Int>, valorPergunta: MutableState<Boo
 }
 
 fun ValidarFuncoes(
-    navController: NavHostController,
-    perguntaTatuagem: MutableState<Boolean>,
-    perguntaRelacao: MutableState<Boolean>,
-    perguntaDesconforto: MutableState<Boolean>,
-    perguntaMedicamento: MutableState<Boolean>,
-    perguntaDst: MutableState<Boolean>,
-    perguntaVacina: MutableState<Boolean>,
-    apto: MutableState<Boolean>,
-    altura: MutableState<String>,
-    peso: MutableState<String>
+        navController: NavHostController,
+        perguntaTatuagem: MutableState<Boolean>,
+        perguntaRelacao: MutableState<Boolean>,
+        perguntaDesconforto: MutableState<Boolean>,
+        perguntaMedicamento: MutableState<Boolean>,
+        perguntaDst: MutableState<Boolean>,
+        perguntaVacina: MutableState<Boolean>,
+        apto: MutableState<Boolean>,
+        altura: MutableState<String>,
+        peso: MutableState<String>
 ) {
     if (perguntaTatuagem.value || perguntaRelacao.value || perguntaDesconforto.value ||
-        perguntaMedicamento.value || perguntaDst.value || perguntaVacina.value
+            perguntaMedicamento.value || perguntaDst.value || perguntaVacina.value
     ) {
         conectarBanco(false, altura, peso, navController)
-    }
-    else {
+    } else {
         conectarBanco(true, altura, peso, navController)
     }
 }
@@ -628,24 +627,33 @@ fun conectarBanco(validarFuncoes: Boolean, altura: MutableState<String>, peso: M
 
     val quiz = Quiz(altura = altura.value, peso = peso.value, validarFuncoes)
 
-    val put = apiQuiz.put(quiz, 55, "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ2aXRhZS1zZXJ2aWNvcyIsInN1YiI6ImFtYXJlbG9AZ21haWwuY29tIiwiZXhwIjoxNzE1MjA2NzEyfQ.xoTEzRX2HbB5hqfkmxxqwB9IvhgQjvtlG3wMh1LR9As")
+    val put = apiQuiz.put(
+            quiz,
+            55,
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ2aXRhZS1zZXJ2aWNvcyIsInN1YiI6ImRpZWdvQGdtYWlsLmNvbSIsImV4cCI6MTcxNTQ1ODMyMn0.Sxg7cJSsSVtnqVji8x-uYYWPXh4qek-S5ZZNINwS5dI"
+    )
 
     put.enqueue(object : retrofit2.Callback<Quiz> {
         override fun onResponse(call: retrofit2.Call<Quiz>, response: Response<Quiz>) {
             if (response.isSuccessful) {
                 val lista = response.body()
                 if (lista != null) {
-                    navController.navigate("Perfil")
+
                 }
             } else {
                 erroApi = response.errorBody().toString()
             }
         }
+
         override fun onFailure(call: retrofit2.Call<Quiz>, t: Throwable) {
             erroApi = t.message!!
         }
 
     })
+
+    if (erroApi.isEmpty()) {
+        navController.navigate("Perfil")
+    }
 }
 
 

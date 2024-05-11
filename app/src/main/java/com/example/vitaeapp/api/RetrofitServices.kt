@@ -9,7 +9,7 @@ object RetrofitServices {
 
     //Exemplo de acesso de funções http
 
-    const val BASE_URL = "http://192.168.1.7:8082/"
+    const val BASE_URL = "http://ip:8082/Api/"
     private const val TOKEN =
         "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ2aXRhZS1zZXJ2aWNvcyIsInN1YiI6InRlc3RlQGdtYWlsLmNvbSIsImV4cCI6MTcxNDc0NDE2MH0.EPPE9kQ6l2Yc_Kkm2kvgkdseSF6uyFjgXfX8IRbehxg"
 
