@@ -92,7 +92,7 @@ fun Tela(navController: NavHostController, modifier: Modifier = Modifier) {
             Menu(navController)
         }
         composable("Historico") {
-            TelaHistorico()
+            TelaHistorico(navController)
             Menu(navController)
         }
         composable("Mapa") {
@@ -104,7 +104,7 @@ fun Tela(navController: NavHostController, modifier: Modifier = Modifier) {
             Menu(navController)
         }
         composable("Agenda") {
-            TelaAgendamento()
+            TelaAgendamento(navController)
             Menu(navController)
         }
         composable("Quiz") {

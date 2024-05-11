@@ -1,4 +1,4 @@
-package com.example.vitaeapp
+package com.example.vitaeapp.classes
 
 data class Configuracao(
     val nome: String,

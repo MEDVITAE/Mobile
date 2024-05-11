@@ -102,5 +102,49 @@ object RetrofitServices {
 
         return caracteristicas
     }
+
+    fun getHospitais(): ApiHospitais{
+        val cliente =
+                Retrofit.Builder()
+                        .baseUrl(BASE_URL)
+                        .addConverterFactory(GsonConverterFactory.create())
+                        .build()
+                        .create(ApiHospitais::class.java)
+
+        return cliente
+    }
+
+    fun postAgendamento(): ApiAgendamentos{
+        val cliente =
+                Retrofit.Builder()
+                        .baseUrl(BASE_URL)
+                        .addConverterFactory(GsonConverterFactory.create())
+                        .build()
+                        .create(ApiAgendamentos::class.java)
+
+        return cliente
+    }
+
+    fun getHistoricoService(): ApiHistorico{
+        val cliente =
+                Retrofit.Builder()
+                        .baseUrl(BASE_URL)
+                        .addConverterFactory(GsonConverterFactory.create())
+                        .build()
+                        .create(ApiHistorico::class.java)
+
+        return cliente
+    }
+
+    fun deleteHistoricoService(): ApiHistorico{
+        val cliente =
+                Retrofit.Builder()
+                        .baseUrl(BASE_URL)
+                        .addConverterFactory(GsonConverterFactory.create())
+                        .build()
+                        .create(ApiHistorico::class.java)
+
+        return cliente
+    }
 }
 
