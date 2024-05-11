@@ -93,7 +93,7 @@ fun Tela(navController: NavHostController, modifier: Modifier = Modifier) {
             Menu(navController)
         }
         composable("Historico") {
-            TelaHistorico()
+            TelaHistorico(navController)
             Menu(navController)
         }
         composable("Mapa") {
@@ -105,7 +105,7 @@ fun Tela(navController: NavHostController, modifier: Modifier = Modifier) {
             Menu(navController)
         }
         composable("Agenda") {
-            TelaAgendamento()
+            TelaAgendamento(navController)
             Menu(navController)
         }
         composable("Quiz") {
@@ -145,7 +145,6 @@ fun Menu(navController: NavHostController) {
     }
 
     Row(
-        modifier = Modifier.fillMaxHeight(),
         verticalAlignment = Alignment.Bottom
     ) {
         Row(

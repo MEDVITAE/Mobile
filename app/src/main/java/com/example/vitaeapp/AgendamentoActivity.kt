@@ -41,12 +41,16 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.example.vitaeapp.api.RetrofitServices
 import com.example.vitaeapp.calendarioUi.CalendarioUiState
 import com.example.vitaeapp.calendarioUi.util.CalendarioViewModel
 import com.example.vitaeapp.calendarioUi.util.DateUtil
 import com.example.vitaeapp.calendarioUi.util.getDisplayName
+import com.example.vitaeapp.classes.Agendamento
 import com.example.vitaeapp.classes.Endereco
+import com.example.vitaeapp.classes.Historico
 import com.example.vitaeapp.classes.Hospital
 import com.example.vitaeapp.ui.theme.VitaeAppTheme
 import retrofit2.Call
@@ -56,17 +60,17 @@ import java.time.YearMonth
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun TelaAgendamento() {
+fun TelaAgendamento(navController: NavHostController) {
     val contador = remember { mutableStateOf(0) }
     val hospitais = remember { mutableStateListOf<Hospital>() }
     val nomeHospital = remember { mutableStateOf("") }
-    val idHospital = remember { mutableStateOf(0) }
+    val idHospital = remember { mutableStateOf<Int>(0) }
     val dataSelecionada = remember { mutableStateOf<CalendarioUiState.Date?>(null) }
-    val horarioSelecionado = remember { mutableStateOf<String>("") }
+    val horarioSelecionado = remember { mutableStateOf("") }
 
     val token = remember {
         mutableStateOf(
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ2aXRhZS1zZXJ2aWNvcyIsInN1YiI6ImRpZWdvQGdtYWlsLmNvbSIsImV4cCI6MTcxNTM2NjIwMH0.qxkCVBusQO0t9XOCDLZ_xdVR9cdjtMkmupIrML-ylUA"
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ2aXRhZS1zZXJ2aWNvcyIsInN1YiI6ImRpZWdvQGdtYWlsLmNvbSIsImV4cCI6MTcxNTQ1NDg0MX0.IG-Jt3pfjNq6mE7590-2wjraU7ZN7lA7bb09e7uky04"
         )
     }
 
@@ -99,33 +103,39 @@ fun TelaAgendamento() {
     if (erroApi.value.isNotEmpty()) {
         Text(erroApi.value)
     } else {
-        Text("${contador.value}")
-        when (contador.value) {
-            0 -> Hospitais(hospitais, nomeHospital, idHospital = idHospital, contador = contador)
-            1 -> Calendario(dataSelecionada = dataSelecionada, contador = contador)
-            2 -> Horarios(horario = horarioSelecionado)
-        }
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 100.dp),
-            horizontalArrangement = Arrangement.Center
-        ) {
-            if (contador.value == 1) {
-                BtnVoltar { contador.value-- }
-            }
-
-            if (contador.value == 2) {
-                BtnVoltar { contador.value-- }
-                Spacer(modifier = Modifier.width(20.dp))
-                BtnFinalizar(
-                    idUsuario = 1,
-                    idHospital = 1,
-                    data = "",
-                    horario = "",
-                    token = token.value
+        Column {
+            when (contador.value) {
+                0 -> Hospitais(
+                    lista = hospitais,
+                    nome = nomeHospital,
+                    idHospital = idHospital,
+                    contador = contador
                 )
+
+                1 -> Calendario(dataSelecionada = dataSelecionada, contador = contador)
+                2 -> Horarios(horario = horarioSelecionado)
+            }
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                if (contador.value == 1) {
+                    BtnVoltar { contador.value-- }
+                }
+
+                if (contador.value == 2) {
+                    BtnVoltar { contador.value-- }
+                    Spacer(modifier = Modifier.width(20.dp))
+                    BtnFinalizar(
+                        idUsuario = 1,
+                        idHospital = idHospital.value,
+                        data = dataSelecionada.value,
+                        horario = horarioSelecionado.value,
+                        token = token.value,
+                        navController = navController
+                    )
+                }
             }
         }
     }
@@ -213,7 +223,7 @@ fun ListaHospitais(
                         modifier = Modifier
                             .padding(bottom = 10.dp)
                             .clickable {
-                                idHospital.value = itens.id
+                                idHospital.value = itens.idHospital
                                 contador.value++
                             },
                         verticalAlignment = Alignment.CenterVertically
@@ -271,21 +281,37 @@ fun Calendario(
 ) {
 
     val uiState = viewModel.uiState.collectAsState()
-    CalendarioWidget(
-        days = DateUtil.diasDaSemana,
-        yearMonth = uiState.value.yearMonth,
-        dates = uiState.value.dates,
-        onPreviousMonthButtonClicked = { prevMonth ->
-            viewModel.toPreviousMonth(prevMonth)
-        },
-        onNextMonthButtonClicked = { nextMonth ->
-            viewModel.toNextMonth(nextMonth)
-        },
-        onDateClickListener = { date ->
-            dataSelecionada.value = date
-        },
-        contador = contador
-    )
+
+    Column(
+        Modifier
+            .padding(15.dp, 90.dp)
+            .fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            "SELECIONE UMA DATA",
+            style = androidx.compose.ui.text.TextStyle(
+                fontFamily = fontFamilyRowdiesBold,
+                fontSize = 18.sp
+            )
+        )
+        Spacer(modifier = Modifier.height(5.dp))
+        CalendarioWidget(
+            days = DateUtil.diasDaSemana,
+            yearMonth = uiState.value.yearMonth,
+            dates = uiState.value.dates,
+            onPreviousMonthButtonClicked = { prevMonth ->
+                viewModel.toPreviousMonth(prevMonth)
+            },
+            onNextMonthButtonClicked = { nextMonth ->
+                viewModel.toNextMonth(nextMonth)
+            },
+            onDateClickListener = { date ->
+                dataSelecionada.value = date
+            },
+            contador = contador
+        )
+    }
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -301,7 +327,6 @@ fun CalendarioWidget(
 ) {
     Column(
         modifier = Modifier
-            .padding(top = 90.dp)
             .fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -487,7 +512,12 @@ fun Horarios(horario: MutableState<String>) {
         )
     }
 
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+    Column(
+        Modifier
+            .padding(15.dp, 90.dp)
+            .fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         Text(
             "SELECIONE A HORA",
             style = TextStyle(
@@ -573,16 +603,73 @@ fun BtnVoltar(onClick: () -> Unit) {
 fun BtnFinalizar(
     idUsuario: Int,
     idHospital: Int,
-    data: String,
+    data: CalendarioUiState.Date?,
     horario: String,
     token: String,
+    navController: NavHostController
 ) {
+    val dia = remember {
+        mutableStateOf(
+            CalendarioUiState.Date(
+                diaDoMes = "",
+                mes = "",
+                ano = "",
+                isSelected = true
+            )
+        )
+    }
+    val diaHora = remember { mutableStateOf("") }
+
+    data.let { date ->
+        val diaDoMesFormatado = date?.diaDoMes?.let { if (it.toInt() < 10) "0$it" else it }
+        val mesFormatado = date?.mes?.let { if (it.toInt() < 10) "0$it" else it }
+
+
+        dia.value = CalendarioUiState.Date(
+            diaDoMes = diaDoMesFormatado ?: "",
+            mes = mesFormatado ?: "",
+            date?.ano ?: "",
+            date?.isSelected ?: false
+        )
+    }
+
+    diaHora.value =
+        dia.value.ano + "-" + dia.value.mes + "-" + dia.value.diaDoMes + "T" + horario + ":00"
+
+    val erroApi = remember { mutableStateOf("") }
+
+    val apiAgendamento = RetrofitServices.postAgendamento()
+    val post = apiAgendamento.post(
+        token,
+        Agendamento(fkHospital = idHospital, fkUsuario = idUsuario, Horario = diaHora.value)
+    )
+
     IconButton(
         modifier = Modifier
             .width(150.dp)
             .height(45.dp),
         onClick = {
+        post.enqueue(object : retrofit2.Callback<Agendamento> {
+            override fun onResponse(call: Call<Agendamento>, response: Response<Agendamento>) {
+                if (response.isSuccessful) {
+                    val lista = response.body()
+                    if (lista != null) {
 
+                    } else {
+                        erroApi.value = "Erro ao buscar histórico"
+                    }
+                } else {
+                    erroApi.value = "Erro na solicitação: ${response.code()}"
+                }
+            }
+
+            override fun onFailure(call: Call<Agendamento>, t: Throwable) {
+                erroApi.value = "Falha na solicitação: ${t.message}"
+            }
+        })
+            if (erroApi.value.isEmpty()){
+                navController.navigate("Historico")
+            }
         }
     ) {
         Row(
@@ -615,6 +702,6 @@ fun BtnFinalizar(
 @Composable
 fun GreetingPreviewFromAgendamento() {
     VitaeAppTheme {
-        TelaAgendamento()
+        TelaAgendamento(rememberNavController())
     }
 }

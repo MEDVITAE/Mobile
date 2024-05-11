@@ -2,15 +2,22 @@ package com.example.vitaeapp
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateListOf
@@ -19,27 +26,35 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.example.vitaeapp.api.RetrofitServices
 import com.example.vitaeapp.classes.Agenda
 import com.example.vitaeapp.classes.Historico
 import com.example.vitaeapp.classes.Hospital
+import com.example.vitaeapp.classes.HospitalHistorico
 import com.example.vitaeapp.ui.theme.Roboto
 import com.example.vitaeapp.ui.theme.Rowdies
 import com.example.vitaeapp.ui.theme.VitaeAppTheme
 import retrofit2.Call
+import retrofit2.Callback
 import retrofit2.Response
 
 @Composable
-fun TelaHistorico() {
-    val token = remember { mutableStateOf(
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ2aXRhZS1zZXJ2aWNvcyIsInN1YiI6ImRpZWdvQGdtYWlsLmNvbSIsImV4cCI6MTcxNTEyMTY3MH0.pmCKZFhfjwOvjG-Uq9wpLG85wct8bXU8qA5DLF2H3kg"
-    ) }
+fun TelaHistorico(navController: NavHostController) {
+    val token = remember {
+        mutableStateOf(
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ2aXRhZS1zZXJ2aWNvcyIsInN1YiI6ImRpZWdvQGdtYWlsLmNvbSIsImV4cCI6MTcxNTQ1NDg0MX0.IG-Jt3pfjNq6mE7590-2wjraU7ZN7lA7bb09e7uky04"
+        )
+    }
 
-    val id = remember { mutableStateOf(1)}
+    val id = remember { mutableStateOf(1) }
 
     val historico = remember {
         mutableStateOf(
@@ -47,7 +62,7 @@ fun TelaHistorico() {
         )
     }
     val listaAgenda = remember { mutableStateListOf<Agenda>() }
-    val listaHospital = remember { mutableStateListOf<Hospital>() }
+    val listaHospital = remember { mutableStateListOf<HospitalHistorico>() }
 
     val erroApi = remember { mutableStateOf("") }
 
@@ -81,7 +96,7 @@ fun TelaHistorico() {
         }
     })
 
-    Column {
+    Column(Modifier.padding(bottom = 70.dp)) {
         if (erroApi.value.isNotEmpty()) {
             Text(erroApi.value)
         } else if (listaAgenda.isNotEmpty() && listaHospital.isNotEmpty()) {
@@ -90,19 +105,24 @@ fun TelaHistorico() {
 
             hospitalMaisRecente?.let {
                 Proxima(agendaMaisRecente, it)
+                Botoes(token.value, 11, navController)
             }
-            Botoes(token.value, 7)
             Anteriores(historico.value, agendaMaisRecente)
         }
     }
 }
 
-
 @Composable
-fun Proxima(agenda: Agenda?, hospital: Hospital) {
+fun Proxima(agenda: Agenda?, hospital: HospitalHistorico) {
     if (agenda != null) {
+        val partes = agenda.horario.split("T")
+        val data = partes[0].split("-")
+        val ano = data[0]
+        val mes = data[1]
+        val dia = data[2]
+        val hora = partes[1]
         Column(
-            Modifier.padding(30.dp, 70.dp)
+            Modifier.padding(30.dp, 70.dp, 30.dp, 30.dp)
         ) {
 
             Text(
@@ -129,7 +149,7 @@ fun Proxima(agenda: Agenda?, hospital: Hospital) {
                                 .padding(10.dp)
                         ) {
                             Text(
-                                "Data: ${agenda.horario} - Hora: ${agenda.horario}",
+                                "Data: ${dia}/${mes}/${ano} - Hora: ${hora}",
                                 style = TextStyle(fontFamily = Roboto)
                             )
                             Text(
@@ -149,19 +169,21 @@ fun Proxima(agenda: Agenda?, hospital: Hospital) {
 }
 
 @Composable
-fun Botoes(token: String, id: Int){
+fun Botoes(token: String, id: Int, navController: NavHostController) {
     val erroApi = remember { mutableStateOf("") }
+    val apiDeleteHistorico = RetrofitServices.deleteHistoricoService()
+    val delete = apiDeleteHistorico.deleteHistorico(
+        token,
+        id
+    )
 
-    Row(Modifier.padding(top = 8.dp)) {
-        Button(
+    Row(Modifier.padding(start = 40.dp)) {
+        IconButton(
+            modifier = Modifier
+                .width(150.dp)
+                .height(45.dp),
             onClick = {
-                val apiDeleteHistorico = RetrofitServices.deleteHistoricoService()
-                val delete = apiDeleteHistorico.deleteHistorico(
-                    token,
-                    id
-                )
-
-                delete.enqueue(object : retrofit2.Callback<Historico> {
+                delete.enqueue(object : Callback<Historico> {
                     override fun onResponse(call: Call<Historico>, response: Response<Historico>) {
                         if (response.code() == 400) {
                             erroApi.value = "Deletado com sucesso"
@@ -174,19 +196,66 @@ fun Botoes(token: String, id: Int){
                         erroApi.value = "Falha na solicitação: ${t.message}"
                     }
                 })
-            },
-            modifier = Modifier.weight(1f)
+            }
         ) {
-            Text("Cancelar")
+            Row(
+                modifier = Modifier
+                    .width(140.dp)
+                    .height(45.dp)
+                    .background(
+                        color = colorResource(id = R.color.vermelho_rosado),
+                        shape = RoundedCornerShape(16.dp)
+                    )
+                    .border(
+                        color = Color.Black,
+                        width = 2.dp,
+                        shape = RoundedCornerShape(16.dp)
+                    ),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Text("Cancelar", fontSize = 18.sp, fontFamily = fontRobotoBold)
+            }
         }
         Spacer(modifier = Modifier.width(8.dp))
-        Button(
+        IconButton(
+            modifier = Modifier
+                .width(150.dp)
+                .height(45.dp),
             onClick = {
+                delete.enqueue(object : Callback<Historico> {
+                    override fun onResponse(call: Call<Historico>, response: Response<Historico>) {
+                        if (response.code() == 400) {
+                            navController.navigate("Agenda")
+                        } else {
+                            erroApi.value = "Erro na solicitação: ${response.code()}"
+                        }
+                    }
 
-            },
-            modifier = Modifier.weight(1f)
+                    override fun onFailure(call: Call<Historico>, t: Throwable) {
+                        erroApi.value = "Falha na solicitação: ${t.message}"
+                    }
+                })
+            }
         ) {
-            Text("Atualizar")
+            Row(
+                modifier = Modifier
+                    .width(140.dp)
+                    .height(45.dp)
+                    .background(
+                        color = colorResource(id = R.color.vermelho_rosado),
+                        shape = RoundedCornerShape(16.dp)
+                    )
+                    .border(
+                        color = Color.Black,
+                        width = 2.dp,
+                        shape = RoundedCornerShape(16.dp)
+                    ),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Text("Atualizar", fontSize = 18.sp, fontFamily = fontRobotoBold)
+            }
         }
     }
     Text("${erroApi.value}")
@@ -196,63 +265,67 @@ fun Botoes(token: String, id: Int){
 fun Anteriores(historico: Historico, agenda: Agenda?) {
     if (agenda != null) {
         Column(
-            Modifier.padding(30.dp, 0.dp)
+            modifier = Modifier.padding(30.dp, 0.dp)
         ) {
             Text(
-                "HISTÓRICO",
-                Modifier.padding(0.dp, 0.dp, 0.dp, 10.dp),
+                text = "HISTÓRICO",
+                modifier = Modifier.padding(0.dp, 0.dp, 0.dp, 10.dp),
                 style = TextStyle(fontFamily = Rowdies)
             )
 
             val qtdDoacao = remember { mutableStateOf(historico.quantidadeDoacao) }
-
             var contador = qtdDoacao.value
 
-            historico.agenda.forEach { itemAgenda ->
-                if (itemAgenda.idAgenda != agenda.idAgenda) {
+            LazyColumn {
+                items(historico.agenda.reversed()) { itemAgenda ->
+                    if (itemAgenda.idAgenda != agenda.idAgenda) {
+                        val partes = itemAgenda.horario.split("T")
+                        val data = partes[0].split("-")
+                        val ano = data[0]
+                        val mes = data[1]
+                        val dia = data[2]
+                        val hora = partes[1]
 
-                    val hospital = remember {
-                        mutableStateOf(
-                            historico.hospital.find { hosp -> hosp.id == agenda.fkHospital }
-                        )
-                    }
+                        val hospital = remember {
+                            mutableStateOf(
+                                historico.hospital.find { hosp -> hosp.id == agenda.fkHospital }
+                            )
+                        }
 
-                    Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Image(
                                 painter = painterResource(id = R.mipmap.hospital),
                                 contentDescription = "Doação",
                                 modifier = Modifier.size(55.dp)
                             )
-
                             Column(
-                                Modifier
+                                modifier = Modifier
                                     .padding(10.dp, 0.dp, 0.dp, 20.dp)
                                     .background(Color.White)
                                     .width(350.dp)
                             ) {
                                 Column(
-                                    Modifier
+                                    modifier = Modifier
                                         .padding(10.dp)
                                 ) {
                                     Text(
-                                        "Doação: n° ${contador}",
+                                        text = "Doação: n° ${contador}",
                                         style = TextStyle(fontFamily = Roboto)
                                     )
                                     Text(
-                                        "Data: ${itemAgenda.horario} - Hora: ${itemAgenda.horario}",
+                                        text = "Data: ${dia}/${mes}/${ano} - Hora: ${hora}",
                                         style = TextStyle(fontFamily = Roboto)
                                     )
                                     Text(
-                                        "Hemocentro: ${hospital.value?.nome}",
+                                        text = "Hemocentro: ${hospital.value?.nome}",
                                         style = TextStyle(fontFamily = Roboto)
                                     )
                                 }
                             }
                         }
-                    }
-                    if(contador > 0) {
-                        contador--
+                        if (contador > 0) {
+                            contador--
+                        }
                     }
                 }
             }
@@ -260,10 +333,11 @@ fun Anteriores(historico: Historico, agenda: Agenda?) {
     }
 }
 
+
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreviewFromHistorico() {
     VitaeAppTheme {
-        TelaHistorico()
+        TelaHistorico(rememberNavController())
     }
 }
