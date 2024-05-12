@@ -7,7 +7,7 @@ import retrofit2.http.Header
 import retrofit2.http.Path
 
 interface ApiDetalhesHemo {
-    @GET("Api/hospital/detalhes/{id}")
+    @GET("hospital/detalhes/{id}")
     fun getDetalhesUsuario(
         @Header("Authorization") token: String,
         @Path("id") id: Int

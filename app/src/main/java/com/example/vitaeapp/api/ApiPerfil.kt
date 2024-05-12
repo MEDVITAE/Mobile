@@ -7,7 +7,7 @@ import retrofit2.http.Header
 import retrofit2.http.Path
 
 interface ApiPerfil {
-    @GET("Api/usuario/detalhes/{id}")
+    @GET("usuario/detalhes/{id}")
     fun getDetalhesUsuario(
         @Header("Authorization") token: String,
         @Path("id") id: Int

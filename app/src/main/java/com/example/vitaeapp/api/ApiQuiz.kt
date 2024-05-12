@@ -9,6 +9,6 @@ import retrofit2.http.PUT
 import retrofit2.http.Path
 
 interface ApiQuiz {
-    @PUT("/Caracteristicas/detalhes/{id}")
+    @PUT("Caracteristicas/detalhes/{id}")
     fun put(@Body quiz: Quiz, @Path ("id") id: Int, @Header ("Autorization") Autorization : String): Call<Quiz>
 }
