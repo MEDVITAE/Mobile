@@ -1,5 +1,6 @@
 package com.example.vitaeapp
 
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -24,6 +25,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
@@ -96,21 +98,26 @@ fun Tela(navController: NavHostController, modifier: Modifier = Modifier) {
             Menu(navController)
         }
         composable("Mapa") {
-            TelaDetalheHemocentro()
+      /*      val contexto = LocalContext.current
+     *//*       val maps =  Intent(contexto, MapsScreen::class.java)*//*
+            contexto.startActivity(maps)*/
+            ChamaMaps(navController)
             Menu(navController)
+
         }
         composable("Ranking") {
             TelaRanking()
             Menu(navController)
         }
         composable("Agenda") {
-            TelaAgendamento()
+            TelaAgendamento("teste")
             Menu(navController)
         }
         composable("Quiz") {
             TelaQuiz()
             Menu(navController)
         }
+
     }
 
 }

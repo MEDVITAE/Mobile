@@ -2,10 +2,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+
+
 
     <application
-        android:usesCleartextTraffic="true"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -14,6 +17,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.VitaeApp"
+        android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
             android:name=".MainActivity"
@@ -28,36 +32,31 @@
         </activity>
         <activity
             android:name=".ConfigActivity"
-            android:label="ConfigActivity">
-        </activity>
+            android:label="ConfigActivity" />
         <activity
             android:name=".HistoricoActivity"
-            android:label="HistoricoActivity">
-        </activity>
+            android:label="HistoricoActivity" />
         <activity
             android:name=".PerfilActivity"
-            android:label="PerfilActivity">
-        </activity>
+            android:label="PerfilActivity" />
         <activity
             android:name=".RankingActivity"
-            android:label="RankingActivity">
-        </activity>
-        <activity
-            android:name=".DetalheHemocentroActivity"
-            android:label="DetalheHemocentroActivity">
-        </activity>
+            android:label="RankingActivity" />
         <activity
             android:name=".CadastroActivity"
-            android:label="CadastroActivity">
-        </activity>
+            android:label="CadastroActivity" />
         <activity
             android:name=".LoginActivity"
-            android:label="LoginActivity">
-        </activity>
+            android:label="LoginActivity" />
         <activity
             android:name=".QuizActivity"
-            android:label="QuizActivity">
-        </activity>
+            android:label="QuizActivity" />
+        <activity
+            android:name=".DetalheHemocentroActivity"
+            android:label="QuizActivity" />
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyC7961y6WzpcHtQnSa7myhWc2jl21GfDnA" />
     </application>
 
 </manifest>

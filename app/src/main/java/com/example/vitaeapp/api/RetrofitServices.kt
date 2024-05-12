@@ -6,7 +6,28 @@ import okhttp3.OkHttpClient
 import okhttp3.Interceptor
 
 object RetrofitServices {
-    const val BASE_URL = "http://192.168.18.170:8082/"
+    const val BASE_URL = "http://192.168.18.170:8082/Api/"
+    const val BASEMAPS = "https://maps.googleapis.com/maps/api/geocode/"
+    fun getCepsHemo(): ApiMaps {
+        val cliente =
+            Retrofit.Builder()
+                .baseUrl(BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build()
+                .create(ApiMaps::class.java)
+
+        return cliente
+    }
+    fun getLatUser(): ApiMaps {
+        val cliente =
+            Retrofit.Builder()
+                .baseUrl(BASEMAPS)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build()
+                .create(ApiMaps::class.java)
+
+        return cliente
+    }
     fun getDetalhesUser(): ApiPerfil {
         val cliente =
             Retrofit.Builder()

@@ -177,10 +177,9 @@ fun TelaLogin(navController: NavHostController, modifier: Modifier = Modifier) {
                 })
             }
                 if (erroApi.value.isNotBlank()) {
-                    Text("${erroApi.value}")
+                    Text("Ouve um erro ao tentar efetuar login, verifique os parametros passados")
                 } else if (acertoApi.value.isNotBlank()) {
                     Text("${acertoApi.value}")
-                    Text("${validacao.value}")
                     navController.navigate("Perfil")
                 }
             }
