@@ -11,6 +11,7 @@ import retrofit2.http.PUT
 import retrofit2.http.Path
 
 interface ApiConfiguracao {
+
     @GET("Api/usuario/detalhes/{id}")
     fun getConfigDadosUser(
         @Header("Authorization") token: String,
@@ -31,10 +32,10 @@ interface ApiConfiguracao {
         @Path("id") id: Int
     ): Call<Configuracao>
 
-//    @POST("Endereco/detalhes/{id}")
-//    fun postConfigCep(
-//        @Header("Authorization") token: String,
-//        @Body config: Configuracao,
-//        @Path("id") id: Int
-//    ): Call<Configuracao>
+    @PUT("Api/Caracteristicas/{id}")
+    fun putConfigData(
+        @Header("Authorization") token: String,
+        @Body config: Configuracao,
+        @Path("id") id: Int
+    ): Call<Configuracao>
 }

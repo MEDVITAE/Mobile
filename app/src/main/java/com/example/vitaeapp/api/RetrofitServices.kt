@@ -50,5 +50,16 @@ object RetrofitServices {
 
         return config
     }
+
+    fun putConfigData(): ApiConfiguracao{
+        val config =
+            Retrofit.Builder()
+                .baseUrl(BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build()
+                .create(ApiConfiguracao::class.java)
+
+        return config
+    }
 }
 

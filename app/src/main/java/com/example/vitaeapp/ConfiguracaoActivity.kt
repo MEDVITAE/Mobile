@@ -6,7 +6,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Row 
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,6 +18,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -39,6 +40,7 @@ import com.example.vitaeapp.classes.Configuracao
 import com.example.vitaeapp.ui.theme.Rowdies
 import com.example.vitaeapp.ui.theme.VitaeAppTheme
 import retrofit2.Call
+import retrofit2.Callback
 import retrofit2.Response
 
 @Preview(showBackground = true)
@@ -57,13 +59,15 @@ var acertoApi = ""
 val apiConfig = RetrofitServices.getConfigUsuario()
 val apiConfigDadosUser = RetrofitServices.putConfigUser()
 val apiConfigEndereco = RetrofitServices.putConfigCep()
+val apiConfigData = RetrofitServices.putConfigData()
 
 var pk =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ2aXRhZS1zZXJ2aWNvcyIsInN1YiI6ImFudG9uaW9AZ21haWwuY29tIiwiZXhwIjoxNzE1MTIyODMyfQ.M18cmoRBJgBOJmYyZfkAD-cNZ8ifzS0um4x5GfSPh8A"
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ2aXRhZS1zZXJ2aWNvcyIsInN1YiI6ImFudG9uaW9AZ21haWwuY29tIiwiZXhwIjoxNzE1NTM3MDI3fQ.h5QKzyLIcjibaYrGTqNPNmxJX_ge4nBb3LCaufi8SWI"
+
 fun getBanco(): Configuracao {
 
     val getUser = apiConfig.getConfigDadosUser(pk, id = 85)
-    getUser.enqueue(object : retrofit2.Callback<Configuracao> {
+    getUser.enqueue(object : Callback<Configuracao> {
         override fun onResponse(
             call: Call<Configuracao>,
             response: Response<Configuracao>
@@ -72,7 +76,7 @@ fun getBanco(): Configuracao {
                 val resposta = response.body()
                 if (resposta != null) {
                     acertoApi = "Usuário verificado"
-                    return
+//                    return
                     Configuracao(
                         nome = resposta.nome,
                         email = resposta.email,
@@ -118,12 +122,15 @@ fun TelaDeConfiguracao(navController: NavHostController, config: Configuracao) {
                     "${dataNasc.value}" +
                     "${senha.value}"
         )
+
         AtributoUsuarioConfig("CONFIGURAÇÕES", 70, 15)
         nome.value?.let { CampoDeEntrada(label = "Nome:", valor = it) { nome.value = it } }
         email.value?.let { CampoDeEntrada(label = "E-mail:", valor = it) { email.value = it } }
         cep.value?.let { CampoDeEntrada(label = "CEP:", valor = it) { cep.value = it } }
-        dataNasc.value?.let {
-            CampoDeEntrada(label = "Data de Nascimento:", valor = it) {
+        dataNasc.value?.let {data ->
+            // Aqui 'data' é garantido de não ser nulo
+            val formattedDate = data.toString() // Ou outra lógica de formatação
+            CampoDeEntrada(label = "Data de Nascimento:", valor = formattedDate) {
                 dataNasc.value = it
             }
         }
@@ -143,7 +150,7 @@ fun TelaDeConfiguracao(navController: NavHostController, config: Configuracao) {
                 )
             )
 
-            putUserDados.enqueue(object : retrofit2.Callback<Configuracao> {
+            putUserDados.enqueue(object : Callback<Configuracao> {
                 override fun onResponse(
                     call: Call<Configuracao>,
                     response: Response<Configuracao>
@@ -180,11 +187,11 @@ fun TelaDeConfiguracao(navController: NavHostController, config: Configuracao) {
                 token = pk,
                 id = 85,
                 config = Configuracao(
-                    cep.value
+                   cep = cep.value
                 )
             )
 
-            putUserCep.enqueue(object : retrofit2.Callback<Configuracao> {
+            putUserCep.enqueue(object : Callback<Configuracao> {
                 override fun onResponse(
                     call: Call<Configuracao>,
                     response: Response<Configuracao>
@@ -195,6 +202,42 @@ fun TelaDeConfiguracao(navController: NavHostController, config: Configuracao) {
                             acertoApi = "Dados do Usuário cadastrado"
                             Configuracao(
                                 config.cep
+                            )
+                        } else {
+                            // Não foi possível achar usuário
+                            erroApi = "Erro ao verificar usuário"
+                        }
+                    } else {
+                        // Algo passado pode estar errado
+                        erroApi = "Erro na solicitação: ${response.code()}"
+                    }
+                }
+
+                override fun onFailure(call: Call<Configuracao>, t: Throwable) {
+                    // Não foi possível conectar na api
+                    erroApi = "Falha na solicitação: ${t.message}"
+                }
+            })
+
+            val putUserData = apiConfigData.putConfigData(
+                token = pk,
+                id = 85,
+                config = Configuracao(
+                    dataNasc = dataNasc.value
+                )
+            )
+
+            putUserData.enqueue(object : Callback<Configuracao> {
+                override fun onResponse(
+                    call: Call<Configuracao>,
+                    response: Response<Configuracao>
+                ) {
+                    if (response.isSuccessful) {
+                        val resposta = response.body()
+                        if (resposta != null) {
+                            acertoApi = "Dados do Usuário cadastrado"
+                            Configuracao(
+                                config.dataNasc
                             )
                         } else {
                             // Não foi possível achar usuário
