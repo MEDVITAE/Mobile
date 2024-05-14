@@ -6,6 +6,26 @@
         <State />
       </entry>
       <entry key="GreetingPreviewFromLogin">
+      <entry key="GreetingPreviewFromMaps">
+        <State>
+          <targetSelectedWithDropDown>
+            <Target>
+              <type value="QUICK_BOOT_TARGET" />
+              <deviceKey>
+                <Key>
+                  <type value="VIRTUAL_DEVICE_PATH" />
+                  <value value="C:\Users\jvtenorio\.android\avd\Medium_Phone_API_VanillaIceCream.avd" />
+                </Key>
+              </deviceKey>
+            </Target>
+          </targetSelectedWithDropDown>
+          <timeTargetWasSelectedWithDropDown value="2024-05-09T22:55:47.858771900Z" />
+        </State>
+      </entry>
+      <entry key="GreetingPreviewFromPerfil">
+        <State />
+      </entry>
+      <entry key="MapsScreen">
         <State />
       </entry>
       <entry key="app">

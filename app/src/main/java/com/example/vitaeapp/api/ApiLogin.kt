@@ -7,5 +7,5 @@ import retrofit2.http.POST
 
 interface ApiLogin {
     @POST("auth/login")
-    fun postLogin(@Body usuario: UsuarioLogin): Call<UsuarioLogin>
+    fun postLogin(@Body usuarioLogin: UsuarioLogin): Call<UsuarioLogin>
 }

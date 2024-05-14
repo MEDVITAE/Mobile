@@ -1,5 +1,6 @@
 package com.example.vitaeapp
 
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -24,6 +25,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
@@ -70,6 +72,7 @@ val fontRobotoBold = FontFamily(
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun Tela(navController: NavHostController, modifier: Modifier = Modifier) {
+    Logo(false)
     NavHost(
         navController = navController,
         startDestination = "Login"
@@ -78,10 +81,125 @@ fun Tela(navController: NavHostController, modifier: Modifier = Modifier) {
         composable("Login") {
             TelaLogin(navController)
         }
+        composable("Perfil") {
+            TelaPerfil()
+            Menu(navController)
+        }
+        composable("Configuracao") {
+            TelaDeConfiguracao(navController)
+            Menu(navController)
+        }
+        composable("Historico") {
+            TelaHistorico(navController)
+            Menu(navController)
+        }
+        composable("Mapa") {
+      /*      val contexto = LocalContext.current
+     *//*       val maps =  Intent(contexto, MapsScreen::class.java)*//*
+            contexto.startActivity(maps)*/
+            ChamaMaps(navController)
+            Menu(navController)
+
+        }
+        composable("Ranking") {
+            TelaRanking()
+            Menu(navController)
+        }
+        composable("Agenda") {
+            TelaAgendamento(navController)
+            Menu(navController)
+        }
+        composable("Quiz") {
+            TelaQuiz()
+            Menu(navController)
+        }
+
     }
 
 }
 
+<<<<<<< HEAD
+=======
+@Composable
+fun Logo(logoPosicao: Boolean){
+    if(logoPosicao){
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(10.dp), Arrangement.End
+    ) {
+        Image(
+            painter = painterResource(id = R.mipmap.logo),
+            contentDescription = "Vitae",
+            modifier = Modifier
+                .size(70.dp)
+                .padding(top = 10.dp)
+
+        )
+    }
+}else{
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(10.dp)
+        ) {
+            Image(
+                painter = painterResource(id = R.mipmap.logo),
+                contentDescription = "Vitae",
+                modifier = Modifier
+                    .size(70.dp)
+                    .padding(top = 10.dp)
+
+            )
+        }
+}
+}
+
+@Composable
+fun Menu(navController: NavHostController) {
+    val listaMenu = remember {
+        mutableStateListOf(
+            MenuItem(R.mipmap.maps, "Mapa"),
+            MenuItem(R.mipmap.historico, "Historico"),
+            MenuItem(R.mipmap.ranking, "Ranking"),
+            MenuItem(R.mipmap.sangue, "Quiz"),
+            MenuItem(R.mipmap.agenda, "Agenda"),
+            MenuItem(R.mipmap.perfil, "Perfil"),
+        )
+    }
+
+    Row(
+        modifier = Modifier.fillMaxHeight(),
+        verticalAlignment = Alignment.Bottom
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color.White)
+                .padding(vertical = 8.dp)
+        ) {
+            Spacer(modifier = Modifier.width(8.dp))
+            listaMenu.forEach { itemId ->
+                IconButton(
+                    onClick = {
+                        navController.navigate(itemId.tela)
+                    },
+                    modifier = Modifier.size(55.dp)
+                ) {
+                    Image(
+                        painter = painterResource(id = itemId.icon),
+                        contentDescription = "",
+                        modifier = Modifier.size(55.dp)
+                    )
+                }
+                Spacer(modifier = Modifier.width(10.dp))
+            }
+            Spacer(modifier = Modifier.width(8.dp))
+        }
+    }
+}
+
+>>>>>>> 1487cba9b2a19ce361e75e9155eec4b4d366510f
 @RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true)
 @Composable

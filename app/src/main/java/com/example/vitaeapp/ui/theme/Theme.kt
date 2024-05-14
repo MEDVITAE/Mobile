@@ -67,4 +67,5 @@ fun VitaeAppTheme(
         typography = Typography,
         content = content
     )
+
 }

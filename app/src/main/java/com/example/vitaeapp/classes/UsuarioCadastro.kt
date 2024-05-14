@@ -1,10 +1,11 @@
 package com.example.vitaeapp.classes
 
-data class UsuarioLogin (
+data class UsuarioCadastro (
 
-    val Id: Int? = null,
     val nome: String? = null,
-    val token: String? = null,
+    val cpf: String? = null,
     val email: String? = null,
     val senha: String? = null,
-    ){}
+    val role: String
+
+)
