@@ -6,7 +6,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row 
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -15,17 +15,18 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberTopAppBarState
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -37,7 +38,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.vitaeapp.api.RetrofitServices
 import com.example.vitaeapp.classes.Configuracao
-import com.example.vitaeapp.ui.theme.Rowdies
+import com.example.vitaeapp.classes.UserConfig
 import com.example.vitaeapp.ui.theme.VitaeAppTheme
 import retrofit2.Call
 import retrofit2.Callback
@@ -47,8 +48,8 @@ import retrofit2.Response
 @Composable
 fun GreetingPreviewFromConfig() {
     VitaeAppTheme {
-        var config = getBanco()
-        TelaDeConfiguracao(rememberNavController(), config)
+//        var config = getBanco()
+        TelaDeConfiguracao(rememberNavController())
     }
 }
 
@@ -61,169 +62,89 @@ val apiConfigDadosUser = RetrofitServices.putConfigUser()
 val apiConfigEndereco = RetrofitServices.putConfigCep()
 val apiConfigData = RetrofitServices.putConfigData()
 
-var pk =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ2aXRhZS1zZXJ2aWNvcyIsInN1YiI6ImFudG9uaW9AZ21haWwuY29tIiwiZXhwIjoxNzE1NTM3MDI3fQ.h5QKzyLIcjibaYrGTqNPNmxJX_ge4nBb3LCaufi8SWI"
-
-fun getBanco(): Configuracao {
-
-    val getUser = apiConfig.getConfigDadosUser(pk, id = 85)
-    getUser.enqueue(object : Callback<Configuracao> {
-        override fun onResponse(
-            call: Call<Configuracao>,
-            response: Response<Configuracao>
-        ) {
-            if (response.isSuccessful) {
-                val resposta = response.body()
-                if (resposta != null) {
-                    acertoApi = "Usuário verificado"
-//                    return
-                    Configuracao(
-                        nome = resposta.nome,
-                        email = resposta.email,
-                        cep = resposta.cep,
-                        dataNasc = resposta.dataNasc,
-                        senha = "********"
-                    )
-                } else {
-                    // Não foi possível achar usuário
-                    erroApi = "Erro ao verificar usuário"
-                }
-            } else {
-                // Algo passado pode estar errado
-                erroApi = "Erro na solicitação: ${response.code()}"
-            }
-        }
-
-        override fun onFailure(call: Call<Configuracao>, t: Throwable) {
-            // Não foi possível conectar na api
-            erroApi = "Falha na solicitação: ${t.message}"
-        }
-    })
-    return Configuracao("", "", "", "", "", "")
-}
 
 @Composable
-fun TelaDeConfiguracao(navController: NavHostController, config: Configuracao) {
-    // Valores iniciais dos campos de entrada
-    var nome = remember { mutableStateOf(config.nome) }
-    var email = remember { mutableStateOf(config.email) }
-    var cep = remember { mutableStateOf(config.cep) }
-    var dataNasc = remember { mutableStateOf(config.dataNasc) }
-    var senha = remember { mutableStateOf(config.senha) }
+fun TelaDeConfiguracao(navController: NavHostController) {
+    var pk =
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ2aXRhZS1zZXJ2aWNvcyIsInN1YiI6Im1pbmlvbkBnbWFpbC5jb20iLCJleHAiOjE3MTU2NTA4NDV9.DoVz73pKb1hduVGg_KaL0irrGGq_0JsyB41M8dXFIBQ"
+    var nome by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
+    var cep by remember { mutableStateOf("") }
+    var dataNasc by remember { mutableStateOf("") }
+    var senha by remember { mutableStateOf("") }
+    var conecta by remember { mutableStateOf(true) }
+    val getUser = apiConfig.getConfigDadosUser(pk, id = 1)
+
+    if (conecta) {
+        getUser.enqueue(object : Callback<Configuracao> {
+            override fun onResponse(
+                call: Call<Configuracao>,
+                response: Response<Configuracao>
+            ) {
+                if (response.isSuccessful) {
+                    val resposta = response.body()
+                    if (resposta != null) {
+                        acertoApi = "Usuário verificado"
+                        nome = resposta.nome.toString()
+                        email = resposta.email.toString()
+                        cep = resposta.cep.toString()
+                        dataNasc = resposta.nascimento.toString()
+                        senha = "marcos"
+                        conecta = false
+
+                    } else {
+                        // Não foi possível achar usuário
+                        erroApi = "Erro ao verificar usuário"
+                    }
+                } else {
+                    // Algo passado pode estar errado
+                    erroApi = "Erro na solicitação: ${response.code()}"
+                }
+            }
+
+            override fun onFailure(call: Call<Configuracao>, t: Throwable) {
+                // Não foi possível conectar na api
+                erroApi = "Falha na solicitação: ${t.message}"
+            }
+        })
+    }
 
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(
-            "${nome.value}," +
-                    "${email.value}" +
-                    "${cep.value}" +
-                    "${dataNasc.value}" +
-                    "${senha.value}"
-        )
 
         AtributoUsuarioConfig("CONFIGURAÇÕES", 70, 15)
-        nome.value?.let { CampoDeEntrada(label = "Nome:", valor = it) { nome.value = it } }
-        email.value?.let { CampoDeEntrada(label = "E-mail:", valor = it) { email.value = it } }
-        cep.value?.let { CampoDeEntrada(label = "CEP:", valor = it) { cep.value = it } }
-        dataNasc.value?.let {data ->
-            // Aqui 'data' é garantido de não ser nulo
-            val formattedDate = data.toString() // Ou outra lógica de formatação
-            CampoDeEntrada(label = "Data de Nascimento:", valor = formattedDate) {
-                dataNasc.value = it
+        nome?.let { CampoDeEntrada(label = "Nome:", valor = it) { novoNome -> nome = novoNome } }
+
+        email?.let {
+            CampoDeEntrada(label = "E-mail:", valor = it) { novoEmail ->
+                email = novoEmail
             }
         }
-        senha.value?.let { CampoDeEntrada(label = "Senha:", valor = it) { senha.value = it } }
 
-        BotaoSalvar(valor = "Salvar", onClick = {
+        cep?.let { CampoDeEntrada(label = "CEP:", valor = it) { novoCep -> cep = novoCep } }
 
-            val putUserDados = apiConfigDadosUser.putConfigUser(
-                token = pk,
-                id = 85,
-                config = Configuracao(
-                    nome.value,
-                    email.value,
-                    cep.value,
-                    dataNasc.value,
-                    senha.value
-                )
-            )
+        dataNasc?.let {
+            CampoDeEntrada(label = "Nascimento:", valor = it) { novaData ->
+                dataNasc = novaData
+            }
+        }
 
-            putUserDados.enqueue(object : Callback<Configuracao> {
-                override fun onResponse(
-                    call: Call<Configuracao>,
-                    response: Response<Configuracao>
-                ) {
-                    if (response.isSuccessful) {
-                        val resposta = response.body()
-                        if (resposta != null) {
-                            acertoApi = "Dados do Usuário cadastrado"
-                            Configuracao(
-                                config.nome,
-                                config.email,
-                                config.token,
-                                config.cep,
-                                config.dataNasc,
-                                config.senha,
-                            )
-                        } else {
-                            // Não foi possível achar usuário
-                            erroApi = "Erro ao verificar usuário"
-                        }
-                    } else {
-                        // Algo passado pode estar errado
-                        erroApi = "Erro na solicitação: ${response.code()}"
-                    }
-                }
+        senha?.let {
+            CampoDeEntrada(label = "Senha:", valor = it) { novaSenha ->
+                senha = novaSenha
+            }
+        }
 
-                override fun onFailure(call: Call<Configuracao>, t: Throwable) {
-                    // Não foi possível conectar na api
-                    erroApi = "Falha na solicitação: ${t.message}"
-                }
-            })
-
-            val putUserCep = apiConfigEndereco.putConfigEnde(
-                token = pk,
-                id = 85,
-                config = Configuracao(
-                   cep = cep.value
-                )
-            )
-
-            putUserCep.enqueue(object : Callback<Configuracao> {
-                override fun onResponse(
-                    call: Call<Configuracao>,
-                    response: Response<Configuracao>
-                ) {
-                    if (response.isSuccessful) {
-                        val resposta = response.body()
-                        if (resposta != null) {
-                            acertoApi = "Dados do Usuário cadastrado"
-                            Configuracao(
-                                config.cep
-                            )
-                        } else {
-                            // Não foi possível achar usuário
-                            erroApi = "Erro ao verificar usuário"
-                        }
-                    } else {
-                        // Algo passado pode estar errado
-                        erroApi = "Erro na solicitação: ${response.code()}"
-                    }
-                }
-
-                override fun onFailure(call: Call<Configuracao>, t: Throwable) {
-                    // Não foi possível conectar na api
-                    erroApi = "Falha na solicitação: ${t.message}"
-                }
-            })
+        BotaoSalvar(navController, valor = "Salvar") {
+            navController.navigate("Login")
 
             val putUserData = apiConfigData.putConfigData(
                 token = pk,
-                id = 85,
+                id = 1,
                 config = Configuracao(
-                    dataNasc = dataNasc.value
+                    nascimento = dataNasc
                 )
             )
 
@@ -237,8 +158,88 @@ fun TelaDeConfiguracao(navController: NavHostController, config: Configuracao) {
                         if (resposta != null) {
                             acertoApi = "Dados do Usuário cadastrado"
                             Configuracao(
-                                config.dataNasc
+                                dataNasc
                             )
+
+                            val putUserCep = apiConfigEndereco.putConfigEnde(
+                                token = pk,
+                                id = 1,
+                                config = Configuracao(
+                                    cep = cep
+                                )
+                            )
+
+                            putUserCep.enqueue(object : Callback<Configuracao> {
+                                override fun onResponse(
+                                    call: Call<Configuracao>,
+                                    response: Response<Configuracao>
+                                ) {
+                                    if (response.isSuccessful) {
+                                        val resposta = response.body()
+                                        if (resposta != null) {
+                                            acertoApi = "Dados do Usuário cadastrado"
+                                            Configuracao(
+                                                cep
+                                            )
+
+                                            val putUserDados = apiConfigDadosUser.putConfigUser(
+                                                token = pk,
+                                                id = 1,
+                                                config = UserConfig(
+                                                    email = email,
+                                                    nome = nome,
+                                                    role = "PACIENTE",
+                                                    senha = senha
+                                                )
+                                            )
+
+                                            putUserDados.enqueue(object : Callback<UserConfig> {
+                                                override fun onResponse(
+                                                    call: Call<UserConfig>,
+                                                    response: Response<UserConfig>
+                                                ) {
+                                                    if (response.isSuccessful) {
+                                                        val resposta = response.body()
+                                                        if (resposta != null) {
+                                                            acertoApi =
+                                                                "Dados do Usuário cadastrado"
+
+                                                        } else {
+                                                            // Não foi possível achar usuário
+                                                            erroApi = "Erro ao verificar usuário"
+                                                        }
+                                                    } else {
+                                                        // Algo passado pode estar errado
+                                                        erroApi =
+                                                            "Erro na solicitação: ${response.code()}"
+                                                    }
+                                                }
+
+                                                override fun onFailure(
+                                                    call: Call<UserConfig>,
+                                                    t: Throwable
+                                                ) {
+                                                    // Não foi possível conectar na api
+                                                    erroApi = "Falha na solicitação: ${t.message}"
+                                                }
+                                            })
+
+                                        } else {
+                                            // Não foi possível achar usuário
+                                            erroApi = "Erro ao verificar usuário"
+                                        }
+                                    } else {
+                                        // Algo passado pode estar errado
+                                        erroApi = "Erro na solicitação: ${response.code()}"
+                                    }
+                                }
+
+                                override fun onFailure(call: Call<Configuracao>, t: Throwable) {
+                                    // Não foi possível conectar na api
+                                    erroApi = "Falha na solicitação: ${t.message}"
+                                }
+                            })
+
                         } else {
                             // Não foi possível achar usuário
                             erroApi = "Erro ao verificar usuário"
@@ -254,7 +255,7 @@ fun TelaDeConfiguracao(navController: NavHostController, config: Configuracao) {
                     erroApi = "Falha na solicitação: ${t.message}"
                 }
             })
-        })
+        }
         Spacer(modifier = Modifier.height(16.dp))
     }
 }
@@ -274,57 +275,55 @@ fun AtributoUsuarioConfig(valor: String, paddingTop: Int, paddingBottom: Int) {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CampoDeEntrada(label: String, valor: String, onValueChange: (String) -> Unit) {
+    val valorInput = remember { mutableStateOf(valor) }// Declare como uma variável mutável
+
     Column(
-        modifier = Modifier.padding(8.dp),
-        verticalArrangement = Arrangement.Center,
-
-        ) {
-        var isHintVisible = valor.isEmpty()
-
-        BasicTextField(
-            value = valor,
-            onValueChange = {
-                onValueChange(it)
-                isHintVisible = it.isEmpty()
-            },
-            textStyle = TextStyle(fontFamily = Rowdies, color = Color.Black, fontSize = 16.sp),
-            singleLine = true,
-            decorationBox = { innerTextField ->
-                Box(
-                    modifier = Modifier
-                        .width(350.dp)
-                        .height(50.dp)
-                        .background(Color.White, shape = RoundedCornerShape(7.dp))
-                        .border(1.2.dp, Color.Black, RoundedCornerShape(6.dp)),
-                    contentAlignment = Alignment.CenterStart
-                ) {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.CenterStart
-                    ) {
-                        if (!isHintVisible) {
-                            innerTextField()
-                        } else {
-                            Text(
-                                text = label,
-                                style = TextStyle(color = Color.Black),
-                                modifier = Modifier.padding(start = 8.dp)
-                            )
-                        }
-                    }
-                }
-            },
+        modifier = Modifier
+            .width(450.dp)
+            .padding(10.dp)
+    ) {
+        Box(
             modifier = Modifier
-                .padding(8.dp)
-                .shadow(10.dp, shape = RoundedCornerShape(7.dp))
-        )
+                .fillMaxWidth()
+                .background(Color.White)
+                .height(55.dp),
+            contentAlignment = Alignment.CenterStart
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    text = label,
+                    fontSize = 20.sp,
+                    fontFamily = fontRobotoBold,
+                    color = Color.Black,
+                    modifier = Modifier.padding(start = 16.dp)
+                )
+                TextField(
+                    value = valor,
+                    onValueChange = { onValueChange(it); valorInput.value = it },
+                    singleLine = true,
+                    textStyle = TextStyle(
+                        fontSize = 17.sp,
+                        fontFamily = fontRobotoBold,
+                        color = Color.Black
+                    ),
+                    colors = TextFieldDefaults.textFieldColors(
+                        containerColor = Color.Transparent
+                    ),
+                    modifier = Modifier.weight(1f)
+                )
+            }
+        }
     }
 }
 
 @Composable
-fun BotaoSalvar(valor: String, onClick: () -> Unit) {
+fun BotaoSalvar(navController: NavHostController, valor: String, onClick: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
