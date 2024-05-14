@@ -1,6 +1,5 @@
 package com.example.vitaeapp.api
 
-
 import com.example.vitaeapp.classes.UsuarioLogin
 import retrofit2.Call
 import retrofit2.http.Body

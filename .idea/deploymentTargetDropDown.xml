@@ -2,9 +2,10 @@
 <project version="4">
   <component name="deploymentTargetDropDown">
     <value>
-      <entry key="GreetingPreview">
+      <entry key="GreetingPreviewFromConfig (1)">
         <State />
       </entry>
+      <entry key="GreetingPreviewFromLogin">
       <entry key="GreetingPreviewFromMaps">
         <State>
           <targetSelectedWithDropDown>

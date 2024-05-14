@@ -23,6 +23,7 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -159,7 +160,6 @@ fun TelaLogin(navController: NavHostController, modifier: Modifier = Modifier) {
                                     usuario.nome,
                                     usuario.token
                                 )
-
                             } else {
                                 // Não foi possível achar usuário
                                 erroApi.value = "Erro ao verificar usuário"

@@ -1,11 +1,10 @@
 package com.example.vitaeapp.classes
 
 data class Configuracao(
-    val nome: String,
-    val email: String,
-    val cep: String,
-    var numero: Int,
-    val dataNasc: String,
-    val senha: String
+    val email: String? = null,
+    val nome: String? = null,
+    val cep: String? = null,
+    val nascimento: String? = null,
+    val senha: String? = null
 ) {
 }

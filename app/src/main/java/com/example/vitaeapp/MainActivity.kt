@@ -36,7 +36,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.vitaeapp.classes.MenuItem
 import com.example.vitaeapp.ui.theme.VitaeAppTheme
 
 class MainActivity : ComponentActivity() {
@@ -79,9 +78,6 @@ fun Tela(navController: NavHostController, modifier: Modifier = Modifier) {
         startDestination = "Login"
     ) {
 
-        composable("Cadastro") {
-            TelaCadastro(navController)
-        }
         composable("Login") {
             TelaLogin(navController)
         }
@@ -122,6 +118,8 @@ fun Tela(navController: NavHostController, modifier: Modifier = Modifier) {
 
 }
 
+<<<<<<< HEAD
+=======
 @Composable
 fun Logo(logoPosicao: Boolean){
     if(logoPosicao){
@@ -201,6 +199,7 @@ fun Menu(navController: NavHostController) {
     }
 }
 
+>>>>>>> 1487cba9b2a19ce361e75e9155eec4b4d366510f
 @RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true)
 @Composable
