@@ -67,6 +67,9 @@ val apiConfigData = RetrofitServices.putConfigData()
 fun TelaDeConfiguracao(navController: NavHostController) {
     var pk =
         "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ2aXRhZS1zZXJ2aWNvcyIsInN1YiI6Im1pbmlvbkBnbWFpbC5jb20iLCJleHAiOjE3MTU2NTA4NDV9.DoVz73pKb1hduVGg_KaL0irrGGq_0JsyB41M8dXFIBQ"
+
+
+
     var nome by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var cep by remember { mutableStateOf("") }
@@ -193,10 +196,10 @@ fun TelaDeConfiguracao(navController: NavHostController) {
                                                 )
                                             )
 
-                                            putUserDados.enqueue(object : Callback<UserConfig> {
+                                            putUserDados.enqueue(object : Callback<Configuracao> {
                                                 override fun onResponse(
-                                                    call: Call<UserConfig>,
-                                                    response: Response<UserConfig>
+                                                    call: Call<Configuracao>,
+                                                    response: Response<Configuracao>
                                                 ) {
                                                     if (response.isSuccessful) {
                                                         val resposta = response.body()
@@ -216,7 +219,7 @@ fun TelaDeConfiguracao(navController: NavHostController) {
                                                 }
 
                                                 override fun onFailure(
-                                                    call: Call<UserConfig>,
+                                                    call: Call<Configuracao>,
                                                     t: Throwable
                                                 ) {
                                                     // Não foi possível conectar na api

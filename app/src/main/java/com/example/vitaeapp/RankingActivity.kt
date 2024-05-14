@@ -36,7 +36,6 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.vitaeapp.api.RetrofitServices
 import com.example.vitaeapp.classes.Ranking
-import com.example.vitaeapp.classes.Usuario
 import com.example.vitaeapp.ui.theme.Rowdies
 import com.example.vitaeapp.ui.theme.VitaeAppTheme
 import retrofit2.Call
