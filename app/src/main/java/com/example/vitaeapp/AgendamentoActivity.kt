@@ -60,7 +60,7 @@ import java.time.YearMonth
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun TelaAgendamento(navController: NavHostController) {
+fun TelaAgendamento(navController: NavHostController, token: String, id: Int) {
     val contador = remember { mutableStateOf(0) }
     val hospitais = remember { mutableStateListOf<Hospital>() }
     val nomeHospital = remember { mutableStateOf("") }
@@ -68,17 +68,11 @@ fun TelaAgendamento(navController: NavHostController) {
     val dataSelecionada = remember { mutableStateOf<CalendarioUiState.Date?>(null) }
     val horarioSelecionado = remember { mutableStateOf("") }
 
-    val token = remember {
-        mutableStateOf(
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ2aXRhZS1zZXJ2aWNvcyIsInN1YiI6ImRpZWdvQGdtYWlsLmNvbSIsImV4cCI6MTcxNTQ1NDg0MX0.IG-Jt3pfjNq6mE7590-2wjraU7ZN7lA7bb09e7uky04"
-        )
-    }
-
     val erroApi = remember { mutableStateOf("") }
 
     val apiHospital = RetrofitServices.getHospitais()
     val get = apiHospital.get(
-        token.value,
+        token,
     )
 
     get.enqueue(object : retrofit2.Callback<List<Hospital>> {
@@ -128,11 +122,11 @@ fun TelaAgendamento(navController: NavHostController) {
                     BtnVoltar { contador.value-- }
                     Spacer(modifier = Modifier.width(20.dp))
                     BtnFinalizar(
-                        idUsuario = 1,
+                        idUsuario = id,
                         idHospital = idHospital.value,
                         data = dataSelecionada.value,
                         horario = horarioSelecionado.value,
-                        token = token.value,
+                        token = token,
                         navController = navController
                     )
                 }
@@ -696,12 +690,3 @@ fun BtnFinalizar(
     }
 }
 
-
-@RequiresApi(Build.VERSION_CODES.O)
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreviewFromAgendamento() {
-    VitaeAppTheme {
-        TelaAgendamento(rememberNavController())
-    }
-}

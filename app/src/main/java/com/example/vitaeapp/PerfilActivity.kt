@@ -41,7 +41,7 @@ import retrofit2.Call
 import retrofit2.Response
 
 @Composable
-fun TelaPerfil() {
+fun TelaPerfil(token: String, id: Int) {
     var isLoading by remember { mutableStateOf(true) }
     var nome = remember { mutableStateOf("") }
     var peso = remember { mutableStateOf("") }
@@ -52,8 +52,8 @@ fun TelaPerfil() {
     var tipoSangue = remember { mutableStateOf("") }
     val apiPerfil = RetrofitServices.getDetalhesUser()
     val get = apiPerfil.getDetalhesUsuario(
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ2aXRhZS1zZXJ2aWNvcyIsInN1YiI6ImFtYXJlbG9AZ21haWwuY29tIiwiZXhwIjoxNzE1MTg1OTcxfQ.VOii79Nb1JPO5W2MzdK3KZgzkdlojkoFApIwJIuZ3nQ",
-        1
+        token,
+        id
     )
     val erroApi = remember { mutableStateOf("") }
     LaunchedEffect(Unit) { // Executa quando o componente é iniciado
@@ -346,13 +346,5 @@ fun BotaoEditar(valor: String) {
                 )
             }
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreviewFromPerfil() {
-    VitaeAppTheme {
-        TelaPerfil()
     }
 }

@@ -44,7 +44,7 @@ import com.example.vitaeapp.ui.theme.Rowdies
 import com.example.vitaeapp.ui.theme.VitaeAppTheme
 
 @Composable
-fun TelaDeConfiguracao(navController: NavHostController) {
+fun TelaDeConfiguracao(navController: NavHostController, token: String, id: Int) {
     // Valores iniciais dos campos de entrada
     var nome = remember { mutableStateOf("") }
     var email = remember { mutableStateOf("") }
@@ -180,14 +180,6 @@ fun BotaoSalvar(valor: String, onClick: () -> Unit) {
                 )
             }
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreviewFromConfig() {
-    VitaeAppTheme {
-        TelaDeConfiguracao(rememberNavController())
     }
 }
 

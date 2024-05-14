@@ -36,7 +36,7 @@ import com.example.vitaeapp.ui.theme.VitaeAppTheme
 import retrofit2.Response
 
 @Composable
-fun TelaQuiz() {
+fun TelaQuiz(token: String, id: Int) {
     val perguntas = remember { mutableStateOf(1) }
     val altura = remember { mutableStateOf("") }
     val peso = remember { mutableStateOf("") }
@@ -52,7 +52,7 @@ fun TelaQuiz() {
         Questionario(
             perguntas, altura, peso, perguntaTatuagem,
             perguntaRelacao, perguntaDesconforto, perguntaMedicamento,
-            perguntaDst, perguntaVacina, apto
+            perguntaDst, perguntaVacina, apto, token = token, id = id
         )
     }
 }
@@ -68,7 +68,8 @@ fun Questionario(
     perguntaMedicamento: MutableState<Boolean>,
     perguntaDst: MutableState<Boolean>,
     perguntaVacina: MutableState<Boolean>,
-    apto: MutableState<Boolean>
+    apto: MutableState<Boolean>,
+    token: String, id: Int
 ) {
 
     Column(Modifier.padding(30.dp, 70.dp)) {
@@ -108,7 +109,7 @@ fun Questionario(
             if (perguntas.value == 9) {
                 BotaoFinalizar(
                     perguntaTatuagem, perguntaRelacao, perguntaDesconforto, perguntaMedicamento,
-                    perguntaDst, perguntaVacina, apto, altura, peso
+                    perguntaDst, perguntaVacina, apto, altura, peso, token =  token, id = id
                 )
             }
         }
@@ -205,7 +206,8 @@ fun BotaoFinalizar(
     perguntaVacina: MutableState<Boolean>,
     apto: MutableState<Boolean>,
     altura: MutableState<String>,
-    peso: MutableState<String>
+    peso: MutableState<String>,
+    token: String, id: Int
 ) {
 
     IconButton(
@@ -216,7 +218,7 @@ fun BotaoFinalizar(
             validarFuncoes(
                 perguntaTatuagem,
                 perguntaRelacao, perguntaDesconforto, perguntaMedicamento,
-                perguntaDst, perguntaVacina, apto
+                perguntaDst, perguntaVacina, apto, token = token, id = id
             )
         }
     ) {
@@ -576,43 +578,20 @@ fun validarFuncoes(
     perguntaMedicamento: MutableState<Boolean>,
     perguntaDst: MutableState<Boolean>,
     perguntaVacina: MutableState<Boolean>,
-    apto: MutableState<Boolean>
+    apto: MutableState<Boolean>,
+    token: String, id: Int
 ) {
     if (perguntaTatuagem.value || perguntaRelacao.value || perguntaDesconforto.value ||
         perguntaMedicamento.value || perguntaDst.value || perguntaVacina.value
     ) {
-        conectarBanco(false)
+        conectarBanco(false, token = token, id = id)
     }
     else {
-        conectarBanco(true)
+        conectarBanco(true, token = token, id = id)
     }
 }
 
-fun validarAlturaPeso(
-    altura: MutableState<String>,
-    peso: MutableState<String>,
-) {
-    // Verifica se a altura é um número válido
-    val alturaFloat = altura.value.toFloatOrNull()
-    if (alturaFloat == null || alturaFloat <= 0 || alturaFloat > 3) {
-        println("Altura Inválida")
-    }
-
-    // Verifica se o peso é um número válido
-    val pesoFloat = peso.value.toFloatOrNull()
-    if (pesoFloat == null || pesoFloat < 0) {
-        println("Peso Inválido")
-    }
-
-    // Verifica se os campos estão vazios
-    val camposVazios = altura.value.isEmpty() || peso.value.isEmpty()
-    if (camposVazios) {
-        println("Preencha os campos, por favor")
-    }
-}
-
-
-fun conectarBanco(validarFuncoes: Boolean) {
+fun conectarBanco(validarFuncoes: Boolean, token: String, id: Int) {
 
     var erroApi = ""
 
@@ -620,7 +599,7 @@ fun conectarBanco(validarFuncoes: Boolean) {
 
     val quiz = Quiz(altura = null, peso = null, validarFuncoes)
 
-    val put = apiQuiz.put(quiz, 55, "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ2aXRhZS1zZXJ2aWNvcyIsInN1YiI6ImFtYXJlbG9AZ21haWwuY29tIiwiZXhwIjoxNzE0NjgxMzUwfQ.Q9v_uJYd1_e_78yML1suC779pnjYLEDG9mBxQFUFFFs")
+    val put = apiQuiz.put(quiz, id, token)
 
     put.enqueue(object : retrofit2.Callback<Quiz> {
         // esta função é invocada caso:
@@ -646,13 +625,4 @@ fun conectarBanco(validarFuncoes: Boolean) {
 
     })
 
-}
-
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreviewFromQuiz() {
-    VitaeAppTheme {
-        TelaQuiz()
-    }
 }

@@ -42,7 +42,7 @@ import retrofit2.Callback
 import retrofit2.Response
 
 @Composable
-fun TelaDetalheHemocentro(modifier: Modifier = Modifier) {
+fun TelaDetalheHemocentro(modifier: Modifier = Modifier, token: String, id: Int) {
     var isLoading by remember { mutableStateOf(true) }
     var nome = remember { mutableStateOf("") }
     var cep = remember { mutableStateOf("") }
@@ -51,8 +51,8 @@ fun TelaDetalheHemocentro(modifier: Modifier = Modifier) {
     var rua = remember { mutableStateOf("") }
     val apiHemo = RetrofitServices.getDetalhesHemo()
     val get = apiHemo.getDetalhesUsuario(
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ2aXRhZS1zZXJ2aWNvcyIsInN1YiI6ImFtYXJlbG9AZ21haWwuY29tIiwiZXhwIjoxNzE1MTg1NjM5fQ.-AgUgzX1CQnS6SdgXG4dYp9OmyeKcm5T3C9GaBbWxdc",
-        1
+        token,
+        id
     )
     val erroApi = remember { mutableStateOf("") }
     LaunchedEffect(Unit) { // Executa quando o componente é iniciado
@@ -198,12 +198,4 @@ fun tiposSangue(lista: List<String>) {
         }
     }
     Spacer(modifier = Modifier.height(15.dp))
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreviewFromDetalhe() {
-    VitaeAppTheme {
-        TelaDetalheHemocentro()
-    }
 }

@@ -43,13 +43,7 @@ import retrofit2.Call
 import retrofit2.Response
 
 @Composable
-fun TelaRanking(modifier: Modifier = Modifier) {
-    Posicoes()
-}
-
-@Composable
-fun Posicoes() {
-
+fun TelaRanking(token: String, id: Int) {
     val ranking = remember {
         mutableStateListOf<Ranking>()
     }
@@ -58,7 +52,7 @@ fun Posicoes() {
 
     val apiRanking = RetrofitServices.getApiRanking()
 
-    val get = apiRanking.get("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ2aXRhZS1zZXJ2aWNvcyIsInN1YiI6ImFtYXJlbEBnbWFpbC5jb20iLCJleHAiOjE3MTQ5NDcxNTV9._CmO0AMYX3Uz5-q68-yKU4ASCmIMVJixWWNvd1TuCgU")
+    val get = apiRanking.get(token)
 
     val scrollState = rememberScrollState()
 
@@ -128,6 +122,8 @@ fun Posicoes() {
         }
     }
 }
+
+
 @Composable
 fun RankingItem(ranking: Ranking, position: Int) {
 
@@ -199,13 +195,5 @@ fun RankingItem(ranking: Ranking, position: Int) {
                 modifier = Modifier.padding(14.dp)
             )
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreviewFromRanking() {
-    VitaeAppTheme {
-        TelaRanking()
     }
 }

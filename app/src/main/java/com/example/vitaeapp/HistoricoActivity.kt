@@ -47,15 +47,7 @@ import retrofit2.Callback
 import retrofit2.Response
 
 @Composable
-fun TelaHistorico(navController: NavHostController) {
-    val token = remember {
-        mutableStateOf(
-                "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ2aXRhZS1zZXJ2aWNvcyIsInN1YiI6ImRpZWdvQGdtYWlsLmNvbSIsImV4cCI6MTcxNTQ1NDg0MX0.IG-Jt3pfjNq6mE7590-2wjraU7ZN7lA7bb09e7uky04"
-        )
-    }
-
-    val id = remember { mutableStateOf(1) }
-
+fun TelaHistorico(navController: NavHostController, token: String, id: Int) {
     val historico = remember {
         mutableStateOf(
                 Historico(0, emptyList(), emptyList())
@@ -68,8 +60,8 @@ fun TelaHistorico(navController: NavHostController) {
 
     val apiHistorico = RetrofitServices.getHistoricoService()
     val get = apiHistorico.getHistorico(
-            token.value,
-            id.value
+            token,
+            id
     )
 
     get.enqueue(object : retrofit2.Callback<Historico> {
@@ -105,7 +97,9 @@ fun TelaHistorico(navController: NavHostController) {
 
             hospitalMaisRecente?.let {
                 Proxima(agendaMaisRecente, it)
-                Botoes(token.value, 11, navController)
+                if (agendaMaisRecente != null) {
+                    Botoes(token, agendaMaisRecente.idAgenda, navController)
+                }
             }
             Anteriores(historico.value, agendaMaisRecente)
         }
@@ -330,14 +324,5 @@ fun Anteriores(historico: Historico, agenda: Agenda?) {
                 }
             }
         }
-    }
-}
-
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreviewFromHistorico() {
-    VitaeAppTheme {
-        TelaHistorico(rememberNavController())
     }
 }

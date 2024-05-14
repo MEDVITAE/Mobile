@@ -1,7 +1,5 @@
 package com.example.vitaeapp
 
-import android.content.Context
-import android.content.SharedPreferences
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -29,7 +27,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -37,6 +34,9 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.vitaeapp.api.RetrofitServices
@@ -47,8 +47,6 @@ import retrofit2.Response
 
 @Composable
 fun TelaLogin(navController: NavHostController, modifier: Modifier = Modifier) {
-    val context = LocalContext.current
-
     val email = remember { mutableStateOf("") }
     val senha = remember { mutableStateOf("") }
 
@@ -176,16 +174,19 @@ fun TelaLogin(navController: NavHostController, modifier: Modifier = Modifier) {
                     }
                 })
             }
-                if (erroApi.value.isNotBlank()) {
-                    Text("${erroApi.value}")
-                } else if (acertoApi.value.isNotBlank()) {
-                    Text("${acertoApi.value}")
-                    Text("${validacao.value}")
-                    navController.navigate("Perfil")
+            if (erroApi.value.isNotBlank()) {
+                Text("${erroApi.value}")
+            } else if (acertoApi.value.isNotBlank()) {
+                Text("${acertoApi.value}")
+                Text("${validacao.value}")
+                if (validacao.value.token != null) {
+
+                    navController.navigate("Perfil/${validacao.value.token!!}/${validacao.value.Id!!}")
                 }
             }
         }
     }
+}
 
 @Composable
 fun BtnIrParaCadastro(navController: NavHostController) {
@@ -244,7 +245,15 @@ fun AtributoUsuarioLogin(valor: String, paddingTop: Int, paddingBottom: Int, tam
 }
 
 @Composable
-fun InputGetInfoLogin(valorInput: String,exemplo: String, onValueChange: (String) -> Unit, isError: Boolean, errorMessage: String, dica: String, isFieldValid: Boolean) {
+fun InputGetInfoLogin(
+    valorInput: String,
+    exemplo: String,
+    onValueChange: (String) -> Unit,
+    isError: Boolean,
+    errorMessage: String,
+    dica: String,
+    isFieldValid: Boolean
+) {
     val fieldColor = if (isFieldValid) Color.Black else Color.Red
 
     Column(
@@ -350,6 +359,7 @@ fun isEmailValid(email: String): Boolean {
     val emailRegex = Regex("^\\w+@[a-zA-Z_]+?\\.[a-zA-Z]{2,3}\$")
     return emailRegex.matches(email)
 }
+
 fun isPasswordValid(password: String): Boolean {
     return password.length >= 8
 //            OPÇÕES DE SEGURANÇA DE SENHA PARA ADICINAR NO FUTURO
