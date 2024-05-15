@@ -9,4 +9,30 @@
     <string name="title_perfil_quantidade_doacao">Doações feitas</string>
     <string name="title_perfil_apto_a_doacao">Disponibilidade</string>
     <string name="title_perfil_tipo_sangue">Tipo sanguineo</string>
+
+    <string name="btn_voltar">Voltar</string>
+    <string name="btn_salvar">Salvar</string>
+    <string name="btn_editar">Editar</string>
+    <string name="btn_avancar">Avançar</string>
+    <string name="btn_cadastrar">Cadastre-se</string>
+    <string name="btn_finalizar">Finalizar</string>
+
+    <string name="title_sub_nome">Nome Completo</string>
+    <string name="title_sub_email">Email</string>
+    <string name="title_sub_senha">Senha</string>
+    <string name="title_sub_numero">Número</string>
+    <string name="title_sub_cep">CEP</string>
+    <string name="title_sub_dt_nasci">Data de Nascimento</string>
+
+    <string name="title_cadastro">Seja Bem-Vindo</string>
+    <string name="title_login">HISTÓRICO</string>
+    <string name="title_historico">HISTÓRICO</string>
+    <string name="title_quiz">QUIZ</string>
+    <string name="title_ranking">RANKING</string>
+    <string name="title_detalhe_hemocentro">A</string>
+    <string name="title_configuracao">CONFIGURAÇÃO</string>
+    <string name="title_maps">MAPA</string>
+    <string name="title_agendamento_hospital">SELECIONE UM HOSPITAL</string>
+    <string name="title_agendamento_agenda">SELECIONE UMA DATA</string>
+    <string name="title_agendamento_horario">SELECIONE A HORA</string>
 </resources>

@@ -37,6 +37,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -158,7 +159,7 @@ fun Hospitais(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            "SELECIONE UM HOSPITAL",
+            stringResource(id = R.string.title_agendamento_hospital),
             style = androidx.compose.ui.text.TextStyle(
                 fontFamily = fontFamilyRowdiesBold,
                 fontSize = 18.sp
@@ -284,7 +285,7 @@ fun Calendario(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            "SELECIONE UMA DATA",
+            stringResource(id = R.string.title_agendamento_agenda),
             style = androidx.compose.ui.text.TextStyle(
                 fontFamily = fontFamilyRowdiesBold,
                 fontSize = 18.sp
@@ -514,7 +515,7 @@ fun Horarios(horario: MutableState<String>) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            "SELECIONE A HORA",
+            stringResource(id = R.string.title_agendamento_horario),
             style = TextStyle(
                 fontFamily = fontFamilyRowdiesBold,
                 fontSize = 18.sp
@@ -588,7 +589,7 @@ fun BtnVoltar(onClick: () -> Unit) {
             )
             Spacer(modifier = Modifier.width(10.dp))
             Text(
-                "Voltar", fontSize = 18.sp, fontFamily = fontRobotoBold
+                stringResource(id = R.string.btn_voltar), fontSize = 18.sp, fontFamily = fontRobotoBold
             )
         }
     }
@@ -686,7 +687,7 @@ fun BtnFinalizar(
         ) {
 
             Text(
-                "Finalizar", fontSize = 18.sp, fontFamily = fontRobotoBold
+                stringResource(id = R.string.btn_finalizar), fontSize = 18.sp, fontFamily = fontRobotoBold
             )
         }
     }

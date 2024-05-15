@@ -34,6 +34,7 @@ import androidx.compose.ui.modifier.modifierLocalMapOf
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -57,16 +58,16 @@ fun TelaDeConfiguracao(navController: NavHostController, token: String, id: Int)
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        AtributoUsuarioConfig("CONFIGURAÇÕES", 70, 15)
-        CampoDeEntrada(label = "Nome:", valor = nome.value) { nome.value = it }
-        CampoDeEntrada(label = "E-mail:", valor = email.value) { email.value = it }
-        CampoDeEntrada(label = "CEP:",valor = numero.value) { numero.value = it }
-        CampoDeEntrada(label = "Número:",valor = cep.value) { cep.value = it }
-        CampoDeEntrada(label = "Data de Nascimento:", valor = dataNasc.value) {
+        AtributoUsuarioConfig(stringResource(id = R.string.title_configuracao), 70, 15)
+        CampoDeEntrada(label = stringResource(id = R.string.title_sub_nome), valor = nome.value) { nome.value = it }
+        CampoDeEntrada(label = stringResource(id = R.string.title_sub_email), valor = email.value) { email.value = it }
+        CampoDeEntrada(label = stringResource(id = R.string.title_sub_cep),valor = numero.value) { numero.value = it }
+        CampoDeEntrada(label = stringResource(id = R.string.title_sub_numero),valor = cep.value) { cep.value = it }
+        CampoDeEntrada(label = stringResource(id = R.string.title_sub_dt_nasci), valor = dataNasc.value) {
             dataNasc.value = it
         }
-        CampoDeEntrada(label = "Senha:", valor = senha.value) { senha.value = it }
-        BotaoSalvar(valor = "Salvar") {
+        CampoDeEntrada(label = stringResource(id = R.string.title_sub_senha), valor = senha.value) { senha.value = it }
+        BotaoSalvar(valor = stringResource(id = R.string.btn_salvar)) {
             navController.navigate("Perfil")
         }
         Spacer(modifier = Modifier.height(16.dp))
