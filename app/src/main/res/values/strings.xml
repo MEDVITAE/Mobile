@@ -10,28 +10,54 @@
     <string name="title_perfil_apto_a_doacao">Disponibilidade</string>
     <string name="title_perfil_tipo_sangue">Tipo sanguineo</string>
 
-    <string name="btn_voltar">Voltar</string>
-    <string name="btn_salvar">Salvar</string>
-    <string name="btn_editar">Editar</string>
+    <string name="btn_agendar">Agendar</string>
     <string name="btn_avancar">Avançar</string>
+    <string name="btn_atualizar">Atualizar</string>
     <string name="btn_cadastrar">Cadastre-se</string>
+    <string name="btn_cancelar">Cancelar</string>
+    <string name="btn_editar">Editar</string>
+    <string name="btn_entrar">Entrar</string>
     <string name="btn_finalizar">Finalizar</string>
+    <string name="btn_nao">Não</string>
+    <string name="btn_salvar">Salvar</string>
+    <string name="btn_sim">Sim</string>
+    <string name="btn_voltar">Voltar</string>
 
     <string name="title_sub_nome">Nome Completo</string>
     <string name="title_sub_email">Email</string>
     <string name="title_sub_senha">Senha</string>
     <string name="title_sub_numero">Número</string>
     <string name="title_sub_cep">CEP</string>
+    <string name="title_sub_cpf">CPF</string>
     <string name="title_sub_dt_nasci">Data de Nascimento</string>
+    <string name="title_sub_message_1">Local destinado ao atendimento de Doadores de sangue</string>
+    <string name="title_sub_doacao">Prioridade de Doações</string>
 
     <string name="title_cadastro">Seja Bem-Vindo</string>
-    <string name="title_login">HISTÓRICO</string>
-    <string name="title_historico">HISTÓRICO</string>
-    <string name="title_quiz">QUIZ</string>
+
+    <string name="title_login">Bem-Vindo de Volta</string>
+    <string name="title_login_sub_erro">Por favor, corrija os campos incorretos.</string>
+
+    <string name="title_historico_proxima">PRÓXIMA DOAÇÃO</string>
+    <string name="title_historico_anteriores">HISTÓRICO</string>
+
+    <string name="title_quiz">QUIZ DE APTIDÃO</string>
+    <string name="title_quiz_sub_pergunta_1">Informe sua altura:</string>
+    <string name="title_quiz_sub_pergunta_2">Informe seu peso:</string>
+    <string name="title_quiz_sub_pergunta_3">Fez alguma tatuagem nos últimos 6 meses?</string>
+    <string name="title_quiz_sub_pergunta_4">Teve algum tipo de relação sexual recentemente?</string>
+    <string name="title_quiz_sub_pergunta_5">Sente algum desconforto, ou dor na barriga?</string>
+    <string name="title_quiz_sub_pergunta_6">Faz ou fez uso de algum tipo de medicamento?</string>
+    <string name="title_quiz_sub_pergunta_7">Tem algum tipo de DST?</string>
+    <string name="title_quiz_sub_pergunta_8">Tomou alguma vacina contra a COVID-19 recentemente?</string>
+
     <string name="title_ranking">RANKING</string>
-    <string name="title_detalhe_hemocentro">A</string>
+    <string name="title_ranking_sub">MAIORES DOADORES</string>
+    <string name="title_ranking_sub_sem_doacao">Sem doadores no Ranking</string>
+
     <string name="title_configuracao">CONFIGURAÇÃO</string>
     <string name="title_maps">MAPA</string>
+
     <string name="title_agendamento_hospital">SELECIONE UM HOSPITAL</string>
     <string name="title_agendamento_agenda">SELECIONE UMA DATA</string>
     <string name="title_agendamento_horario">SELECIONE A HORA</string>

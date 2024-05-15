@@ -115,14 +115,15 @@ fun TelaDetalheHemocentro(modifier: Modifier = Modifier, token: String, id: Int)
                 Modifier.padding(0.dp, 0.dp, 0.dp, 5.dp),
                 style = TextStyle(fontFamily = Rowdies, fontSize = 20.sp)
             )
-            Text(text = "Local destinado ao atendimento de Doadores de sangue")
+            Text(stringResource(id = R.string.title_sub_message_1))
 
 
             Column(
                 Modifier.padding(0.dp, 25.dp, 0.dp, 20.dp)
             ) {
                 Text(
-                    text = "Endereço:${rua.value}, ${numero.value} - ${bairro.value}", Modifier
+                    text = "${stringResource(id = R.string.title_sub_email)}:${rua.value}, ${numero.value} - ${bairro.value}",
+                    Modifier
                         .background(Color.White, shape = RoundedCornerShape(8.dp))
                         .width(350.dp)
                         .height(70.dp)
@@ -147,7 +148,7 @@ fun TelaDetalheHemocentro(modifier: Modifier = Modifier, token: String, id: Int)
             Spacer(modifier = Modifier.height(30.dp))
 
             Text(
-                text = "Prioridades de doações",
+                text = stringResource(id = R.string.title_sub_doacao),
                 style = TextStyle(fontFamily = Rowdies, fontSize = 20.sp)
             )
 
@@ -166,7 +167,7 @@ fun TelaDetalheHemocentro(modifier: Modifier = Modifier, token: String, id: Int)
                     .align(Alignment.CenterHorizontally),
                 colors = ButtonDefaults.buttonColors(Color(android.graphics.Color.parseColor("#f24e4e")))
             ) {
-                Text(text = "Agendar")
+                Text(text = stringResource(id = R.string.btn_agendar))
             }
 
         }

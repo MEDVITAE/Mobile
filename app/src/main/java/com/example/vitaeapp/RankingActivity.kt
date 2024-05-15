@@ -28,6 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -86,12 +87,12 @@ fun TelaRanking(token: String, id: Int) {
         Row {
             Column {
                 Text(
-                    "RANKING",
+                    stringResource(id = R.string.title_ranking),
                     fontSize = 36.sp,
                     style = TextStyle(fontFamily = Rowdies),
                 )
                 Text(
-                    "MAIORES DOADORES",
+                    stringResource(id = R.string.title_ranking_sub),
                     modifier = Modifier.offset(y = (-24).dp),
                     fontSize = 13.sp,
                     style = TextStyle(fontFamily = Rowdies)
@@ -111,7 +112,7 @@ fun TelaRanking(token: String, id: Int) {
                     Text(erroApi.value, style = TextStyle(color = Color.Red))
                 } else {
                     if (ranking.isEmpty()) {
-                        Text("Sem doadores no ranking")
+                        Text(stringResource(id = R.string.title_ranking_sub_sem_doacao))
                     } else {
                         ranking.forEachIndexed { index, item ->
                             RankingItem(ranking = item, position = index + 1)

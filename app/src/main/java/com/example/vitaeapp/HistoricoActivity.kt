@@ -28,6 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -120,7 +121,7 @@ fun Proxima(agenda: Agenda?, hospital: HospitalHistorico) {
         ) {
 
             Text(
-                    "PRÓXIMA DOAÇÃO",
+                    stringResource(id = R.string.title_historico_proxima),
                     Modifier.padding(0.dp, 0.dp, 0.dp, 10.dp),
                     style = TextStyle(fontFamily = Rowdies),
             )
@@ -133,10 +134,10 @@ fun Proxima(agenda: Agenda?, hospital: HospitalHistorico) {
                     )
 
                     Column(
-                            Modifier
-                                    .padding(10.dp, 0.dp, 0.dp, 0.dp)
-                                    .background(Color.White)
-                                    .width(350.dp)
+                        Modifier
+                            .padding(10.dp, 0.dp, 0.dp, 0.dp)
+                            .background(Color.White)
+                            .width(350.dp)
                     ) {
                         Column(
                                 Modifier
@@ -174,8 +175,8 @@ fun Botoes(token: String, id: Int, navController: NavHostController) {
     Row(Modifier.padding(start = 40.dp)) {
         IconButton(
                 modifier = Modifier
-                        .width(150.dp)
-                        .height(45.dp),
+                    .width(150.dp)
+                    .height(45.dp),
                 onClick = {
                     delete.enqueue(object : Callback<Historico> {
                         override fun onResponse(call: Call<Historico>, response: Response<Historico>) {
@@ -194,21 +195,21 @@ fun Botoes(token: String, id: Int, navController: NavHostController) {
         ) {
             Row(
                     modifier = Modifier
-                            .width(140.dp)
-                            .height(45.dp)
-                            .background(
-                                    color = colorResource(id = R.color.vermelho_rosado),
-                                    shape = RoundedCornerShape(16.dp)
-                            )
-                            .border(
-                                    color = Color.Black,
-                                    width = 2.dp,
-                                    shape = RoundedCornerShape(16.dp)
-                            ),
+                        .width(140.dp)
+                        .height(45.dp)
+                        .background(
+                            color = colorResource(id = R.color.vermelho_rosado),
+                            shape = RoundedCornerShape(16.dp)
+                        )
+                        .border(
+                            color = Color.Black,
+                            width = 2.dp,
+                            shape = RoundedCornerShape(16.dp)
+                        ),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center
             ) {
-                Text("Cancelar", fontSize = 18.sp, fontFamily = fontRobotoBold)
+                Text(stringResource(id = R.string.btn_cancelar), fontSize = 18.sp, fontFamily = fontRobotoBold)
             }
         }
         Spacer(modifier = Modifier.width(8.dp))
@@ -248,7 +249,7 @@ fun Botoes(token: String, id: Int, navController: NavHostController) {
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center
             ) {
-                Text("Atualizar", fontSize = 18.sp, fontFamily = fontRobotoBold)
+                Text(stringResource(id = R.string.btn_atualizar), fontSize = 18.sp, fontFamily = fontRobotoBold)
             }
         }
     }
@@ -262,7 +263,7 @@ fun Anteriores(historico: Historico, agenda: Agenda?) {
                 modifier = Modifier.padding(30.dp, 0.dp)
         ) {
             Text(
-                    text = "HISTÓRICO",
+                    text = stringResource(id = R.string.title_historico_anteriores),
                     modifier = Modifier.padding(0.dp, 0.dp, 0.dp, 10.dp),
                     style = TextStyle(fontFamily = Rowdies)
             )

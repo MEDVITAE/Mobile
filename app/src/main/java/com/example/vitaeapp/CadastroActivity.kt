@@ -123,7 +123,7 @@ fun TelaCadastro(navController: NavHostController, modifier: Modifier = Modifier
             )
 
             AtributoUsuarioCadastro(
-                valor = "Data Nascimento",
+                valor = stringResource(id = R.string.title_sub_dt_nasci),
                 paddingTop = 20,
                 paddingBottom = 10,
                 tamanho = 20
@@ -140,7 +140,7 @@ fun TelaCadastro(navController: NavHostController, modifier: Modifier = Modifier
                 )
 
             AtributoUsuarioCadastro(
-                valor = "CPF",
+                valor = stringResource(id = R.string.title_sub_cpf),
                 paddingTop = 0,
                 paddingBottom = 10,
                 tamanho = 20

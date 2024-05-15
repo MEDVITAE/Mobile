@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.vitaeapp.api.RetrofitServices
@@ -86,7 +87,7 @@ fun TelaLogin(navController: NavHostController, modifier: Modifier = Modifier) {
 
             Spacer(modifier = Modifier.height(40.dp))
             AtributoUsuarioLoginBemVindo(
-                valor = "Bem-vindo de volta",
+                valor = stringResource(id = R.string.title_login),
                 paddingTop = 20,
                 paddingBottom = 10,
                 tamanho = 20
@@ -94,7 +95,7 @@ fun TelaLogin(navController: NavHostController, modifier: Modifier = Modifier) {
             Spacer(modifier = Modifier.height(15.dp))
 
             AtributoUsuarioLogin(
-                valor = "Email",
+                valor = stringResource(id = R.string.title_sub_email),
                 paddingTop = 0,
                 paddingBottom = 10,
                 tamanho = 20
@@ -110,7 +111,7 @@ fun TelaLogin(navController: NavHostController, modifier: Modifier = Modifier) {
             )
 
             AtributoUsuarioLogin(
-                valor = "Senha",
+                valor = stringResource(id = R.string.title_sub_senha),
                 paddingTop = 20,
                 paddingBottom = 10,
                 tamanho = 20
@@ -128,7 +129,7 @@ fun TelaLogin(navController: NavHostController, modifier: Modifier = Modifier) {
             if (emailError.value.isNotBlank() || senhaError.value.isNotBlank()) {
                 Spacer(modifier = Modifier.height(20.dp))
                 Text(
-                    text = "Por favor, corrija os campos incorretos.",
+                    text = stringResource(id = R.string.title_login_sub_erro),
                     color = Color.Red,
                     fontSize = 14.sp,
                 )
@@ -136,7 +137,7 @@ fun TelaLogin(navController: NavHostController, modifier: Modifier = Modifier) {
 
             Spacer(modifier = Modifier.height(5.dp))
 
-            BotaoLogin("Entrar") {
+            BotaoLogin(valor = stringResource(id = R.string.btn_entrar)) {
 
                 val usuario =
                     UsuarioLogin(email = email.value, senha = senha.value)
@@ -196,7 +197,7 @@ fun BtnIrParaCadastro(navController: NavHostController) {
         horizontalArrangement = Arrangement.End
     ) {
         Text(
-            text = "Cadastre-se",
+            text = stringResource(id = R.string.btn_cadastrar),
             fontSize = 16.sp,
             color = Color.Black,
             textDecoration = TextDecoration.Underline,

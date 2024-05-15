@@ -104,7 +104,7 @@ fun TelaPerfil(token: String, id: Int) {
             InputGetInfo(valor = peso.value) { peso.value = it }
             AtributoUsuario(stringResource(id = (string.title_input_altura)), 12, 10)
             InputGetInfo(valor = altura.value) { altura.value = it }
-            BotaoEditar("Editar")
+            BotaoEditar(stringResource(id = R.string.btn_editar))
         }
     }
 }
