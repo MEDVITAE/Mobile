@@ -28,27 +28,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.tooling.preview.Preview
 import com.example.vitaeapp.api.RetrofitServices
 import com.example.vitaeapp.classes.Ranking
 import com.example.vitaeapp.ui.theme.Rowdies
-import com.example.vitaeapp.ui.theme.VitaeAppTheme
 import retrofit2.Call
 import retrofit2.Response
 
 @Composable
-fun TelaRanking(modifier: Modifier = Modifier) {
-    Posicoes()
-}
-
-@Composable
-fun Posicoes() {
-
+fun TelaRanking(token: String, id: Int) {
     val ranking = remember {
         mutableStateListOf<Ranking>()
     }
@@ -57,7 +50,7 @@ fun Posicoes() {
 
     val apiRanking = RetrofitServices.getApiRanking()
 
-    val get = apiRanking.get("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ2aXRhZS1zZXJ2aWNvcyIsInN1YiI6ImFtYXJlbEBnbWFpbC5jb20iLCJleHAiOjE3MTQ5NDcxNTV9._CmO0AMYX3Uz5-q68-yKU4ASCmIMVJixWWNvd1TuCgU")
+    val get = apiRanking.get(token)
 
     val scrollState = rememberScrollState()
 
@@ -86,23 +79,22 @@ fun Posicoes() {
     }
 
     Column(
-        Modifier.padding(30.dp, 100.dp)
+        Modifier.padding(30.dp, 90.dp)
     ) {
-        Row {
-            Column {
-                Text(
-                    "RANKING",
-                    fontSize = 36.sp,
-                    style = TextStyle(fontFamily = Rowdies),
-                )
-                Text(
-                    "MAIORES DOADORES",
-                    modifier = Modifier.offset(y = (-24).dp),
-                    fontSize = 13.sp,
-                    style = TextStyle(fontFamily = Rowdies)
-                )
-            }
+        Column {
+            Text(
+                stringResource(id = R.string.title_ranking),
+                fontSize = 23.sp,
+                style = TextStyle(fontFamily = Rowdies),
+            )
+            Spacer(modifier = Modifier.height(10.dp))
+            Text(
+                stringResource(id = R.string.title_ranking_sub),
+                fontSize = 16.sp,
+                style = TextStyle(fontFamily = Rowdies)
+            )
         }
+
 
 
         Box(
@@ -116,7 +108,7 @@ fun Posicoes() {
                     Text(erroApi.value, style = TextStyle(color = Color.Red))
                 } else {
                     if (ranking.isEmpty()) {
-                        Text("Sem doadores no ranking")
+                        Text(stringResource(id = R.string.title_ranking_sub_sem_doacao))
                     } else {
                         ranking.forEachIndexed { index, item ->
                             RankingItem(ranking = item, position = index + 1)
@@ -127,6 +119,8 @@ fun Posicoes() {
         }
     }
 }
+
+
 @Composable
 fun RankingItem(ranking: Ranking, position: Int) {
 
@@ -198,13 +192,5 @@ fun RankingItem(ranking: Ranking, position: Int) {
                 modifier = Modifier.padding(14.dp)
             )
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreviewFromRanking() {
-    VitaeAppTheme {
-        TelaRanking()
     }
 }

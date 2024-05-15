@@ -50,7 +50,7 @@ fun GetIsLoading(): Boolean {
 }
 
 @Composable
-fun ChamaMaps(navController: NavHostController) {
+fun ChamaMaps(navController: NavHostController, token: String) {
     val locationLondon = LatLng(
         -23.557978, -46.661789
     )
@@ -91,8 +91,8 @@ fun ChamaMaps(navController: NavHostController) {
         var markerClick by remember { mutableStateOf(false) }
         var nav by remember { mutableStateOf("") }
         var markersData by remember { mutableStateOf<List<ClusterItem>>(emptyList()) }
-        var size = conectaBanco().size
-        markersData = criaObjetosMarcadores()
+        var size = conectaBanco(token).size
+        markersData = criaObjetosMarcadores(token)
         if (markersData.isNotEmpty() && markersData.size == size && GetIsLoading()) {
             Clustering(
                 items = markersData,
@@ -105,13 +105,7 @@ fun ChamaMaps(navController: NavHostController) {
 
         }
         if (markerClick) {
-            val context = LocalContext.current
-            context.startActivity(
-                Intent(
-                    context,
-                    GreetingPreviewFromDetalhe(nav)::class.java
-                )
-            )
+            navController.navigate("DetalheHemo/${token}")
         }
 
     }
@@ -120,13 +114,13 @@ fun ChamaMaps(navController: NavHostController) {
 
 @SuppressLint("UnrememberedMutableState")
 @Composable
-fun conectaBanco(): List<CepMaps> {
+fun conectaBanco(token: String): List<CepMaps> {
     var isLoading by remember { mutableStateOf(false) }
     var ceps by remember { mutableStateOf<List<CepMaps>>(emptyList()) }
 
     val apiMaps = RetrofitServices.getCepsHemo()
     val get = apiMaps.getCeps(
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ2aXRhZS1zZXJ2aWNvcyIsInN1YiI6ImFtYXJlbG9AZ21haWwuY29tIiwiZXhwIjoxNzE1MzcwNzY4fQ.rNWkCHgp8XtPfMn2gg5c509bkagE1Uaqc8m0OiEKpL0"
+        token
     )
     val erroApi = remember { mutableStateOf("") }
 
@@ -210,8 +204,8 @@ fun buscarDetalhes(ceps: List<CepMaps>): SnapshotStateList<Location> {
 }
 
 @Composable
-fun criaObjetosMarcadores(): List<ClusterItem> {
-    val listaCeps = conectaBanco()
+fun criaObjetosMarcadores(token: String): List<ClusterItem> {
+    val listaCeps = conectaBanco(token)
     val listaDeLatLng = buscarDetalhes(ceps = listaCeps)
     val marcadores = mutableListOf<ObjMarker>()
     if (listaDeLatLng != null && listaCeps != null) {
@@ -227,13 +221,5 @@ fun criaObjetosMarcadores(): List<ClusterItem> {
     }
     return marcadores.toList()
 
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreviewFromMaps() {
-    VitaeAppTheme {
-        ChamaMaps(rememberNavController())
-    }
 }
 

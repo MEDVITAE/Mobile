@@ -25,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -36,7 +37,7 @@ import com.example.vitaeapp.ui.theme.VitaeAppTheme
 import retrofit2.Response
 
 @Composable
-fun TelaQuiz() {
+fun TelaQuiz(token: String, id: Int) {
     val perguntas = remember { mutableStateOf(1) }
     val altura = remember { mutableStateOf("") }
     val peso = remember { mutableStateOf("") }
@@ -52,7 +53,7 @@ fun TelaQuiz() {
         Questionario(
             perguntas, altura, peso, perguntaTatuagem,
             perguntaRelacao, perguntaDesconforto, perguntaMedicamento,
-            perguntaDst, perguntaVacina, apto
+            perguntaDst, perguntaVacina, apto, token = token, id = id
         )
     }
 }
@@ -68,13 +69,14 @@ fun Questionario(
     perguntaMedicamento: MutableState<Boolean>,
     perguntaDst: MutableState<Boolean>,
     perguntaVacina: MutableState<Boolean>,
-    apto: MutableState<Boolean>
+    apto: MutableState<Boolean>,
+    token: String, id: Int
 ) {
 
-    Column(Modifier.padding(30.dp, 70.dp)) {
+    Column(Modifier.padding(30.dp, 90.dp)) {
         Text(
-            "QUIZ DE APTIDÃO",
-            style = TextStyle(fontFamily = fontFamilyRowdiesBold),
+            stringResource(id = R.string.title_quiz),
+            style = TextStyle(fontFamily = fontFamilyRowdiesBold, fontSize = 18.sp),
         )
         when (perguntas.value) {
             1 -> perguntaAltura(pergunta = altura)
@@ -108,7 +110,7 @@ fun Questionario(
             if (perguntas.value == 9) {
                 BotaoFinalizar(
                     perguntaTatuagem, perguntaRelacao, perguntaDesconforto, perguntaMedicamento,
-                    perguntaDst, perguntaVacina, apto, altura, peso
+                    perguntaDst, perguntaVacina, apto, altura, peso, token =  token, id = id
                 )
             }
         }
@@ -141,7 +143,7 @@ fun BotaoAvancar(onClick: () -> Unit) {
         ) {
 
             Text(
-                "Avançar", fontSize = 18.sp, fontFamily = fontRobotoBold
+                stringResource(id = R.string.btn_avancar), fontSize = 18.sp, fontFamily = fontRobotoBold
             )
             Spacer(modifier = Modifier.width(10.dp))
             Image(
@@ -189,7 +191,7 @@ fun BotaoVoltar(onClick: () -> Unit) {
             )
             Spacer(modifier = Modifier.width(10.dp))
             Text(
-                "Voltar", fontSize = 18.sp, fontFamily = fontRobotoBold
+                stringResource(id = R.string.btn_voltar), fontSize = 18.sp, fontFamily = fontRobotoBold
             )
         }
     }
@@ -205,7 +207,8 @@ fun BotaoFinalizar(
     perguntaVacina: MutableState<Boolean>,
     apto: MutableState<Boolean>,
     altura: MutableState<String>,
-    peso: MutableState<String>
+    peso: MutableState<String>,
+    token: String, id: Int
 ) {
 
     IconButton(
@@ -216,7 +219,7 @@ fun BotaoFinalizar(
             validarFuncoes(
                 perguntaTatuagem,
                 perguntaRelacao, perguntaDesconforto, perguntaMedicamento,
-                perguntaDst, perguntaVacina, apto
+                perguntaDst, perguntaVacina, apto, token = token, id = id
             )
         }
     ) {
@@ -238,7 +241,7 @@ fun BotaoFinalizar(
         ) {
 
             Text(
-                "Finalizar", fontSize = 18.sp, fontFamily = fontRobotoBold
+                stringResource(id = R.string.btn_finalizar), fontSize = 18.sp, fontFamily = fontRobotoBold
             )
         }
     }
@@ -266,7 +269,7 @@ fun BotaoSim(onClick: () -> Unit) {
         ) {
 
             Text(
-                "Sim", fontSize = 18.sp, fontFamily = fontRobotoBold
+                stringResource(id = R.string.btn_sim), fontSize = 18.sp, fontFamily = fontRobotoBold
             )
         }
     }
@@ -294,7 +297,7 @@ fun BotaoNao(onClick: () -> Unit) {
         ) {
 
             Text(
-                "Não", fontSize = 18.sp, fontFamily = fontRobotoBold
+                stringResource(id = R.string.btn_nao), fontSize = 18.sp, fontFamily = fontRobotoBold
             )
         }
     }
@@ -309,7 +312,7 @@ fun perguntaAltura(pergunta: MutableState<String>) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            "Informe sua altura:",
+            stringResource(id = R.string.title_quiz_sub_pergunta_1),
             modifier = Modifier
                 .padding(0.dp, 0.dp, 0.dp, 20.dp),
             style = TextStyle(fontFamily = fontFamilyRowdies, fontSize = 20.sp)
@@ -335,7 +338,7 @@ fun perguntaPeso(pergunta: MutableState<String>) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            "Informe seu peso:",
+            stringResource(id = R.string.title_quiz_sub_pergunta_2),
             modifier = Modifier
                 .padding(0.dp, 0.dp, 0.dp, 20.dp),
             style = TextStyle(fontFamily = fontFamilyRowdies, fontSize = 20.sp)
@@ -360,7 +363,7 @@ fun perguntaTatuagem(perguntas: MutableState<Int>, valorPergunta: MutableState<B
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            "Fez alguma tatuagem nos últimos 6 meses?",
+            stringResource(id = R.string.title_quiz_sub_pergunta_3),
             modifier = Modifier
                 .padding(0.dp, 0.dp, 0.dp, 20.dp),
             style = TextStyle(
@@ -396,7 +399,7 @@ fun perguntaRelacao(perguntas: MutableState<Int>, valorPergunta: MutableState<Bo
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            "Teve algum tipo de relação sexual recentemente?",
+            stringResource(id = R.string.title_quiz_sub_pergunta_4),
             modifier = Modifier
                 .padding(0.dp, 0.dp, 0.dp, 20.dp),
             style = TextStyle(
@@ -432,7 +435,7 @@ fun perguntaDesconforto(perguntas: MutableState<Int>, valorPergunta: MutableStat
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            "Sente algum desconforto, ou dor na barriga?",
+            stringResource(id = R.string.title_quiz_sub_pergunta_5),
             modifier = Modifier
                 .padding(0.dp, 0.dp, 0.dp, 20.dp),
             style = TextStyle(
@@ -468,7 +471,7 @@ fun perguntaMedicamento(perguntas: MutableState<Int>, valorPergunta: MutableStat
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            "Faz ou fez uso de algum tipo de medicamento?",
+            stringResource(id = R.string.title_quiz_sub_pergunta_6),
             modifier = Modifier
                 .padding(0.dp, 0.dp, 0.dp, 20.dp),
             style = TextStyle(
@@ -505,7 +508,7 @@ fun perguntaDst(perguntas: MutableState<Int>, valorPergunta: MutableState<Boolea
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            "Tem algum tipo de DST?",
+            stringResource(id = R.string.title_quiz_sub_pergunta_8),
             modifier = Modifier
                 .padding(0.dp, 0.dp, 0.dp, 20.dp),
             style = TextStyle(
@@ -541,7 +544,7 @@ fun perguntaVacina(perguntas: MutableState<Int>, valorPergunta: MutableState<Boo
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            "Tomou alguma vacina contra a COVID-19 recentemente?",
+            stringResource(id = R.string.title_quiz_sub_pergunta_8),
             modifier = Modifier
                 .padding(0.dp, 0.dp, 0.dp, 20.dp),
             style = TextStyle(
@@ -576,43 +579,20 @@ fun validarFuncoes(
     perguntaMedicamento: MutableState<Boolean>,
     perguntaDst: MutableState<Boolean>,
     perguntaVacina: MutableState<Boolean>,
-    apto: MutableState<Boolean>
+    apto: MutableState<Boolean>,
+    token: String, id: Int
 ) {
     if (perguntaTatuagem.value || perguntaRelacao.value || perguntaDesconforto.value ||
         perguntaMedicamento.value || perguntaDst.value || perguntaVacina.value
     ) {
-        conectarBanco(false)
+        conectarBanco(false, token = token, id = id)
     }
     else {
-        conectarBanco(true)
+        conectarBanco(true, token = token, id = id)
     }
 }
 
-fun validarAlturaPeso(
-    altura: MutableState<String>,
-    peso: MutableState<String>,
-) {
-    // Verifica se a altura é um número válido
-    val alturaFloat = altura.value.toFloatOrNull()
-    if (alturaFloat == null || alturaFloat <= 0 || alturaFloat > 3) {
-        println("Altura Inválida")
-    }
-
-    // Verifica se o peso é um número válido
-    val pesoFloat = peso.value.toFloatOrNull()
-    if (pesoFloat == null || pesoFloat < 0) {
-        println("Peso Inválido")
-    }
-
-    // Verifica se os campos estão vazios
-    val camposVazios = altura.value.isEmpty() || peso.value.isEmpty()
-    if (camposVazios) {
-        println("Preencha os campos, por favor")
-    }
-}
-
-
-fun conectarBanco(validarFuncoes: Boolean) {
+fun conectarBanco(validarFuncoes: Boolean, token: String, id: Int) {
 
     var erroApi = ""
 
@@ -620,7 +600,7 @@ fun conectarBanco(validarFuncoes: Boolean) {
 
     val quiz = Quiz(altura = null, peso = null, validarFuncoes)
 
-    val put = apiQuiz.put(quiz, 55, "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ2aXRhZS1zZXJ2aWNvcyIsInN1YiI6ImFtYXJlbG9AZ21haWwuY29tIiwiZXhwIjoxNzE0NjgxMzUwfQ.Q9v_uJYd1_e_78yML1suC779pnjYLEDG9mBxQFUFFFs")
+    val put = apiQuiz.put(quiz, id, token)
 
     put.enqueue(object : retrofit2.Callback<Quiz> {
         // esta função é invocada caso:
@@ -646,13 +626,4 @@ fun conectarBanco(validarFuncoes: Boolean) {
 
     })
 
-}
-
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreviewFromQuiz() {
-    VitaeAppTheme {
-        TelaQuiz()
-    }
 }

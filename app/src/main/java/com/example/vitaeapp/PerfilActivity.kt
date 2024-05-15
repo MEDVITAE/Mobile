@@ -41,7 +41,7 @@ import retrofit2.Call
 import retrofit2.Response
 
 @Composable
-fun TelaPerfil() {
+fun TelaPerfil(token: String, id: Int) {
     var isLoading by remember { mutableStateOf(true) }
     var nome = remember { mutableStateOf("") }
     var peso = remember { mutableStateOf("") }
@@ -52,8 +52,8 @@ fun TelaPerfil() {
     var tipoSangue = remember { mutableStateOf("") }
     val apiPerfil = RetrofitServices.getDetalhesUser()
     val get = apiPerfil.getDetalhesUsuario(
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ2aXRhZS1zZXJ2aWNvcyIsInN1YiI6ImFtYXJlbG9AZ21haWwuY29tIiwiZXhwIjoxNzE1MTg1OTcxfQ.VOii79Nb1JPO5W2MzdK3KZgzkdlojkoFApIwJIuZ3nQ",
-        1
+        token,
+        id
     )
     val erroApi = remember { mutableStateOf("") }
     LaunchedEffect(Unit) { // Executa quando o componente é iniciado
@@ -94,7 +94,7 @@ fun TelaPerfil() {
     } else {
         // Exibe os campos com os valores recebidos da API
         Column {
-            AtributoUsuario(stringResource(id = (string.ola)) + nome.value, 70, 15)
+            AtributoUsuario(stringResource(id = (string.ola)) + nome.value, 90, 15)
             QuadradoInfo(apto.value, quantidadeDoacao.value, tipoSangue.value)
             AtributoUsuario(stringResource(id = (string.title_input_nome)), 12, 5)
             InputGetInfo(valor = nome.value) { nome.value = it }
@@ -104,7 +104,7 @@ fun TelaPerfil() {
             InputGetInfo(valor = peso.value) { peso.value = it }
             AtributoUsuario(stringResource(id = (string.title_input_altura)), 12, 10)
             InputGetInfo(valor = altura.value) { altura.value = it }
-            BotaoEditar("Editar")
+            BotaoEditar(stringResource(id = R.string.btn_editar))
         }
     }
 }
@@ -275,7 +275,7 @@ fun QuadradoInfo(apto: Boolean, quantidadeDoacao: Int, tipoSangue: String) {
             else if (tipoSangue == "-A") {
                 ImagemTipo = mipmap.anegativo
             }else if(tipoSangue == "A"){
-                 ImagemTipo = mipmap.a
+                ImagemTipo = mipmap.a
             }
             QuadradoComImagem(
                 ImagemApto,
@@ -346,13 +346,5 @@ fun BotaoEditar(valor: String) {
                 )
             }
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreviewFromPerfil() {
-    VitaeAppTheme {
-        TelaPerfil()
     }
 }

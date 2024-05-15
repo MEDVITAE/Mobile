@@ -32,6 +32,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
@@ -97,7 +98,7 @@ fun TelaCadastro(navController: NavHostController, modifier: Modifier = Modifier
 
             Spacer(modifier = Modifier.height(40.dp))
             AtributoUsuarioCadastroBemVindo(
-                valor = "Seja Bem-vindo",
+                valor = stringResource(id = R.string.title_cadastro),
                 paddingTop = 20,
                 paddingBottom = 10,
                 tamanho = 25
@@ -105,7 +106,7 @@ fun TelaCadastro(navController: NavHostController, modifier: Modifier = Modifier
             Spacer(modifier = Modifier.height(15.dp))
 
             AtributoUsuarioCadastro(
-                valor = "Nome Completo",
+                valor = stringResource(id = R.string.title_sub_nome),
                 paddingTop = 0,
                 paddingBottom = 10,
                 tamanho = 20
@@ -122,7 +123,7 @@ fun TelaCadastro(navController: NavHostController, modifier: Modifier = Modifier
             )
 
             AtributoUsuarioCadastro(
-                valor = "Data Nascimento",
+                valor = stringResource(id = R.string.title_sub_dt_nasci),
                 paddingTop = 20,
                 paddingBottom = 10,
                 tamanho = 20
@@ -136,10 +137,10 @@ fun TelaCadastro(navController: NavHostController, modifier: Modifier = Modifier
                 errorMessage = nascimentoError.value,
                 dica = if (nascimentoError.value.isBlank()) "A data de nascimento deve ser YYYY-MM-DD" else "A data de nascimento deve ser YYYY-MM-DD",
                 textColor = if (highlightFields.value) Color.Red else Color.Black
-                )
+            )
 
             AtributoUsuarioCadastro(
-                valor = "CPF",
+                valor = stringResource(id = R.string.title_sub_cpf),
                 paddingTop = 0,
                 paddingBottom = 10,
                 tamanho = 20
@@ -156,7 +157,7 @@ fun TelaCadastro(navController: NavHostController, modifier: Modifier = Modifier
             )
 
             AtributoUsuarioCadastro(
-                valor = "Email",
+                valor = stringResource(id = R.string.title_sub_email),
                 paddingTop = 0,
                 paddingBottom = 10,
                 tamanho = 20
@@ -173,7 +174,7 @@ fun TelaCadastro(navController: NavHostController, modifier: Modifier = Modifier
             )
 
             AtributoUsuarioCadastro(
-                valor = "Senha",
+                valor = stringResource(id = R.string.title_sub_senha),
                 paddingTop = 20,
                 paddingBottom = 10,
                 tamanho = 20
@@ -206,7 +207,7 @@ fun TelaCadastro(navController: NavHostController, modifier: Modifier = Modifier
             Spacer(modifier = Modifier.height(0.dp))
         }
 
-        BotaoCadastro("Cadastre-se") {
+        BotaoCadastro(stringResource(id = R.string.btn_cadastrar)) {
             if (isNomeCompletoValid.value &&
                 isNascimentoValid.value &&
                 isCpfValid.value &&
@@ -235,7 +236,7 @@ fun TelaCadastro(navController: NavHostController, modifier: Modifier = Modifier
                 highlightFields.value = true
             }
         }
-    //navController.navigate("Login")
+        //navController.navigate("Login")
     }
 }
 

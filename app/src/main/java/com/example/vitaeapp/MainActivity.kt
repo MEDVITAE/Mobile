@@ -33,9 +33,11 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.vitaeapp.classes.MenuItem
 import com.example.vitaeapp.ui.theme.VitaeAppTheme
 
@@ -79,65 +81,181 @@ fun Tela(navController: NavHostController, modifier: Modifier = Modifier) {
         startDestination = "Login"
     ) {
 
+        composable("Cadastro") {
+            TelaCadastro(navController)
+        }
         composable("Login") {
             TelaLogin(navController)
         }
-        composable("Perfil") {
-            TelaPerfil()
-            Menu(navController)
+        composable("Mapa/{token}/{id}", arguments = listOf(
+            navArgument("token") {
+                type = NavType.StringType
+            },
+            navArgument("id") {
+                type = NavType.IntType
+            }
+        )) {
+            ChamaMaps(
+                navController,
+                it.arguments?.getString("token") ?: ""
+            )
+            Menu(
+                navController,
+                it.arguments?.getString("token") ?: "",
+                it.arguments?.getInt("id") ?: 0
+            )
         }
-        composable("Configuracao") {
-            TelaDeConfiguracao(navController)
-            Menu(navController)
+        composable("Perfil/{token}/{id}", arguments = listOf(
+            navArgument("token") {
+                type = NavType.StringType
+            },
+            navArgument("id") {
+                type = NavType.IntType
+            }
+        )) {
+            TelaPerfil(
+                it.arguments?.getString("token") ?: "",
+                it.arguments?.getInt("id") ?: 0
+            )
+            Menu(
+                navController,
+                it.arguments?.getString("token") ?: "",
+                it.arguments?.getInt("id") ?: 0
+            )
         }
-        composable("Historico") {
-            TelaHistorico(navController)
-            Menu(navController)
+        composable("Configuracao/{token}/{id}", arguments = listOf(
+            navArgument("token") {
+                type = NavType.StringType
+            },
+            navArgument("id") {
+                type = NavType.IntType
+            }
+        )) {
+            TelaDeConfiguracao(
+                navController,
+                it.arguments?.getString("token") ?: "",
+                it.arguments?.getInt("id") ?: 0
+            )
+            Menu(
+                navController,
+                it.arguments?.getString("token") ?: "",
+                it.arguments?.getInt("id") ?: 0
+            )
         }
-        composable("Mapa") {
-      /*      val contexto = LocalContext.current
-     *//*       val maps =  Intent(contexto, MapsScreen::class.java)*//*
-            contexto.startActivity(maps)*/
-            ChamaMaps(navController)
-            Menu(navController)
-
+        composable("Historico/{token}/{id}", arguments = listOf(
+            navArgument("token") {
+                type = NavType.StringType
+            },
+            navArgument("id") {
+                type = NavType.IntType
+            }
+        )) {
+            TelaHistorico(
+                navController,
+                it.arguments?.getString("token") ?: "",
+                it.arguments?.getInt("id") ?: 0
+            )
+            Menu(
+                navController,
+                it.arguments?.getString("token") ?: "",
+                it.arguments?.getInt("id") ?: 0
+            )
         }
-        composable("Ranking") {
-            TelaRanking()
-            Menu(navController)
+        composable("DetalheHemo/{token}/{id}", arguments = listOf(
+            navArgument("token") {
+                type = NavType.StringType
+            },
+            navArgument("id") {
+                type = NavType.IntType
+            }
+        )) {
+            TelaDetalheHemocentro(
+                token = it.arguments?.getString("token") ?: "",
+                id = it.arguments?.getInt("id") ?: 0
+            )
+            Menu(
+                navController,
+                it.arguments?.getString("token") ?: "",
+                it.arguments?.getInt("id") ?: 0
+            )
         }
-        composable("Agenda") {
-            TelaAgendamento(navController)
-            Menu(navController)
+        composable("Ranking/{token}/{id}", arguments = listOf(
+            navArgument("token") {
+                type = NavType.StringType
+            },
+            navArgument("id") {
+                type = NavType.IntType
+            }
+        )) {
+            TelaRanking(
+                it.arguments?.getString("token") ?: "",
+                it.arguments?.getInt("id") ?: 0
+            )
+            Menu(
+                navController,
+                it.arguments?.getString("token") ?: "",
+                it.arguments?.getInt("id") ?: 0
+            )
         }
-        composable("Quiz") {
-            TelaQuiz()
-            Menu(navController)
+        composable("Agenda/{token}/{id}", arguments = listOf(
+            navArgument("token") {
+                type = NavType.StringType
+            },
+            navArgument("id") {
+                type = NavType.IntType
+            }
+        )) {
+            TelaAgendamento(
+                navController,
+                token = it.arguments?.getString("token") ?: "",
+                it.arguments?.getInt("id") ?: 0
+            )
+            Menu(
+                navController,
+                it.arguments?.getString("token") ?: "",
+                it.arguments?.getInt("id") ?: 0
+            )
         }
-
+        composable("Quiz/{token}/{id}", arguments = listOf(
+            navArgument("token") {
+                type = NavType.StringType
+            },
+            navArgument("id") {
+                type = NavType.IntType
+            }
+        )) {
+            TelaQuiz(
+                it.arguments?.getString("token") ?: "",
+                it.arguments?.getInt("id") ?: 0
+            )
+            Menu(
+                navController,
+                it.arguments?.getString("token") ?: "",
+                it.arguments?.getInt("id") ?: 0
+            )
+        }
     }
-
 }
 
 
 @Composable
-fun Logo(logoPosicao: Boolean){
-    if(logoPosicao){
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(10.dp), Arrangement.End
-    ) {
-        Image(
-            painter = painterResource(id = R.mipmap.logo),
-            contentDescription = "Vitae",
+fun Logo(logoPosicao: Boolean) {
+    if (logoPosicao) {
+        Row(
             modifier = Modifier
-                .size(70.dp)
-                .padding(top = 10.dp)
+                .fillMaxWidth()
+                .padding(10.dp), Arrangement.End
+        ) {
+            Image(
+                painter = painterResource(id = R.mipmap.logo),
+                contentDescription = "Vitae",
+                modifier = Modifier
+                    .size(70.dp)
+                    .padding(top = 10.dp)
 
-        )
-    }
-}else{
+            )
+        }
+    } else {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -152,19 +270,19 @@ fun Logo(logoPosicao: Boolean){
 
             )
         }
-}
+    }
 }
 
 @Composable
-fun Menu(navController: NavHostController) {
+fun Menu(navController: NavHostController, token: String, id: Int) {
     val listaMenu = remember {
         mutableStateListOf(
-            MenuItem(R.mipmap.maps, "Mapa"),
-            MenuItem(R.mipmap.historico, "Historico"),
-            MenuItem(R.mipmap.ranking, "Ranking"),
-            MenuItem(R.mipmap.sangue, "Quiz"),
-            MenuItem(R.mipmap.agenda, "Agenda"),
-            MenuItem(R.mipmap.perfil, "Perfil"),
+            MenuItem(R.mipmap.maps, "Mapa/${token}/${id}"),
+            MenuItem(R.mipmap.historico, "Historico/${token}/${id}"),
+            MenuItem(R.mipmap.ranking, "Ranking/${token}/${id}"),
+            MenuItem(R.mipmap.sangue, "Quiz/${token}/${id}"),
+            MenuItem(R.mipmap.agenda, "Agenda/${token}/${id}"),
+            MenuItem(R.mipmap.perfil, "Perfil/${token}/${id}"),
         )
     }
 

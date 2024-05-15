@@ -37,6 +37,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -60,7 +61,7 @@ import java.time.YearMonth
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun TelaAgendamento(navController: NavHostController) {
+fun TelaAgendamento(navController: NavHostController, token: String, id: Int) {
     val contador = remember { mutableStateOf(0) }
     val hospitais = remember { mutableStateListOf<Hospital>() }
     val nomeHospital = remember { mutableStateOf("") }
@@ -68,17 +69,11 @@ fun TelaAgendamento(navController: NavHostController) {
     val dataSelecionada = remember { mutableStateOf<CalendarioUiState.Date?>(null) }
     val horarioSelecionado = remember { mutableStateOf("") }
 
-    val token = remember {
-        mutableStateOf(
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ2aXRhZS1zZXJ2aWNvcyIsInN1YiI6ImRpZWdvQGdtYWlsLmNvbSIsImV4cCI6MTcxNTQ1NDg0MX0.IG-Jt3pfjNq6mE7590-2wjraU7ZN7lA7bb09e7uky04"
-        )
-    }
-
     val erroApi = remember { mutableStateOf("") }
 
     val apiHospital = RetrofitServices.getHospitais()
     val get = apiHospital.get(
-        token.value,
+        token,
     )
 
     get.enqueue(object : retrofit2.Callback<List<Hospital>> {
@@ -128,12 +123,13 @@ fun TelaAgendamento(navController: NavHostController) {
                     BtnVoltar { contador.value-- }
                     Spacer(modifier = Modifier.width(20.dp))
                     BtnFinalizar(
-                        idUsuario = 1,
+                        idUsuario = id,
                         idHospital = idHospital.value,
                         data = dataSelecionada.value,
                         horario = horarioSelecionado.value,
-                        token = token.value,
-                        navController = navController
+                        token = token,
+                        navController = navController,
+                        id = id
                     )
                 }
             }
@@ -163,7 +159,7 @@ fun Hospitais(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            "SELECIONE UM HOSPITAL",
+            stringResource(id = R.string.title_agendamento_hospital),
             style = androidx.compose.ui.text.TextStyle(
                 fontFamily = fontFamilyRowdiesBold,
                 fontSize = 18.sp
@@ -244,7 +240,11 @@ fun ListaHospitais(
                                 ),
                             verticalArrangement = Arrangement.Center
                         ) {
-                            Row(modifier = Modifier.padding(start = 10.dp)) {
+                            Row(
+                                modifier = Modifier.padding(start = 10.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center
+                            ) {
                                 Text(
                                     "Nome: ",
                                     style = TextStyle(
@@ -253,7 +253,11 @@ fun ListaHospitais(
                                 )
                                 Text(itens.nome)
                             }
-                            Row(modifier = Modifier.padding(start = 10.dp)) {
+                            Row(
+                                modifier = Modifier.padding(start = 10.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center
+                            ) {
                                 Text(
                                     "Endereço: ",
                                     style = TextStyle(
@@ -289,7 +293,7 @@ fun Calendario(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            "SELECIONE UMA DATA",
+            stringResource(id = R.string.title_agendamento_agenda),
             style = androidx.compose.ui.text.TextStyle(
                 fontFamily = fontFamilyRowdiesBold,
                 fontSize = 18.sp
@@ -519,7 +523,7 @@ fun Horarios(horario: MutableState<String>) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            "SELECIONE A HORA",
+            stringResource(id = R.string.title_agendamento_horario),
             style = TextStyle(
                 fontFamily = fontFamilyRowdiesBold,
                 fontSize = 18.sp
@@ -593,7 +597,9 @@ fun BtnVoltar(onClick: () -> Unit) {
             )
             Spacer(modifier = Modifier.width(10.dp))
             Text(
-                "Voltar", fontSize = 18.sp, fontFamily = fontRobotoBold
+                stringResource(id = R.string.btn_voltar),
+                fontSize = 18.sp,
+                fontFamily = fontRobotoBold
             )
         }
     }
@@ -606,7 +612,8 @@ fun BtnFinalizar(
     data: CalendarioUiState.Date?,
     horario: String,
     token: String,
-    navController: NavHostController
+    navController: NavHostController,
+    id: Int
 ) {
     val dia = remember {
         mutableStateOf(
@@ -667,8 +674,8 @@ fun BtnFinalizar(
                     erroApi.value = "Falha na solicitação: ${t.message}"
                 }
             })
-            if (erroApi.value.isEmpty()){
-                navController.navigate("Historico")
+            if (erroApi.value.isEmpty()) {
+                navController.navigate("Historico/${token}/${id}")
             }
         }
     ) {
@@ -690,18 +697,10 @@ fun BtnFinalizar(
         ) {
 
             Text(
-                "Finalizar", fontSize = 18.sp, fontFamily = fontRobotoBold
+                stringResource(id = R.string.btn_finalizar),
+                fontSize = 18.sp,
+                fontFamily = fontRobotoBold
             )
         }
-    }
-}
-
-
-@RequiresApi(Build.VERSION_CODES.O)
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreviewFromAgendamento() {
-    VitaeAppTheme {
-        TelaAgendamento(rememberNavController())
     }
 }
