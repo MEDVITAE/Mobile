@@ -220,7 +220,7 @@ fun Botoes(token: String, id: Int, navController: NavHostController) {
                     delete.enqueue(object : Callback<Historico> {
                         override fun onResponse(call: Call<Historico>, response: Response<Historico>) {
                             if (response.code() == 400) {
-                                navController.navigate("Agenda")
+                                navController.navigate("Agenda/${token}/${id}")
                             } else {
                                 erroApi.value = "Erro na solicitação: ${response.code()}"
                             }

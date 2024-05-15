@@ -127,7 +127,8 @@ fun TelaAgendamento(navController: NavHostController, token: String, id: Int) {
                         data = dataSelecionada.value,
                         horario = horarioSelecionado.value,
                         token = token,
-                        navController = navController
+                        navController = navController,
+                        id = id
                     )
                 }
             }
@@ -600,7 +601,8 @@ fun BtnFinalizar(
     data: CalendarioUiState.Date?,
     horario: String,
     token: String,
-    navController: NavHostController
+    navController: NavHostController,
+    id : Int
 ) {
     val dia = remember {
         mutableStateOf(
@@ -662,7 +664,7 @@ fun BtnFinalizar(
                 }
             })
             if (erroApi.value.isEmpty()){
-                navController.navigate("Historico")
+                navController.navigate("Historico/${token}/${id}")
             }
         }
     ) {

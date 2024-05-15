@@ -6,7 +6,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Interceptor
 
 object RetrofitServices {
-    const val BASE_URL = "http://192.168.68.114:8082/Api/"
+    const val BASE_URL = "http://192.168.218.228:8082/Api/"
     fun getDetalhesUser(): ApiPerfil {
         val cliente =
             Retrofit.Builder()
