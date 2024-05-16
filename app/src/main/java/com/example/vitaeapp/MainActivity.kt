@@ -97,7 +97,8 @@ fun Tela(navController: NavHostController, modifier: Modifier = Modifier) {
         )) {
             ChamaMaps(
                 navController,
-                it.arguments?.getString("token") ?: ""
+                it.arguments?.getString("token") ?: "",
+                it.arguments?.getInt("id") ?: 0
             )
             Menu(
                 navController,
@@ -114,6 +115,7 @@ fun Tela(navController: NavHostController, modifier: Modifier = Modifier) {
             }
         )) {
             TelaPerfil(
+                navController,
                 it.arguments?.getString("token") ?: "",
                 it.arguments?.getInt("id") ?: 0
             )
@@ -161,17 +163,22 @@ fun Tela(navController: NavHostController, modifier: Modifier = Modifier) {
                 it.arguments?.getInt("id") ?: 0
             )
         }
-        composable("DetalheHemo/{token}/{id}", arguments = listOf(
+        composable("DetalheHemo/{token}/{id}/{idHemo}", arguments = listOf(
             navArgument("token") {
                 type = NavType.StringType
             },
             navArgument("id") {
                 type = NavType.IntType
+            },
+            navArgument("idHemo") {
+                type = NavType.IntType
             }
         )) {
             TelaDetalheHemocentro(
+                navController,
                 token = it.arguments?.getString("token") ?: "",
-                id = it.arguments?.getInt("id") ?: 0
+                id = it.arguments?.getInt("id") ?: 0,
+                idHemo = it.arguments?.getInt("idHemo") ?: 0
             )
             Menu(
                 navController,

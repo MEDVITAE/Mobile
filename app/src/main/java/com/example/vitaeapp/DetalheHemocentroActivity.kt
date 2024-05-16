@@ -32,6 +32,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import com.example.vitaeapp.api.RetrofitServices
 import com.example.vitaeapp.classes.HemoCentroDetalhes
 import com.example.vitaeapp.classes.UsuarioPerfil
@@ -42,7 +43,7 @@ import retrofit2.Callback
 import retrofit2.Response
 
 @Composable
-fun TelaDetalheHemocentro(modifier: Modifier = Modifier, token: String, id: Int) {
+fun TelaDetalheHemocentro(navController: NavHostController, token: String, id: Int, idHemo: Int) {
     var isLoading by remember { mutableStateOf(true) }
     var nome = remember { mutableStateOf("") }
     var cep = remember { mutableStateOf("") }
@@ -52,10 +53,9 @@ fun TelaDetalheHemocentro(modifier: Modifier = Modifier, token: String, id: Int)
     val apiHemo = RetrofitServices.getDetalhesHemo()
     val get = apiHemo.getDetalhesUsuario(
         token,
-        id
+        idHemo
     )
-    val erroApi = remember { mutableStateOf("") }
-    LaunchedEffect(Unit) { // Executa quando o componente é iniciado
+    val erroApi = remember { mutableStateOf("") } // Executa quando o componente é iniciado
         get.enqueue(object : Callback<HemoCentroDetalhes> {
             override fun onResponse(
                 call: Call<HemoCentroDetalhes>,
@@ -83,7 +83,6 @@ fun TelaDetalheHemocentro(modifier: Modifier = Modifier, token: String, id: Int)
                 isLoading = false // Indica que os dados foram carregados
             }
         })
-    }
 
     if (isLoading) {
         // Exibe mensagem de carregamento enquanto os dados estão sendo carregados
@@ -108,12 +107,12 @@ fun TelaDetalheHemocentro(modifier: Modifier = Modifier, token: String, id: Int)
         }
         // Exibe os campos com os valores recebidos da API
         Column(
-            Modifier.padding(30.dp, 70.dp)
+            Modifier.padding(30.dp, 90.dp)
         ) {
             Text(
                 text = nome.value,
                 Modifier.padding(0.dp, 0.dp, 0.dp, 5.dp),
-                style = TextStyle(fontFamily = Rowdies, fontSize = 20.sp)
+                style = TextStyle(fontFamily = Rowdies, fontSize = 18.sp)
             )
             Text(stringResource(id = R.string.title_sub_message_1))
 
@@ -122,11 +121,11 @@ fun TelaDetalheHemocentro(modifier: Modifier = Modifier, token: String, id: Int)
                 Modifier.padding(0.dp, 25.dp, 0.dp, 20.dp)
             ) {
                 Text(
-                    text = "${stringResource(id = R.string.title_sub_email)}:${rua.value}, ${numero.value} - ${bairro.value}",
+                    text = "${stringResource(id = R.string.title_sub_endereco)}: ${cep.value}, ${numero.value} - ${bairro.value}",
                     Modifier
                         .background(Color.White, shape = RoundedCornerShape(8.dp))
                         .width(350.dp)
-                        .height(70.dp)
+                        .height(50.dp)
                         .padding(10.dp)
                         .size(50.dp)
                 )
@@ -149,7 +148,7 @@ fun TelaDetalheHemocentro(modifier: Modifier = Modifier, token: String, id: Int)
 
             Text(
                 text = stringResource(id = R.string.title_sub_doacao),
-                style = TextStyle(fontFamily = Rowdies, fontSize = 20.sp)
+                style = TextStyle(fontFamily = Rowdies, fontSize = 18.sp)
             )
 
             Spacer(modifier = Modifier.height(20.dp))
@@ -160,7 +159,7 @@ fun TelaDetalheHemocentro(modifier: Modifier = Modifier, token: String, id: Int)
             Spacer(modifier = Modifier.height(20.dp))
 
             Button(
-                onClick = { /*TODO*/ },
+                onClick = { navController.navigate("Agenda/${token}/${id}") },
                 modifier = Modifier
                     .height(40.dp)
                     .width(120.dp)

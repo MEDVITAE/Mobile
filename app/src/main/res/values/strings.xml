@@ -15,6 +15,7 @@
     <string name="btn_atualizar">Atualizar</string>
     <string name="btn_cadastrar">Cadastre-se</string>
     <string name="btn_cancelar">Cancelar</string>
+    <string name="btn_configura">Configurações</string>
     <string name="btn_editar">Editar</string>
     <string name="btn_entrar">Entrar</string>
     <string name="btn_finalizar">Finalizar</string>
@@ -25,6 +26,7 @@
 
     <string name="title_sub_nome">Nome Completo</string>
     <string name="title_sub_email">Email</string>
+    <string name="title_sub_endereco">Endereço</string>
     <string name="title_sub_senha">Senha</string>
     <string name="title_sub_numero">Número</string>
     <string name="title_sub_cep">CEP</string>

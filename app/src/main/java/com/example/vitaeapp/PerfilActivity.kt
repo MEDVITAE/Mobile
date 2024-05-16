@@ -33,6 +33,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import com.example.vitaeapp.R.*
 import com.example.vitaeapp.api.RetrofitServices
 import com.example.vitaeapp.classes.UsuarioPerfil
@@ -41,7 +42,7 @@ import retrofit2.Call
 import retrofit2.Response
 
 @Composable
-fun TelaPerfil(token: String, id: Int) {
+fun TelaPerfil(navController: NavHostController, token: String, id: Int) {
     var isLoading by remember { mutableStateOf(true) }
     var nome = remember { mutableStateOf("") }
     var peso = remember { mutableStateOf("") }
@@ -104,7 +105,7 @@ fun TelaPerfil(token: String, id: Int) {
             InputGetInfo(valor = peso.value) { peso.value = it }
             AtributoUsuario(stringResource(id = (string.title_input_altura)), 12, 10)
             InputGetInfo(valor = altura.value) { altura.value = it }
-            BotaoEditar(stringResource(id = R.string.btn_editar))
+            BotaoEditar(navController, stringResource(id = R.string.btn_configura), token, id)
         }
     }
 }
@@ -269,13 +270,20 @@ fun QuadradoInfo(apto: Boolean, quantidadeDoacao: Int, tipoSangue: String) {
             }
             if (tipoSangue == "AB") {
                 ImagemTipo = mipmap.ab
-            } else if (tipoSangue == "-AB") {
+            } else if (tipoSangue == "AB+") {
                 ImagemTipo = mipmap.abnegativo
-            }
-            else if (tipoSangue == "-A") {
+            } else if (tipoSangue == "A-") {
                 ImagemTipo = mipmap.anegativo
-            }else if(tipoSangue == "A"){
+            } else if (tipoSangue == "A+") {
                 ImagemTipo = mipmap.a
+            } else if (tipoSangue == "B+") {
+                ImagemTipo = mipmap.bpositivo
+            } else if (tipoSangue == "B-") {
+                ImagemTipo = mipmap.bnegativo
+            } else if (tipoSangue == "O+") {
+                ImagemTipo = mipmap.opositivo
+            } else if (tipoSangue == "O-") {
+                ImagemTipo = mipmap.onegativo
             }
             QuadradoComImagem(
                 ImagemApto,
@@ -298,7 +306,7 @@ fun QuadradoInfo(apto: Boolean, quantidadeDoacao: Int, tipoSangue: String) {
 }
 
 @Composable
-fun BotaoEditar(valor: String) {
+fun BotaoEditar(navController: NavHostController, valor: String, token: String, id: Int) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -315,6 +323,7 @@ fun BotaoEditar(valor: String) {
                 .width(210.dp)
                 .height(45.dp),
             onClick = {
+                navController.navigate("Configuracao/${token}/${id}")
             }
         ) {
             Row(

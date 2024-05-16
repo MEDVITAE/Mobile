@@ -50,7 +50,7 @@ fun GetIsLoading(): Boolean {
 }
 
 @Composable
-fun ChamaMaps(navController: NavHostController, token: String) {
+fun ChamaMaps(navController: NavHostController, token: String, id: Int) {
     val locationLondon = LatLng(
         -23.557978, -46.661789
     )
@@ -105,7 +105,7 @@ fun ChamaMaps(navController: NavHostController, token: String) {
 
         }
         if (markerClick) {
-            navController.navigate("DetalheHemo/${token}")
+            navController.navigate("DetalheHemo/${token}/${id}/${nav.toInt()}")
         }
 
     }
