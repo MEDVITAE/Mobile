@@ -82,6 +82,9 @@ fun Tela(navController: NavHostController, modifier: Modifier = Modifier) {
         composable("Login") {
             TelaLogin(navController)
         }
+        composable("Cadastro") {
+            TelaCadastro(navController)
+        }
         composable("Perfil") {
             TelaPerfil()
             Menu(navController)
