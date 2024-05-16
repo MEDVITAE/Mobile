@@ -41,6 +41,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.vitaeapp.api.RetrofitServices
 import com.example.vitaeapp.classes.Caracteristicas
+import com.example.vitaeapp.classes.Configuracao
 import com.example.vitaeapp.classes.UsuarioCadastro
 import com.example.vitaeapp.classes.UsuarioLogin
 import com.example.vitaeapp.ui.theme.VitaeAppTheme
@@ -129,14 +130,14 @@ fun TelaCadastro(navController: NavHostController, modifier: Modifier = Modifier
             )
             InputGetInfoCadastro(
                 valorInput = nascimento.value,
-                exemplo = "2024-12-31",
+                exemplo = "31/12/2024",
                 onValueChange = { nascimento.value = it },
                 isFieldValid = isNascimentoValid.value,
                 validationFunction = ::validarDtNasc,
                 errorMessage = nascimentoError.value,
-                dica = if (nascimentoError.value.isBlank()) "A data de nascimento deve ser YYYY-MM-DD" else "A data de nascimento deve ser YYYY-MM-DD",
+                dica = if (nascimentoError.value.isBlank()) "A data de nascimento deve ser DD/MM/YYYY" else "A data de nascimento deve ser DD/MM/YYYY",
                 textColor = if (highlightFields.value) Color.Red else Color.Black
-                )
+            )
 
             AtributoUsuarioCadastro(
                 valor = "CPF",
@@ -221,13 +222,14 @@ fun TelaCadastro(navController: NavHostController, modifier: Modifier = Modifier
                     senha = senha.value,
                     role = "PACIENTE"
                 )
+                val nascimentoConvertido = dataFormatada(nascimento.value)
 
                 val caracteristicas = Caracteristicas(
                     peso = "",
                     altura = null,
                     tatto = false,
                     sexo = null,
-                    nascimento = nascimento.value,
+                    nascimento = nascimentoConvertido,
                     apto = false
                 )
                 cadastrarUser(cadastroUsuario, caracteristicas, acertoApi, erroApi)
@@ -453,7 +455,6 @@ fun InputGetInfoCadastro(
 }
 
 
-
 @Composable
 fun BotaoCadastro(valor: String, onClick: () -> Unit) {
     Box(
@@ -508,7 +509,30 @@ fun validarNomeCompleto(nomeCompleto: String): Boolean {
 }
 
 fun validarDtNasc(dtNasc: String): Boolean {
-    return dtNasc.isNotBlank() && dtNasc.length == 10
+
+    val formatoEsperado = """\d{2}/\d{2}/\d{4}"""
+    return if (dtNasc.matches(Regex(formatoEsperado))) {
+
+        val dataFormatada = dataFormatada(dtNasc)
+        dataFormatada.isNotBlank() && dataFormatada.length == 10
+    } else {
+        false
+    }
+}
+
+fun dataFormatada(dtNasc: String): String {
+
+    val partes = dtNasc.split("/")
+
+    if (partes.size != 3) {
+        throw IllegalArgumentException("Formato de data inválido: $dtNasc")
+    }
+
+    val dia = partes[0]
+    val mes = partes[1]
+    val ano = partes[2]
+
+    return "$ano-$mes-$dia"
 }
 
 fun validarCPF(cpf: String): Boolean {
