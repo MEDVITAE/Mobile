@@ -51,16 +51,10 @@ fun TelaLogin(navController: NavHostController, modifier: Modifier = Modifier) {
     val email = remember { mutableStateOf("") }
     val senha = remember { mutableStateOf("") }
 
-    val emailError = remember { mutableStateOf("") }
-    val senhaError = remember { mutableStateOf("") }
-
-    val isEmailValid = remember { mutableStateOf(true) }
-    val isSenhaValid = remember { mutableStateOf(true) }
 
     val erroApi = remember { mutableStateOf("") }
     val acertoApi = remember { mutableStateOf("") }
-
-    val apiLogin = RetrofitServices.getLoginService()
+    val loginClicado = remember { mutableStateOf(false) }
 
     Logo(logoPosicao = false)
 
@@ -104,10 +98,8 @@ fun TelaLogin(navController: NavHostController, modifier: Modifier = Modifier) {
                 valorInput = email.value,
                 exemplo = "email@gmail.com",
                 onValueChange = { email.value = it },
-                isError = emailError.value.isNotBlank(),
-                errorMessage = emailError.value,
-                dica = if (emailError.value.isBlank()) "Insira um email válido" else "",
-                isFieldValid = isEmailValid.value
+                validationFunction = ::validarEmail,
+                loginClicado = loginClicado.value
             )
 
             AtributoUsuarioLogin(
@@ -120,69 +112,50 @@ fun TelaLogin(navController: NavHostController, modifier: Modifier = Modifier) {
                 valorInput = senha.value,
                 exemplo = "********",
                 onValueChange = { senha.value = it },
-                isError = senhaError.value.isNotBlank(),
-                errorMessage = senhaError.value,
-                dica = if (senhaError.value.isBlank()) "A senha deve conter pelo menos 6 caracteres" else "",
-                isFieldValid = isSenhaValid.value
+                validationFunction = ::validarSenha,
+                loginClicado = loginClicado.value
             )
-
-            if (emailError.value.isNotBlank() || senhaError.value.isNotBlank()) {
-                Spacer(modifier = Modifier.height(20.dp))
-                Text(
-                    text = stringResource(id = R.string.title_login_sub_erro),
-                    color = Color.Red,
-                    fontSize = 14.sp,
-                )
-            }
 
             Spacer(modifier = Modifier.height(5.dp))
 
             BotaoLogin(valor = stringResource(id = R.string.btn_entrar)) {
+                loginClicado.value = true
+                if (validarEmail(email.value) &&
+                    validarSenha(senha.value)
+                ) {
+                    val usuario = UsuarioLogin(email = email.value, senha = senha.value)
+                    val apiLogin = RetrofitServices.getLoginService()
 
-                val usuario =
-                    UsuarioLogin(email = email.value, senha = senha.value)
-
-                val post = apiLogin.postLogin(usuario)
-
-                post.enqueue(object : retrofit2.Callback<UsuarioLogin> {
-                    override fun onResponse(
-                        call: Call<UsuarioLogin>,
-                        response: Response<UsuarioLogin>
-                    ) {
-                        if (response.isSuccessful) {
-                            val usuario = response.body()
-                            if (usuario != null) {
-                                acertoApi.value = "Usuário verificado"
-                                validacao.value = UsuarioLogin(
-                                    usuario.Id,
-                                    usuario.nome,
-                                    usuario.token
-                                )
-
+                    val postLog = apiLogin.postLogin(usuario)
+                    postLog.enqueue(object : retrofit2.Callback<UsuarioLogin> {
+                        override fun onResponse(
+                            call: Call<UsuarioLogin>,
+                            response: Response<UsuarioLogin>
+                        ) {
+                            if (response.isSuccessful) {
+                                val usuario = response.body()
+                                if (usuario != null) {
+                                    acertoApi.value = "Usuário verificado"
+                                    validacao.value = UsuarioLogin(
+                                        usuario.Id,
+                                        usuario.nome,
+                                        usuario.token
+                                    )
+                                    navController.navigate("Perfil/${validacao.value.token!!}/${validacao.value.Id!!}")
+                                } else {
+                                    erroApi.value = "Erro ao verificar usuário"
+                                }
                             } else {
-                                // Não foi possível achar usuário
-                                erroApi.value = "Erro ao verificar usuário"
+                                erroApi.value = "Erro na solicitação: ${response.code()}"
                             }
-                        } else {
-                            // Algo passado pode estar errado
-                            erroApi.value = "Erro na solicitação: ${response.code()}"
                         }
-                    }
 
-                    override fun onFailure(call: Call<UsuarioLogin>, t: Throwable) {
-                        // Não foi possível conectar na api
-                        erroApi.value = "Falha na solicitação: ${t.message}"
-                    }
-                })
-            }
-            if (erroApi.value.isNotBlank()) {
-                Text("${erroApi.value}")
-            } else if (acertoApi.value.isNotBlank()) {
-                Text("${acertoApi.value}")
-                Text("${validacao.value}")
-                if (validacao.value.token != null) {
-
-                    navController.navigate("Perfil/${validacao.value.token!!}/${validacao.value.Id!!}")
+                        override fun onFailure(call: Call<UsuarioLogin>, t: Throwable) {
+                            erroApi.value = "Falha na solicitação: ${t.message}"
+                        }
+                    })
+                } else {
+                    erroApi.value = "Por favor, corrija os campos incorretos."
                 }
             }
         }
@@ -213,7 +186,12 @@ fun BtnIrParaCadastro(navController: NavHostController) {
 
 
 @Composable
-fun AtributoUsuarioLoginBemVindo(valor: String, paddingTop: Int, paddingBottom: Int, tamanho: Int) {
+fun AtributoUsuarioLoginBemVindo(
+    valor: String,
+    paddingTop: Int,
+    paddingBottom: Int,
+    tamanho: Int
+) {
     Column {
         Text(
             valor,
@@ -250,12 +228,11 @@ fun InputGetInfoLogin(
     valorInput: String,
     exemplo: String,
     onValueChange: (String) -> Unit,
-    isError: Boolean,
-    errorMessage: String,
-    dica: String,
-    isFieldValid: Boolean
+    validationFunction: (String) -> Boolean,
+    loginClicado: Boolean
 ) {
-    val fieldColor = if (isFieldValid) Color.Black else Color.Red
+    val isError = !validationFunction(valorInput) && valorInput.isNotBlank() && loginClicado
+    val fieldColor = if (isError) Color.Red else Color.Black
 
     Column(
         modifier = Modifier
@@ -285,24 +262,12 @@ fun InputGetInfoLogin(
             modifier = Modifier.fillMaxWidth(),
             color = fieldColor
         )
-        // Exibir mensagem de erro se houver
-        if (isError) {
-            Text(
-                text = errorMessage,
-                color = Color.Red,
-                fontSize = 12.sp,
-                modifier = Modifier.padding(start = 15.dp, top = 4.dp)
-            )
-        }
-        // Exibir dica se o campo estiver vazio e não houver erro
-        if (valorInput.isEmpty() && !isError) {
-            Text(
-                text = dica,
-                color = Color.Black,
-                fontSize = 12.sp,
-                modifier = Modifier.padding(start = 15.dp, top = 4.dp)
-            )
-        }
+        Text(
+            text = "",
+            color = fieldColor,
+            fontSize = 12.sp,
+            modifier = Modifier.padding(start = 15.dp, top = if (isError) 8.dp else 8.dp)
+        )
     }
 }
 
@@ -353,28 +318,5 @@ fun BotaoLogin(valor: String, onClick: () -> Unit) {
                 )
             }
         }
-    }
-}
-
-fun isEmailValid(email: String): Boolean {
-    val emailRegex = Regex("^\\w+@[a-zA-Z_]+?\\.[a-zA-Z]{2,3}\$")
-    return emailRegex.matches(email)
-}
-
-fun isPasswordValid(password: String): Boolean {
-    return password.length >= 8
-//            OPÇÕES DE SEGURANÇA DE SENHA PARA ADICINAR NO FUTURO
-//            && password.any { it.isUpperCase() } // Pelo menos uma letra maiúscula
-//            && password.any { it.isLowerCase() } // Pelo menos uma letra minúscula
-//            && password.any { it.isDigit() } // Pelo menos um número
-//            && password.any { !it.isLetterOrDigit() } // Pelo menos um caractere especial
-}
-
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreviewFromLogin() {
-    VitaeAppTheme {
-        TelaLogin(rememberNavController())
     }
 }

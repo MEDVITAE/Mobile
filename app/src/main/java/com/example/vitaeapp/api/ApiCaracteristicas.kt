@@ -9,5 +9,5 @@ import retrofit2.http.POST
 interface ApiCaracteristicas {
 
     @POST("Caracteristicas")
-    fun postCaracteristicas(@Header ("Authorization") Authorization:String, @Body caracteristicas: Caracteristicas): Call<Caracteristicas>
+    fun postCaracteristicas(@Header ("Authorization") token:String, @Body caracteristicas: Caracteristicas): Call<Caracteristicas>
 }

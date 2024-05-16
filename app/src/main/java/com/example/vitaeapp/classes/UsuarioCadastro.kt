@@ -6,6 +6,6 @@ data class UsuarioCadastro (
     val cpf: String? = null,
     val email: String? = null,
     val senha: String? = null,
-    val role: String
-
+    val role: String,
+    val fkHospotal: Int? = null
 )
