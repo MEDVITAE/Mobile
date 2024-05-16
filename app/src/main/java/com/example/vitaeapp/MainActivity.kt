@@ -232,6 +232,7 @@ fun Tela(navController: NavHostController, modifier: Modifier = Modifier) {
             }
         )) {
             TelaQuiz(
+                navController,
                 it.arguments?.getString("token") ?: "",
                 it.arguments?.getInt("id") ?: 0
             )

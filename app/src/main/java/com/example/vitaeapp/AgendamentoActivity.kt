@@ -331,7 +331,8 @@ fun CalendarioWidget(
 ) {
     Column(
         modifier = Modifier
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .padding(top = 20.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Cabecalho(
@@ -400,7 +401,7 @@ fun DayItem(day: String) {
     Spacer(modifier = Modifier.width(5.dp))
     Box(
         modifier = Modifier
-            .width(46.dp)
+            .width(41.5.dp)
             .background(
                 color = colorResource(id = R.color.vermelho_rosado),
                 shape = RoundedCornerShape(6.dp)
@@ -529,7 +530,7 @@ fun Horarios(horario: MutableState<String>) {
                 fontSize = 18.sp
             )
         )
-        Spacer(modifier = Modifier.height(15.dp))
+        Spacer(modifier = Modifier.height(30.dp))
         repeat(8) {
             if (index >= horarios.size) return@repeat
             Row {

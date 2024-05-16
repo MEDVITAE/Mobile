@@ -12,27 +12,27 @@ import retrofit2.http.Path
 
 interface ApiConfiguracao {
 
-    @GET("Api/usuario/detalhes/{id}")
+    @GET("usuario/detalhes/{id}")
     fun getConfigDadosUser(
         @Header("Authorization") token: String,
         @Path("id") id: Int
     ): Call<Configuracao>
 
-    @PUT("Api/usuario/{id}")
+    @PUT("usuario/{id}")
     fun putConfigUser(
         @Header("Authorization") token: String,
         @Body config: UserConfig,
         @Path("id") id: Int
     ): Call<Configuracao>
 
-    @PUT("Api/Endereco/detalhes/{id}")
+    @PUT("Endereco/detalhes/{id}")
     fun putConfigEnde(
         @Header("Authorization") token: String,
         @Body config: Configuracao,
         @Path("id") id: Int
     ): Call<Configuracao>
 
-    @PUT("Api/Caracteristicas/{id}")
+    @PUT("Caracteristicas/{id}")
     fun putConfigData(
         @Header("Authorization") token: String,
         @Body config: Configuracao,

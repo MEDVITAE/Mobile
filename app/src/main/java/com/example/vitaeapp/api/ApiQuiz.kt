@@ -10,5 +10,5 @@ import retrofit2.http.Path
 
 interface ApiQuiz {
     @PUT("Caracteristicas/detalhes/{id}")
-    fun put(@Body quiz: Quiz, @Path ("id") id: Int, @Header ("Autorization") Autorization : String): Call<Quiz>
+    fun put(@Header ("Authorization") token: String, @Body quiz: Quiz, @Path ("id") id: Int): Call<Quiz>
 }

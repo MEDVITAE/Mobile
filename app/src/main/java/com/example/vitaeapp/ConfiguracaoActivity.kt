@@ -1,9 +1,5 @@
 package com.example.vitaeapp
 
-import android.content.Intent
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -19,19 +15,19 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.modifier.modifierLocalMapOf
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -41,34 +37,216 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.example.vitaeapp.api.RetrofitServices
+import com.example.vitaeapp.classes.Configuracao
+import com.example.vitaeapp.classes.UserConfig
 import com.example.vitaeapp.ui.theme.Rowdies
 import com.example.vitaeapp.ui.theme.VitaeAppTheme
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+
+// Variáveis para resposta da api, seja um sucesso, ou não
+var erroApi = ""
+var acertoApi = ""
+
+val apiConfig = RetrofitServices.getConfigUsuario()
+val apiConfigDadosUser = RetrofitServices.putConfigUser()
+val apiConfigEndereco = RetrofitServices.putConfigCep()
+val apiConfigData = RetrofitServices.putConfigData()
+
 
 @Composable
 fun TelaDeConfiguracao(navController: NavHostController, token: String, id: Int) {
-    // Valores iniciais dos campos de entrada
-    var nome = remember { mutableStateOf("") }
-    var email = remember { mutableStateOf("") }
-    var cep = remember { mutableStateOf("") }
-    var numero = remember { mutableStateOf("") }
-    var dataNasc = remember { mutableStateOf("") }
-    var senha = remember { mutableStateOf("") }
+
+    var nome by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
+    var cep by remember { mutableStateOf("") }
+    var dataNasc by remember { mutableStateOf("") }
+    var senha by remember { mutableStateOf("") }
+    var conecta by remember { mutableStateOf(true) }
+    val getUser = apiConfig.getConfigDadosUser(token = token, id = id)
+
+    if (conecta) {
+        getUser.enqueue(object : Callback<Configuracao> {
+            override fun onResponse(
+                call: Call<Configuracao>,
+                response: Response<Configuracao>
+            ) {
+                if (response.isSuccessful) {
+                    val resposta = response.body()
+                    if (resposta != null) {
+                        acertoApi = "Usuário verificado"
+                        nome = resposta.nome.toString()
+                        email = resposta.email.toString()
+                        cep = resposta.cep.toString()
+                        dataNasc = resposta.nascimento.toString()
+                        senha = "Digite uma nova senha"
+                        conecta = false
+
+                    } else {
+                        // Não foi possível achar usuário
+                        erroApi = "Erro ao verificar usuário"
+                    }
+                } else {
+                    // Algo passado pode estar errado
+                    erroApi = "Erro na solicitação: ${response.code()}"
+                }
+            }
+
+            override fun onFailure(call: Call<Configuracao>, t: Throwable) {
+                // Não foi possível conectar na api
+                erroApi = "Falha na solicitação: ${t.message}"
+            }
+        })
+    }
 
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        AtributoUsuarioConfig(stringResource(id = R.string.title_configuracao), 70, 15)
-        CampoDeEntrada(label = stringResource(id = R.string.title_sub_nome), valor = nome.value) { nome.value = it }
-        CampoDeEntrada(label = stringResource(id = R.string.title_sub_email), valor = email.value) { email.value = it }
-        CampoDeEntrada(label = stringResource(id = R.string.title_sub_cep),valor = numero.value) { numero.value = it }
-        CampoDeEntrada(label = stringResource(id = R.string.title_sub_numero),valor = cep.value) { cep.value = it }
-        CampoDeEntrada(label = stringResource(id = R.string.title_sub_dt_nasci), valor = dataNasc.value) {
-            dataNasc.value = it
+
+        AtributoUsuarioConfig(stringResource(id = R.string.title_configuracao), 90, 15)
+        nome?.let { CampoDeEntrada(label = "${stringResource(id = R.string.title_sub_nome)}:", valor = it) { novoNome -> nome = novoNome } }
+
+        email?.let {
+            CampoDeEntrada(label = "${stringResource(id = R.string.title_sub_email)}:", valor = it) { novoEmail ->
+                email = novoEmail
+            }
         }
-        CampoDeEntrada(label = stringResource(id = R.string.title_sub_senha), valor = senha.value) { senha.value = it }
-        BotaoSalvar(valor = stringResource(id = R.string.btn_salvar)) {
-            navController.navigate("Perfil")
+
+        cep?.let { CampoDeEntrada(label = "${stringResource(id = R.string.title_sub_cep)}:", valor = it) { novoCep -> cep = novoCep } }
+
+        dataNasc?.let {
+            CampoDeEntrada(label = "${stringResource(id = R.string.title_sub_dt_nasci)}:", valor = it) { novaData ->
+                dataNasc = novaData
+            }
+        }
+
+        senha?.let {
+            CampoDeEntrada(label = "${stringResource(id = R.string.title_sub_senha)}:", valor = it) { novaSenha ->
+                senha = novaSenha
+            }
+        }
+
+        BotaoSalvar(navController, valor = stringResource(id = R.string.btn_salvar)) {
+            navController.navigate("Login")
+
+            val putUserData = apiConfigData.putConfigData(
+                token = token,
+                id = id,
+                config = Configuracao(
+                    nascimento = dataNasc
+                )
+            )
+
+            putUserData.enqueue(object : Callback<Configuracao> {
+                override fun onResponse(
+                    call: Call<Configuracao>,
+                    response: Response<Configuracao>
+                ) {
+                    if (response.isSuccessful) {
+                        val resposta = response.body()
+                        if (resposta != null) {
+                            acertoApi = "Dados do Usuário cadastrado"
+                            Configuracao(
+                                dataNasc
+                            )
+
+                            val putUserCep = apiConfigEndereco.putConfigEnde(
+                                token = token,
+                                id = id,
+                                config = Configuracao(
+                                    cep = cep
+                                )
+                            )
+
+                            putUserCep.enqueue(object : Callback<Configuracao> {
+                                override fun onResponse(
+                                    call: Call<Configuracao>,
+                                    response: Response<Configuracao>
+                                ) {
+                                    if (response.isSuccessful) {
+                                        val resposta = response.body()
+                                        if (resposta != null) {
+                                            acertoApi = "Dados do Usuário cadastrado"
+                                            Configuracao(
+                                                cep
+                                            )
+
+                                            val putUserDados = apiConfigDadosUser.putConfigUser(
+                                                token = token,
+                                                id = id,
+                                                config = UserConfig(
+                                                    email = email,
+                                                    nome = nome,
+                                                    role = "PACIENTE",
+                                                    senha = senha
+                                                )
+                                            )
+
+                                            putUserDados.enqueue(object : Callback<Configuracao> {
+                                                override fun onResponse(
+                                                    call: Call<Configuracao>,
+                                                    response: Response<Configuracao>
+                                                ) {
+                                                    if (response.isSuccessful) {
+                                                        val resposta = response.body()
+                                                        if (resposta != null) {
+                                                            acertoApi =
+                                                                "Dados do Usuário cadastrado"
+
+                                                        } else {
+                                                            // Não foi possível achar usuário
+                                                            erroApi = "Erro ao verificar usuário"
+                                                        }
+                                                    } else {
+                                                        // Algo passado pode estar errado
+                                                        erroApi =
+                                                            "Erro na solicitação: ${response.code()}"
+                                                    }
+                                                }
+
+                                                override fun onFailure(
+                                                    call: Call<Configuracao>,
+                                                    t: Throwable
+                                                ) {
+                                                    // Não foi possível conectar na api
+                                                    erroApi = "Falha na solicitação: ${t.message}"
+                                                }
+                                            })
+
+                                        } else {
+                                            // Não foi possível achar usuário
+                                            erroApi = "Erro ao verificar usuário"
+                                        }
+                                    } else {
+                                        // Algo passado pode estar errado
+                                        erroApi = "Erro na solicitação: ${response.code()}"
+                                    }
+                                }
+
+                                override fun onFailure(call: Call<Configuracao>, t: Throwable) {
+                                    // Não foi possível conectar na api
+                                    erroApi = "Falha na solicitação: ${t.message}"
+                                }
+                            })
+
+                        } else {
+                            // Não foi possível achar usuário
+                            erroApi = "Erro ao verificar usuário"
+                        }
+                    } else {
+                        // Algo passado pode estar errado
+                        erroApi = "Erro na solicitação: ${response.code()}"
+                    }
+                }
+
+                override fun onFailure(call: Call<Configuracao>, t: Throwable) {
+                    // Não foi possível conectar na api
+                    erroApi = "Falha na solicitação: ${t.message}"
+                }
+            })
         }
         Spacer(modifier = Modifier.height(16.dp))
     }
@@ -78,7 +256,7 @@ fun TelaDeConfiguracao(navController: NavHostController, token: String, id: Int)
 fun AtributoUsuarioConfig(valor: String, paddingTop: Int, paddingBottom: Int) {
     Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.Start) {
         Text(
-            valor, fontSize = 30.sp, fontFamily = fontRobotoBold, modifier =
+            valor, fontSize = 18.sp, fontFamily = Rowdies, modifier =
             Modifier.padding(
                 top = paddingTop.dp,
                 start = 20.dp,
@@ -89,57 +267,55 @@ fun AtributoUsuarioConfig(valor: String, paddingTop: Int, paddingBottom: Int) {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CampoDeEntrada(label: String, valor: String, onValueChange: (String) -> Unit) {
+    val valorInput = remember { mutableStateOf(valor) }// Declare como uma variável mutável
+
     Column(
-        modifier = Modifier.padding(8.dp),
-        verticalArrangement = Arrangement.Center,
-
-        ) {
-        var isHintVisible = valor.isEmpty()
-
-        BasicTextField(
-            value = valor,
-            onValueChange = {
-                onValueChange(it)
-                isHintVisible = it.isEmpty()
-            },
-            textStyle = TextStyle(fontFamily = Rowdies, color = Color.Black, fontSize = 16.sp),
-            singleLine = true,
-            decorationBox = { innerTextField ->
-                Box(
-                    modifier = Modifier
-                        .width(350.dp)
-                        .height(50.dp)
-                        .background(Color.White, shape = RoundedCornerShape(7.dp))
-                        .border(1.2.dp, Color.Black, RoundedCornerShape(6.dp)),
-                    contentAlignment = Alignment.CenterStart
-                ) {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.CenterStart
-                    ) {
-                        if (!isHintVisible) {
-                            innerTextField()
-                        } else {
-                            Text(
-                                text = label,
-                                style = TextStyle(color = Color.Black),
-                                modifier = Modifier.padding(start = 8.dp)
-                            )
-                        }
-                    }
-                }
-            },
+        modifier = Modifier
+            .width(450.dp)
+            .padding(10.dp)
+    ) {
+        Box(
             modifier = Modifier
-                .padding(8.dp)
-                .shadow(10.dp, shape = RoundedCornerShape(7.dp))
-        )
+                .fillMaxWidth()
+                .background(Color.White)
+                .height(55.dp),
+            contentAlignment = Alignment.CenterStart
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    text = label,
+                    fontSize = 20.sp,
+                    fontFamily = fontRobotoBold,
+                    color = Color.Black,
+                    modifier = Modifier.padding(start = 16.dp)
+                )
+                TextField(
+                    value = valor,
+                    onValueChange = { onValueChange(it); valorInput.value = it },
+                    singleLine = true,
+                    textStyle = TextStyle(
+                        fontSize = 17.sp,
+                        fontFamily = fontRobotoBold,
+                        color = Color.Black
+                    ),
+                    colors = TextFieldDefaults.textFieldColors(
+                        containerColor = Color.Transparent
+                    ),
+                    modifier = Modifier.weight(1f)
+                )
+            }
+        }
     }
 }
 
 @Composable
-fun BotaoSalvar(valor: String, onClick: () -> Unit) {
+fun BotaoSalvar(navController: NavHostController, valor: String, onClick: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxWidth()

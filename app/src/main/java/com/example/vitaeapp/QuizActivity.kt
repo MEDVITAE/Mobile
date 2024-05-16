@@ -13,6 +13,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.Divider
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -27,18 +30,20 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import com.example.vitaeapp.api.RetrofitServices
 import com.example.vitaeapp.classes.Quiz
 import com.example.vitaeapp.ui.theme.VitaeAppTheme
 import retrofit2.Response
 
 @Composable
-fun TelaQuiz(token: String, id: Int) {
-    val perguntas = remember { mutableStateOf(1) }
+fun TelaQuiz(navController: NavHostController, token: String, id: Int) {
+    val contador = remember { mutableStateOf(1) }
     val altura = remember { mutableStateOf("") }
     val peso = remember { mutableStateOf("") }
     val perguntaTatuagem = remember { mutableStateOf(false) }
@@ -51,16 +56,17 @@ fun TelaQuiz(token: String, id: Int) {
 
     Column {
         Questionario(
-            perguntas, altura, peso, perguntaTatuagem,
+            navController, contador, altura, peso, perguntaTatuagem,
             perguntaRelacao, perguntaDesconforto, perguntaMedicamento,
-            perguntaDst, perguntaVacina, apto, token = token, id = id
+            perguntaDst, perguntaVacina, apto, token, id
         )
     }
 }
 
 @Composable
 fun Questionario(
-    perguntas: MutableState<Int>,
+    navController: NavHostController,
+    contador: MutableState<Int>,
     altura: MutableState<String>,
     peso: MutableState<String>,
     perguntaTatuagem: MutableState<Boolean>,
@@ -78,15 +84,15 @@ fun Questionario(
             stringResource(id = R.string.title_quiz),
             style = TextStyle(fontFamily = fontFamilyRowdiesBold, fontSize = 18.sp),
         )
-        when (perguntas.value) {
-            1 -> perguntaAltura(pergunta = altura)
-            2 -> perguntaPeso(pergunta = peso)
-            3 -> perguntaTatuagem(perguntas = perguntas, valorPergunta = perguntaTatuagem)
-            4 -> perguntaRelacao(perguntas = perguntas, valorPergunta = perguntaRelacao)
-            5 -> perguntaDesconforto(perguntas = perguntas, valorPergunta = perguntaDesconforto)
-            6 -> perguntaMedicamento(perguntas = perguntas, valorPergunta = perguntaMedicamento)
-            7 -> perguntaDst(perguntas = perguntas, valorPergunta = perguntaDst)
-            8 -> perguntaVacina(perguntas = perguntas, valorPergunta = perguntaVacina)
+        when (contador.value) {
+            1 -> perguntaAltura(pergunta = altura, onValueChange = { altura.value = it })
+            2 -> perguntaPeso(pergunta = peso, onValueChange = { peso.value = it })
+            3 -> perguntaTatuagem(perguntas = contador, valorPergunta = perguntaTatuagem)
+            4 -> perguntaRelacao(perguntas = contador, valorPergunta = perguntaRelacao)
+            5 -> perguntaDesconforto(perguntas = contador, valorPergunta = perguntaDesconforto)
+            6 -> perguntaMedicamento(perguntas = contador, valorPergunta = perguntaMedicamento)
+            7 -> perguntaDst(perguntas = contador, valorPergunta = perguntaDst)
+            8 -> perguntaVacina(perguntas = contador, valorPergunta = perguntaVacina)
         }
 
         Row(
@@ -95,23 +101,44 @@ fun Questionario(
                 .padding(top = 100.dp),
             horizontalArrangement = Arrangement.Center
         ) {
-            if (perguntas.value > 1) {
-                BotaoVoltar(onClick = { perguntas.value-- })
+            if (contador.value > 1 && contador.value < 9) {
+                BotaoVoltar(onClick = { contador.value-- })
             }
 
-            if (perguntas.value == 2 || perguntas.value == 8) {
+            if (contador.value == 2) {
                 Spacer(modifier = Modifier.width(20.dp))
             }
 
-            if (perguntas.value < 8) {
-                BotaoAvancar(onClick = { perguntas.value++ })
+            if (contador.value > 0 && contador.value < 3) {
+                BotaoAvancar(onClick = { contador.value++ })
             }
-
-            if (perguntas.value == 9) {
-                BotaoFinalizar(
-                    perguntaTatuagem, perguntaRelacao, perguntaDesconforto, perguntaMedicamento,
-                    perguntaDst, perguntaVacina, apto, altura, peso, token =  token, id = id
-                )
+            if (contador.value == 9) {
+                Column {
+                    Text(
+                        "Deseja finalizar o Quiz de Aptidão?",
+                        fontSize = 18.sp,
+                        fontFamily = fontRobotoBold
+                    )
+                    Spacer(modifier = Modifier.height(70.dp))
+                    Row {
+                        BotaoVoltar(onClick = { contador.value-- })
+                        Spacer(modifier = Modifier.width(10.dp))
+                        BotaoFinalizar(
+                            navController,
+                            perguntaTatuagem,
+                            perguntaRelacao,
+                            perguntaDesconforto,
+                            perguntaMedicamento,
+                            perguntaDst,
+                            perguntaVacina,
+                            apto,
+                            altura,
+                            peso,
+                            token = token,
+                            id = id
+                        )
+                    }
+                }
             }
         }
     }
@@ -143,7 +170,9 @@ fun BotaoAvancar(onClick: () -> Unit) {
         ) {
 
             Text(
-                stringResource(id = R.string.btn_avancar), fontSize = 18.sp, fontFamily = fontRobotoBold
+                stringResource(id = R.string.btn_avancar),
+                fontSize = 18.sp,
+                fontFamily = fontRobotoBold
             )
             Spacer(modifier = Modifier.width(10.dp))
             Image(
@@ -191,7 +220,9 @@ fun BotaoVoltar(onClick: () -> Unit) {
             )
             Spacer(modifier = Modifier.width(10.dp))
             Text(
-                stringResource(id = R.string.btn_voltar), fontSize = 18.sp, fontFamily = fontRobotoBold
+                stringResource(id = R.string.btn_voltar),
+                fontSize = 18.sp,
+                fontFamily = fontRobotoBold
             )
         }
     }
@@ -199,6 +230,7 @@ fun BotaoVoltar(onClick: () -> Unit) {
 
 @Composable
 fun BotaoFinalizar(
+    navController: NavHostController,
     perguntaTatuagem: MutableState<Boolean>,
     perguntaRelacao: MutableState<Boolean>,
     perguntaDesconforto: MutableState<Boolean>,
@@ -216,10 +248,10 @@ fun BotaoFinalizar(
             .width(150.dp)
             .height(45.dp),
         onClick = {
-            validarFuncoes(
-                perguntaTatuagem,
+            ValidarFuncoes(
+                navController = navController, perguntaTatuagem,
                 perguntaRelacao, perguntaDesconforto, perguntaMedicamento,
-                perguntaDst, perguntaVacina, apto, token = token, id = id
+                perguntaDst, perguntaVacina, apto, altura, peso, token = token, id = id
             )
         }
     ) {
@@ -241,7 +273,9 @@ fun BotaoFinalizar(
         ) {
 
             Text(
-                stringResource(id = R.string.btn_finalizar), fontSize = 18.sp, fontFamily = fontRobotoBold
+                stringResource(id = R.string.btn_finalizar),
+                fontSize = 18.sp,
+                fontFamily = fontRobotoBold
             )
         }
     }
@@ -304,7 +338,7 @@ fun BotaoNao(onClick: () -> Unit) {
 }
 
 @Composable
-fun perguntaAltura(pergunta: MutableState<String>) {
+fun perguntaAltura(pergunta: MutableState<String>, onValueChange: (String) -> Unit) {
 
     Column(
         modifier = Modifier
@@ -315,22 +349,33 @@ fun perguntaAltura(pergunta: MutableState<String>) {
             stringResource(id = R.string.title_quiz_sub_pergunta_1),
             modifier = Modifier
                 .padding(0.dp, 0.dp, 0.dp, 20.dp),
-            style = TextStyle(fontFamily = fontFamilyRowdies, fontSize = 20.sp)
+            style = TextStyle(fontFamily = fontFamilyRowdies, fontSize = 20.sp),
         )
-        TextField(
+        BasicTextField(
             value = pergunta.value,
-            onValueChange = { pergunta.value = it },
-            singleLine = true, // Define o TextField como uma única linha
-            modifier = Modifier.fillMaxWidth()
+            onValueChange = { onValueChange(it) },
+            modifier = Modifier.background(color = Color.Transparent),
+            singleLine = true,
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Number
+            )
+            )
+        Divider(
+            modifier = Modifier.fillMaxWidth(),
+            color = Color.Black
         )
         Row {
             Text("1/8")
         }
+        if (pergunta.value.isEmpty() || pergunta.value.toDouble() <= 0.0 || pergunta.value.toDouble() > 3.0) {
+            Text("Altura Inválida")
+        }
     }
 }
 
+
 @Composable
-fun perguntaPeso(pergunta: MutableState<String>) {
+fun perguntaPeso(pergunta: MutableState<String>, onValueChange: (String) -> Unit) {
 
     Column(
         modifier = Modifier
@@ -343,12 +388,22 @@ fun perguntaPeso(pergunta: MutableState<String>) {
                 .padding(0.dp, 0.dp, 0.dp, 20.dp),
             style = TextStyle(fontFamily = fontFamilyRowdies, fontSize = 20.sp)
         )
-        TextField(
+        BasicTextField(
             value = pergunta.value,
-            onValueChange = { pergunta.value = it },
-            singleLine = true, // Define o TextField como uma única linha
-            modifier = Modifier.fillMaxWidth()
+            onValueChange = { onValueChange(it) },
+            modifier = Modifier.background(color = Color.Transparent),
+            singleLine = true,
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Number
+            )
+            )
+        Divider(
+            modifier = Modifier.fillMaxWidth(),
+            color = Color.Black
         )
+        if (pergunta.value.isEmpty() || pergunta.value.toDouble() <= 0.0) {
+            Text("Peso Inválido")
+        }
         Row {
             Text("2/8")
         }
@@ -572,7 +627,8 @@ fun perguntaVacina(perguntas: MutableState<Int>, valorPergunta: MutableState<Boo
     }
 }
 
-fun validarFuncoes(
+fun ValidarFuncoes(
+    navController: NavHostController,
     perguntaTatuagem: MutableState<Boolean>,
     perguntaRelacao: MutableState<Boolean>,
     perguntaDesconforto: MutableState<Boolean>,
@@ -580,50 +636,59 @@ fun validarFuncoes(
     perguntaDst: MutableState<Boolean>,
     perguntaVacina: MutableState<Boolean>,
     apto: MutableState<Boolean>,
+    altura: MutableState<String>,
+    peso: MutableState<String>,
     token: String, id: Int
 ) {
     if (perguntaTatuagem.value || perguntaRelacao.value || perguntaDesconforto.value ||
         perguntaMedicamento.value || perguntaDst.value || perguntaVacina.value
     ) {
-        conectarBanco(false, token = token, id = id)
-    }
-    else {
-        conectarBanco(true, token = token, id = id)
+        conectarBanco(false, altura, peso, navController, token, id)
+    } else {
+        conectarBanco(true, altura, peso, navController, token, id)
     }
 }
 
-fun conectarBanco(validarFuncoes: Boolean, token: String, id: Int) {
+fun conectarBanco(
+    validarFuncoes: Boolean,
+    altura: MutableState<String>,
+    peso: MutableState<String>,
+    navController: NavHostController,
+    token: String,
+    id: Int
+) {
 
     var erroApi = ""
 
     val apiQuiz = RetrofitServices.getApiQuiz()
 
-    val quiz = Quiz(altura = null, peso = null, validarFuncoes)
+    val quiz = Quiz(altura = altura.value, peso = peso.value, validarFuncoes)
 
-    val put = apiQuiz.put(quiz, id, token)
+    val put = apiQuiz.put(
+        quiz = quiz,
+        id = id,
+        token = token
+    )
 
     put.enqueue(object : retrofit2.Callback<Quiz> {
-        // esta função é invocada caso:
-        // a chamada ao endpoint ocorra sem problemas
-        // o corpo da resposta foi convertido para o tipo indicado
         override fun onResponse(call: retrofit2.Call<Quiz>, response: Response<Quiz>) {
-            if (response.isSuccessful) { // testando se a resposta não é 4xx nem 5xx
-                val lista = response.body() // recuperando o corpo da resposta
+            if (response.isSuccessful) {
+                val lista = response.body()
                 if (lista != null) {
-                    println("Ok")
+
                 }
             } else {
                 erroApi = response.errorBody().toString()
             }
         }
 
-        // esta função é invocada caso:
-        // não seja possivel chamar a API (rede fora, por exemplo)
-        // não seja possivel converter o corpo da resposta no tipo esperado
         override fun onFailure(call: retrofit2.Call<Quiz>, t: Throwable) {
             erroApi = t.message!!
         }
 
     })
 
+    if (erroApi.isEmpty()) {
+        navController.navigate("Perfil/${token}/${id}")
+    }
 }
