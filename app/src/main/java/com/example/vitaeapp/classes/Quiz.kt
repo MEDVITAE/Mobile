@@ -1,8 +1,8 @@
 package com.example.vitaeapp.classes
 
 data class Quiz(
-    val altura: String? = null,
-    val peso: String? = null,
-    val apto: Boolean? = null
+    val altura: String,
+    val peso: String,
+    val apto: Boolean
 ) {
 }

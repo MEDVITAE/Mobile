@@ -1,5 +1,6 @@
 package com.example.vitaeapp
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -657,7 +658,6 @@ fun conectarBanco(
     token: String,
     id: Int
 ) {
-
     var erroApi = ""
 
     val apiQuiz = RetrofitServices.getApiQuiz()
@@ -675,20 +675,22 @@ fun conectarBanco(
             if (response.isSuccessful) {
                 val lista = response.body()
                 if (lista != null) {
-
+                    // Processar a resposta
                 }
             } else {
-                erroApi = response.errorBody().toString()
+                erroApi = response.errorBody()?.string() ?: "Erro desconhecido"
             }
         }
 
         override fun onFailure(call: retrofit2.Call<Quiz>, t: Throwable) {
-            erroApi = t.message!!
+            erroApi = t.message ?: "Erro desconhecido"
         }
-
     })
 
     if (erroApi.isEmpty()) {
         navController.navigate("Perfil/${token}/${id}")
+    } else {
+        // Tratar erro, talvez mostrar uma mensagem para o usuário
+        Log.e("QuizActivity", "Erro na API: $erroApi")
     }
 }

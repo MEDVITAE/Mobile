@@ -5,9 +5,9 @@
     <string name="title_input_cpf">CPF</string>
     <string name="title_input_peso">Peso</string>
     <string name="title_input_altura">Altura</string>
-    <string name="ola">Olá,</string>
+    <string name="ola">Olá, </string>
     <string name="title_perfil_quantidade_doacao">Doações feitas</string>
-    <string name="title_perfil_apto_a_doacao">Disponibilidade</string>
+    <string name="title_perfil_apto_a_doacao">Apto</string>
     <string name="title_perfil_tipo_sangue">Tipo sanguineo</string>
 
     <string name="btn_agendar">Agendar</string>
@@ -41,6 +41,7 @@
     <string name="title_login_sub_erro">Por favor, corrija os campos incorretos.</string>
 
     <string name="title_historico_proxima">PRÓXIMA DOAÇÃO</string>
+    <string name="title_historico_proxima_vazia">Não há doações próximas</string>
     <string name="title_historico_anteriores">HISTÓRICO</string>
 
     <string name="title_quiz">QUIZ DE APTIDÃO</string>
