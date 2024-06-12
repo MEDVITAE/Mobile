@@ -7,7 +7,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitServices {
     //"http://35.172.13.205:80/Api/"
-    const val BASE_URL = "http://192.168.68.114:8082/Api/"
+    const val BASE_URL = "https://vitae.zapto.org/Api/"
     const val BASEMAPS = "https://maps.googleapis.com/maps/api/geocode/"
     fun getCepsHemo(): ApiMaps {
         val cliente =

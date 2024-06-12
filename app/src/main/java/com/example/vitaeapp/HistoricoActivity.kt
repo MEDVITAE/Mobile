@@ -111,7 +111,18 @@ fun TelaHistorico(navController: NavHostController, token: String, id: Int) {
                     }
 
                 }
-                Anteriores(historico.value, agendaMaisRecente)
+                val novasAgendas = historico.value.agenda.filter { it.idAgenda != agendaMaisRecente?.idAgenda }
+                val novosHospitais = historico.value.hospital.filter { hospital ->
+                    novasAgendas.any { agenda -> agenda.fkHospital == hospital.id }
+                }
+
+                val novoHistorico = Historico(
+                    quantidadeDoacao = historico.value.quantidadeDoacao,
+                    agenda = novasAgendas,
+                    hospital = novosHospitais
+                )
+
+                Anteriores(novoHistorico, agendaMaisRecente)
             }
         }
     }
