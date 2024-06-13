@@ -183,7 +183,7 @@ fun RankingItem(ranking: Ranking, position: Int) {
             Spacer(modifier = Modifier.width(16.dp))
 
             Text(
-                text = "${ranking.totalDoado}",
+                text = String.format("%.2f", ranking.totalDoacao),
                 style = TextStyle(
                     fontFamily = Rowdies,
                     fontSize = 16.sp,
